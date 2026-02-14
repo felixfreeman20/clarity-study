@@ -1,1 +1,74 @@
+:root {
+    --primary: #000000;
+    --accent: #3b82f6;
+    --bg: #ffffff;
+    --gray: #f9f9f9;
+}
 
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background-color: var(--bg);
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    border-right: 1px solid #eee;
+    padding: 40px 20px;
+    background: white;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px;
+    color: #666;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 5px;
+}
+
+.nav-link.active {
+    background: var(--gray);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Main Workspace */
+.content {
+    margin-left: 250px;
+    padding: 80px;
+    max-width: 900px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 500;
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+}
+
+.input-box {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 1.1rem;
+    margin-top: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.btn-generate {
+    background: black;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    float: right;
+    margin-top: 20px;
+}
