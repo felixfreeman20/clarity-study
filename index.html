@@ -13,18 +13,34 @@
         .main-content { margin-left: 280px; padding: 100px; max-width: 1100px; }
         
         /* Logo Styling */
-        .logo-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 50; }
-        .app-logo { height: 40px; width: auto; object-fit: contain; }
+        .logo-container { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 50; }
+        .app-logo { height: 45px; width: auto; object-fit: contain; }
+
+        /* Sidebar Login Button */
+        .google-login-sidebar { 
+            width: 100%; 
+            border: 1px solid #e5e5e5; 
+            background: white; 
+            color: #1a1a1a; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 0.875rem; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            transition: 0.2s; 
+            cursor: pointer;
+        }
+        .google-login-sidebar:hover { background: #fafafa; border-color: #000; }
+        .g-icon { height: 20px; width: 20px; object-fit: contain; }
 
         /* Button Styling */
-        .btn-black { background: #000; color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-black { background: #000; color: #fff; padding: 14px 32px; border-radius: 8px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
         .btn-black:hover { opacity: 0.8; transform: translateY(-1px); }
-        
-        /* Sidebar Login Button */
-        .google-login-sidebar { width: 100%; border: 1px solid #e5e5e5; background: white; color: #1a1a1a; padding: 10px; border-radius: 6px; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
-        .google-login-sidebar:hover { background: #fafafa; border-color: #d1d1d1; }
 
-        /* Modal GUI */
+        /* Modal GUI for Name Collection */
         #name-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; justify-content: center; }
         .modal-box { background: white; padding: 48px; border-radius: 32px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); width: 100%; max-width: 420px; text-align: center; border: 1px solid #f0f0f0; }
 
@@ -36,7 +52,7 @@
 <body>
 
     <div class="logo-container">
-        <img src="logo.png" alt="Clarity Logo" class="app-logo">
+        <img src="logo.png" alt="Clarity" class="app-logo">
     </div>
 
     <div id="name-modal" class="hidden">
@@ -49,7 +65,7 @@
     </div>
 
     <aside class="sidebar flex flex-col">
-        <div class="h-20"></div> 
+        <div class="h-24"></div> 
         <nav class="space-y-4 flex-1">
             <a href="index.html" class="block font-semibold text-black">New Session</a>
             <a href="saved.html" id="nav-saved" class="hidden block text-gray-400 hover:text-black transition">Saved Sessions</a>
@@ -57,7 +73,7 @@
 
         <div id="auth-section" class="pt-8 border-t border-gray-100">
             <button id="loginBtn" class="google-login-sidebar">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/layout/google.svg" width="18">
+                <img src="GLogo.png" alt="G" class="g-icon">
                 Sign in with Google
             </button>
             
@@ -87,18 +103,18 @@
             </div>
         </div>
 
-        <textarea id="studyInput" class="w-full h-80 p-8 text-xl border border-gray-100 rounded-3xl bg-[#fafafa] focus:bg-white focus:border-black transition-all outline-none leading-relaxed mb-6" placeholder="Paste your messy notes..."></textarea>
+        <textarea id="studyInput" class="w-full h-80 p-8 text-xl border border-gray-100 rounded-[2rem] bg-[#fafafa] focus:bg-white focus:border-black transition-all outline-none leading-relaxed mb-6" placeholder="Paste your messy notes..."></textarea>
         
         <div class="flex justify-between items-center">
             <span id="status-msg" class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">Llama 3.3 Engine Active</span>
             <button id="generateBtn" class="btn-black">Generate</button>
         </div>
 
-        <div id="outputArea" class="hidden mt-16 p-12 border border-gray-100 rounded-[32px] bg-white shadow-sm">
+        <div id="outputArea" class="hidden mt-16 p-12 border border-gray-100 rounded-[2.5rem] bg-white shadow-sm">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-300">Result</h3>
                 <div class="flex gap-6">
-                    <button id="copyBtn" class="text-sm text-gray-400 hover:text-black transition">Copy</button>
+                    <button id="copyBtn" class="text-sm text-gray-400 hover:text-black transition font-medium">Copy</button>
                     <button id="saveBtn" class="text-sm text-blue-600 font-bold hover:underline">Save to Dashboard</button>
                 </div>
             </div>
@@ -125,7 +141,6 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // AUTH MONITORING
         onAuthStateChanged(auth, async (user) => {
             const loginBtn = document.getElementById('loginBtn');
             const userProfile = document.getElementById('user-profile');
@@ -152,7 +167,6 @@
             }
         });
 
-        // ACTIONS
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
         
         document.getElementById('logoutBtn').onclick = () => {
@@ -179,7 +193,7 @@
             const aiResult = document.getElementById('aiResult');
             document.getElementById('outputArea').classList.remove('hidden');
             aiResult.classList.add('shimmer');
-            aiResult.innerText = "Processing...";
+            aiResult.innerText = "Analyzing notes with Clarity AI...";
 
             try {
                 const res = await fetch('/api/generate', {
@@ -194,7 +208,7 @@
                 const data = await res.json();
                 aiResult.classList.remove('shimmer');
                 aiResult.innerText = data.result;
-            } catch (e) { aiResult.innerText = "Error."; }
+            } catch (e) { aiResult.innerText = "Connection failed. Please check your AI key."; }
         };
 
         document.getElementById('copyBtn').onclick = () => {
@@ -205,6 +219,7 @@
 
         document.getElementById('saveBtn').onclick = async () => {
             if(!auth.currentUser) return;
+            document.getElementById('saveBtn').innerText = "Saving...";
             await addDoc(collection(db, "sessions"), {
                 uid: auth.currentUser.uid,
                 content: document.getElementById('aiResult').innerText,
@@ -212,6 +227,7 @@
                 timestamp: serverTimestamp()
             });
             document.getElementById('saveBtn').innerText = "Saved ✓";
+            setTimeout(() => document.getElementById('saveBtn').innerText = "Save to Dashboard", 2000);
         };
     </script>
 </body>
