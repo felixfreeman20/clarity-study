@@ -9,20 +9,28 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; overflow-x: hidden; }
         .hero-text { font-size: 4.5rem; line-height: 1.1; letter-spacing: -0.04em; font-weight: 500; }
-        .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; background: #fff; padding: 40px 24px; z-index: 40; }
-        .main-content { margin-left: 280px; padding: 120px 100px; max-width: 1100px; }
         
-        /* Logo Styling - Updated for "Clarity Logo.png" */
+        /* Sidebar - Adjusted spacer for larger logo */
+        .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; background: #fff; padding: 40px 24px; z-index: 40; }
+        
+        /* Main Content - Pushed down further (padding-top: 180px) to clear the giant logo */
+        .main-content { margin-left: 280px; padding: 180px 100px 100px 100px; max-width: 1100px; }
+        
+        /* Logo Styling - SCALED 2.5X */
         .logo-container { 
             position: absolute; 
-            top: 35px; 
+            top: 40px; 
             left: 50%; 
             transform: translateX(-50%); 
             z-index: 50; 
             display: flex;
             justify-content: center;
         }
-        .app-logo { height: 50px; width: auto; object-fit: contain; }
+        .app-logo { 
+            height: 125px; /* Original 50px * 2.5 = 125px */
+            width: auto; 
+            object-fit: contain; 
+        }
 
         /* Sidebar Login Button */
         .google-login-sidebar { 
@@ -67,14 +75,13 @@
         <div class="modal-box">
             <h2 class="text-3xl font-bold tracking-tight mb-2 text-black">Welcome</h2>
             <p class="text-gray-400 mb-8">What should Clarity call you?</p>
-            <input type="text" id="nickname-input" placeholder="Your name" class="w-full p-4 border rounded-2xl mb-6 outline-none focus:border-black text-center text-xl bg-gray-50">
+            <input type="text" id="nickname-input" placeholder="Your name" class="w-full p-4 border rounded-2xl mb-6 outline-none focus:border-black text-center text-xl bg-gray-50 text-black">
             <button id="save-name-btn" class="btn-black w-full text-lg py-4">Continue</button>
         </div>
     </div>
 
     <aside class="sidebar flex flex-col">
-        <div class="h-24"></div> 
-        <nav class="space-y-4 flex-1">
+        <div class="h-32"></div> <nav class="space-y-4 flex-1">
             <a href="index.html" class="block font-semibold text-black">New Session</a>
             <a href="saved.html" id="nav-saved" class="hidden block text-gray-400 hover:text-black transition">Saved Sessions</a>
         </nav>
@@ -111,7 +118,7 @@
             </div>
         </div>
 
-        <textarea id="studyInput" class="w-full h-80 p-8 text-xl border border-gray-100 rounded-[2.5rem] bg-[#fafafa] focus:bg-white focus:border-black transition-all outline-none leading-relaxed mb-6" placeholder="Paste your messy notes..."></textarea>
+        <textarea id="studyInput" class="w-full h-80 p-8 text-xl border border-gray-100 rounded-[2.5rem] bg-[#fafafa] focus:bg-white focus:border-black transition-all outline-none leading-relaxed mb-6 text-black" placeholder="Paste your messy notes..."></textarea>
         
         <div class="flex justify-between items-center">
             <span id="status-msg" class="text-[10px] text-gray-300 uppercase tracking-widest font-bold italic">AI Powered by Groq Cloud</span>
@@ -150,15 +157,10 @@
         const provider = new GoogleAuthProvider();
 
         onAuthStateChanged(auth, async (user) => {
-            const loginBtn = document.getElementById('loginBtn');
-            const userProfile = document.getElementById('user-profile');
-            const savedNav = document.getElementById('nav-saved');
-            const nameModal = document.getElementById('name-modal');
-
             if (user) {
-                loginBtn.classList.add('hidden');
-                userProfile.classList.remove('hidden');
-                savedNav.classList.remove('hidden');
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('user-profile').classList.remove('hidden');
+                document.getElementById('nav-saved').classList.remove('hidden');
 
                 const userRef = doc(db, "users", user.uid);
                 const userSnap = await getDoc(userRef);
@@ -166,20 +168,17 @@
                 if (userSnap.exists()) {
                     document.getElementById('display-name').innerText = userSnap.data().nickname;
                 } else {
-                    nameModal.classList.remove('hidden');
+                    document.getElementById('name-modal').classList.remove('hidden');
                 }
             } else {
-                loginBtn.classList.remove('hidden');
-                userProfile.classList.add('hidden');
-                savedNav.classList.add('hidden');
+                document.getElementById('loginBtn').classList.remove('hidden');
+                document.getElementById('user-profile').classList.add('hidden');
+                document.getElementById('nav-saved').classList.add('hidden');
             }
         });
 
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
-        
-        document.getElementById('logoutBtn').onclick = () => {
-            signOut(auth).then(() => window.location.reload());
-        };
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
 
         document.getElementById('save-name-btn').onclick = async () => {
             const val = document.getElementById('nickname-input').value;
@@ -197,11 +196,10 @@
         document.getElementById('generateBtn').onclick = async () => {
             const text = document.getElementById('studyInput').value;
             if(!text) return;
-
             const aiResult = document.getElementById('aiResult');
             document.getElementById('outputArea').classList.remove('hidden');
             aiResult.classList.add('shimmer');
-            aiResult.innerText = "Processing your notes with AI...";
+            aiResult.innerText = "Analyzing notes...";
 
             try {
                 const res = await fetch('/api/generate', {
@@ -216,7 +214,7 @@
                 const data = await res.json();
                 aiResult.classList.remove('shimmer');
                 aiResult.innerText = data.result;
-            } catch (e) { aiResult.innerText = "Connection failed. Please check your Vercel logs."; }
+            } catch (e) { aiResult.innerText = "Error connecting to AI."; }
         };
 
         document.getElementById('copyBtn').onclick = () => {
