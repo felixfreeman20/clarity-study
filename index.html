@@ -3,129 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Structured Study Assistant</title>
+    <title>Clarity | Study with Structure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .sidebar-link:hover { background-color: #f8fafc; color: #2563eb; }
-        .mode-btn-active { border-color: #3b82f6; background-color: #eff6ff; color: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; color: #1a1a1a; }
+        .hero-text { font-size: 3.5rem; line-height: 1.1; letter-spacing: -0.02em; }
+        .sidebar-item { transition: all 0.2s ease; border-radius: 8px; cursor: pointer; }
+        .sidebar-item:hover { background: #f4f4f4; }
+        .sidebar-active { background: #000; color: #fff; }
+        .glass-input { background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; transition: border 0.3s ease; }
+        .glass-input:focus { border-color: #000; outline: none; }
+        .btn-primary { background: #000; color: #fff; padding: 12px 24px; border-radius: 4px; font-weight: 500; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.8; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="flex min-h-screen">
 
-    <div class="flex min-h-screen">
-        <aside class="w-64 bg-white border-r border-slate-200 p-8 hidden md:flex flex-col">
-            <h1 class="text-2xl font-semibold text-blue-600 tracking-tight mb-10">Clarity</h1>
-            <nav class="space-y-2 flex-1">
-                <a href="#" class="sidebar-link block p-3 rounded-lg text-blue-600 font-medium transition">New Session</a>
-                <a href="#" class="sidebar-link block p-3 rounded-lg text-slate-400 transition">Saved Sessions</a>
-                <a href="#" class="sidebar-link block p-3 rounded-lg text-slate-400 transition">Flashcards</a>
-            </nav>
-            <div class="pt-6 border-t border-slate-100">
-                <button id="loginBtn" class="text-sm text-slate-500 hover:text-blue-600 transition">Student Login</button>
-            </div>
-        </aside>
+    <aside class="w-64 border-r border-gray-100 p-8 flex flex-col fixed h-full bg-white z-10">
+        <div class="mb-12">
+            <h1 class="text-xl font-semibold tracking-tighter uppercase">Clarity</h1>
+        </div>
+        
+        <nav class="space-y-2 flex-1">
+            <div onclick="switchView('new')" id="nav-new" class="sidebar-item sidebar-active p-3 text-sm">New Session</div>
+            <div onclick="switchView('saved')" id="nav-saved" class="sidebar-item p-3 text-sm text-gray-500">Saved Sessions</div>
+            <div onclick="switchView('flashcards')" id="nav-flashcards" class="sidebar-item p-3 text-sm text-gray-500">Flashcard Decks</div>
+        </nav>
 
-        <main class="flex-1 p-6 md:p-12 max-w-5xl mx-auto w-full">
-            <header class="mb-10 text-center md:text-left">
-                <h2 class="text-3xl font-light text-slate-700">Transform Chaos into <span class="text-blue-600 font-semibold">Clarity</span></h2>
-                <p class="text-slate-400 mt-2 text-lg">Organize your notes into exam-ready formats.</p>
-            </header>
+        <div class="pt-6 border-t border-gray-100">
+            <button id="authBtn" class="text-sm font-medium hover:underline">Log In</button>
+        </div>
+    </aside>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <button class="mode-btn mode-btn-active p-4 rounded-xl border border-slate-200 bg-white transition-all text-sm font-medium shadow-sm">
-                    Structured Summary
-                </button>
-                <button class="mode-btn p-4 rounded-xl border border-slate-200 bg-white transition-all text-sm font-medium shadow-sm hover:border-blue-200">
-                    Quiz Mode
-                </button>
-                <button class="mode-btn p-4 rounded-xl border border-slate-200 bg-white transition-all text-sm font-medium shadow-sm hover:border-blue-200">
-                    Study Cards
-                </button>
-                <button class="mode-btn p-4 rounded-xl border border-slate-200 bg-white transition-all text-sm font-medium shadow-sm hover:border-blue-200">
-                    Speed Review
-                </button>
+    <main class="ml-64 flex-1 flex flex-col items-center justify-center p-20">
+        
+        <section id="view-new" class="w-full max-w-3xl animate-in fade-in duration-700">
+            <h2 class="hero-text font-medium mb-4">Make it <span class="text-gray-400">clear.</span></h2>
+            <p class="text-gray-500 mb-10 text-lg">Transform messy notes into structured learning paths.</p>
+
+            <div class="flex gap-4 mb-6">
+                <select id="modeSelect" class="bg-transparent border-b border-gray-300 py-2 text-sm focus:border-black outline-none">
+                    <option value="summary">Structured Summary</option>
+                    <option value="quiz">Quiz Mode</option>
+                    <option value="speed">Speed Review</option>
+                </select>
             </div>
 
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <textarea id="studyInput" 
-                    class="w-full h-80 p-8 outline-none resize-none text-slate-600 leading-relaxed text-lg" 
-                    placeholder="Paste your messy notes, textbook passages, or slide content here..."></textarea>
-                
-                <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                    <span class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Academic Assistant</span>
-                    <button id="generateBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-all shadow-md active:scale-95">
-                        Generate Session
-                    </button>
-                </div>
+            <textarea id="studyInput" class="glass-input w-full h-64 p-6 text-lg mb-6" placeholder="Paste your text here..."></textarea>
+            
+            <div class="flex justify-between items-center">
+                <span id="statusText" class="text-xs text-gray-400 uppercase tracking-widest">Ready to organize</span>
+                <button id="generateBtn" class="btn-primary">Generate</button>
             </div>
 
-            <div id="outputArea" class="mt-12 hidden space-y-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xl font-semibold text-slate-700">Your Organized Material</h3>
-                    <button class="text-sm text-blue-600 hover:underline">Save to Dashboard</button>
-                </div>
-                <div id="resultContent" class="p-8 rounded-2xl bg-white border border-blue-100 shadow-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
-                    </div>
+            <div id="outputContainer" class="hidden mt-12 p-10 bg-white border border-gray-100 shadow-xl rounded-sm">
+                <div id="aiResult" class="prose prose-slate max-w-none text-gray-700 whitespace-pre-wrap"></div>
+                <button id="saveSessionBtn" class="mt-8 text-sm font-semibold text-blue-600 hover:text-blue-800">Save to Dashboard →</button>
             </div>
-        </main>
-    </div>
+        </section>
+
+        <section id="view-saved" class="hidden w-full max-w-4xl">
+            <h2 class="text-3xl font-medium mb-8">Saved Sessions</h2>
+            <div id="savedList" class="grid grid-cols-1 gap-4">
+                <p class="text-gray-400">No sessions saved yet. Log in to sync your data.</p>
+            </div>
+        </section>
+
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Your specific Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo",
             authDomain: "clarity-study-cd835.firebaseapp.com",
             projectId: "clarity-study-cd835",
             storageBucket: "clarity-study-cd835.firebasestorage.app",
             messagingSenderId: "92484724607",
-            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a",
-            measurementId: "G-G8X7DJQ4GG"
+            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a"
         };
 
-        // Initialize Firebase services
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // Basic UI Interaction Logic
+        // --- NAVIGATION LOGIC ---
+        window.switchView = (view) => {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('sidebar-active', 'text-white'));
+            document.getElementById(`nav-${view}`).classList.add('sidebar-active');
+            
+            if(view === 'saved') loadSavedSessions();
+        };
+
+        // --- REAL AI INTEGRATION (MOCKUP) ---
+        // To make this "Real," you need an OpenAI API key. 
+        // For now, I've built the logic to handle the response.
         const generateBtn = document.getElementById('generateBtn');
-        const outputArea = document.getElementById('outputArea');
-        const resultContent = document.getElementById('resultContent');
-        const studyInput = document.getElementById('studyInput');
+        generateBtn.addEventListener('click', async () => {
+            const text = document.getElementById('studyInput').value;
+            const mode = document.getElementById('modeSelect').value;
 
-        generateBtn.addEventListener('click', () => {
-            if (!studyInput.value.trim()) {
-                alert("Please paste some notes first!");
-                return;
-            }
+            if (!text) return alert("Please enter text.");
 
-            // Showing a "Simulated" organization process for now
-            generateBtn.innerText = "Organizing...";
-            setTimeout(() => {
-                outputArea.classList.remove('hidden');
-                resultContent.innerHTML = `<strong>Session Generated:</strong><br><br>${studyInput.value.substring(0, 500)}...<br><br><em>Note: AI processing will be linked here in the next step.</em>`;
-                generateBtn.innerText = "Generate Session";
-                window.scrollTo({ top: outputArea.offsetTop, behavior: 'smooth' });
-            }, 1000);
-        });
+            generateBtn.disabled = true;
+            generateBtn.innerText = "Analyzing...";
+            document.getElementById('statusText').innerText = "AI is structuring your notes...";
 
-        // Simple Login Function
-        document.getElementById('loginBtn').addEventListener('click', async () => {
             try {
-                const result = await signInWithPopup(auth, provider);
-                alert(`Welcome to Clarity, ${result.user.displayName}!`);
-            } catch (error) {
-                console.error("Login failed:", error);
+                // In a production app, you would fetch from your Vercel API here:
+                // const response = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({text, mode}) });
+                
+                // Simulated AI Response for now:
+                setTimeout(() => {
+                    const mockResults = {
+                        summary: "### KEY CONCEPTS\n• Concept 1: Focused Learning\n• Concept 2: Active Recall\n\n### SUMMARY\nThis text explains how clarity reduces cognitive load.",
+                        quiz: "1. What is the main goal of Clarity?\na) Homework replacement\nb) Note organization\nc) Social media\n\nAnswer: b"
+                    };
+                    
+                    document.getElementById('aiResult').innerText = mockResults[mode] || "AI processed content here.";
+                    document.getElementById('outputContainer').classList.remove('hidden');
+                    generateBtn.disabled = false;
+                    generateBtn.innerText = "Generate";
+                    document.getElementById('statusText').innerText = "Complete";
+                }, 2000);
+
+            } catch (err) {
+                alert("AI Error. Check console.");
+                generateBtn.disabled = false;
             }
         });
 
+        // --- FIREBASE SAVE LOGIC ---
+        document.getElementById('saveSessionBtn').addEventListener('click', async () => {
+            if (!auth.currentUser) return alert("Please log in to save!");
+            
+            await addDoc(collection(db, "sessions"), {
+                uid: auth.currentUser.uid,
+                content: document.getElementById('aiResult').innerText,
+                mode: document.getElementById('modeSelect').value,
+                timestamp: serverTimestamp()
+            });
+            alert("Saved successfully!");
+        });
+
+        async function loadSavedSessions() {
+            if (!auth.currentUser) return;
+            const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid));
+            const querySnapshot = await getDocs(q);
+            const list = document.getElementById('savedList');
+            list.innerHTML = "";
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                list.innerHTML += `<div class="p-4 border border-gray-100 bg-white rounded">
+                    <p class="text-xs uppercase text-gray-400">${data.mode}</p>
+                    <p class="text-sm mt-1">${data.content.substring(0, 100)}...</p>
+                </div>`;
+            });
+        }
+
+        document.getElementById('authBtn').addEventListener('click', () => signInWithPopup(auth, provider));
+        onAuthStateChanged(auth, (user) => {
+            if (user) document.getElementById('authBtn').innerText = user.displayName;
+        });
     </script>
 </body>
 </html>
