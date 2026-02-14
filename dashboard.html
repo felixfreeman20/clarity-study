@@ -1,1 +1,16 @@
+async function generateAIContent() {
+    const input = document.getElementById('studyInput').value;
+    const mode = document.getElementById('modeSelect').value;
 
+    // This is where the magic happens
+    document.getElementById('status').innerText = "Clarity AI is analyzing...";
+
+    // This calls the AI. (You'll need a backend 'helper' for this)
+    const response = await fetch('/api/generate', {
+        method: 'POST',
+        body: JSON.stringify({ prompt: input, mode: mode })
+    });
+    
+    const data = await response.json();
+    document.getElementById('output').innerHTML = data.text;
+}
