@@ -3,37 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saved Sessions | Clarity</title>
+    <title>Archive | Clarity</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #fff; }
-        .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; padding: 40px 24px; }
-        .main-content { margin-left: 280px; padding: 80px; }
-        .session-card { border: 1px solid #eee; padding: 24px; border-radius: 8px; transition: 0.2s; }
-        .session-card:hover { border-color: #000; }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; }
+        .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; background: #fff; padding: 40px 24px; z-index: 40; }
+        .main-content { margin-left: 280px; padding: 100px; max-width: 1100px; }
+        
+        /* Logo Styling */
+        .logo-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 50; }
+        .app-logo { height: 40px; width: auto; object-fit: contain; }
+
+        /* Session Card Styling */
+        .session-card { 
+            border: 1px solid #f0f0f0; 
+            border-radius: 20px; 
+            padding: 32px; 
+            transition: all 0.3s ease; 
+            background: #fff;
+        }
+        .session-card:hover { 
+            border-color: #000; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
+        }
+
+        .hidden { display: none !important; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <h1 class="text-xl font-bold tracking-tighter uppercase mb-12">Clarity</h1>
-        <nav class="space-y-4">
+
+    <div class="logo-container">
+        <img src="logo.png" alt="Clarity Logo" class="app-logo">
+    </div>
+
+    <aside class="sidebar flex flex-col">
+        <div class="h-20"></div> 
+        <nav class="space-y-4 flex-1">
             <a href="index.html" class="block text-gray-400 hover:text-black transition">New Session</a>
-            <a href="saved.html" class="block font-medium text-black">Saved Sessions</a>
+            <a href="saved.html" class="block font-semibold text-black">Saved Sessions</a>
         </nav>
+
+        <div id="auth-section" class="pt-8 border-t border-gray-100">
+            <div id="user-profile">
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Account</p>
+                <p id="display-name" class="font-medium text-lg text-black">Loading...</p>
+                <button id="logoutBtn" class="text-xs text-red-500 hover:underline mt-2 cursor-pointer">Sign Out</button>
+            </div>
+        </div>
     </aside>
 
     <main class="main-content">
-        <h2 class="text-4xl font-medium mb-10 tracking-tight">Your Archive</h2>
-        <div id="sessions-list" class="grid grid-cols-1 gap-6">
-            <p id="loading-text" class="text-gray-400">Loading your history...</p>
+        <header class="mb-12">
+            <h2 class="text-4xl font-medium tracking-tight">Your Archive</h2>
+            <p class="text-gray-400 mt-2">All your AI-generated study guides and quizzes.</p>
+        </header>
+
+        <div id="sessions-container" class="space-y-8">
+            <div id="loading-state" class="text-gray-300 italic tracking-widest text-xs uppercase">Fetching your notes...</div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo",
@@ -48,42 +87,64 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // LOCK PAGE & LOAD DATA
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = "index.html"; // Redirect if not logged in
-                return;
-            }
+                // If not logged in, boot back to home
+                window.location.href = "index.html";
+            } else {
+                // 1. Get Nickname for Sidebar
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                document.getElementById('display-name').innerText = userSnap.exists() ? userSnap.data().nickname : user.displayName;
 
-            const listElem = document.getElementById('sessions-list');
-            const q = query(collection(db, "sessions"), where("uid", "==", user.uid), orderBy("timestamp", "desc"));
-            
+                // 2. Load Saved Sessions
+                loadSessions(user.uid);
+            }
+        });
+
+        async function loadSessions(uid) {
+            const container = document.getElementById('sessions-container');
+            const q = query(
+                collection(db, "sessions"), 
+                where("uid", "==", uid), 
+                orderBy("timestamp", "desc")
+            );
+
             try {
                 const querySnapshot = await getDocs(q);
-                document.getElementById('loading-text').classList.add('hidden');
-                
+                document.getElementById('loading-state').classList.add('hidden');
+
                 if (querySnapshot.empty) {
-                    listElem.innerHTML = "<p class='text-gray-400'>No sessions saved yet.</p>";
+                    container.innerHTML = `<p class="text-gray-400 italic">No saved sessions yet. Go generate some magic!</p>`;
                     return;
                 }
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    const date = data.timestamp?.toDate().toLocaleDateString() || "Recent";
-                    listElem.innerHTML += `
-                        <div class="session-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-xs font-bold uppercase tracking-widest text-blue-600">${data.mode}</span>
-                                <span class="text-xs text-gray-400">${date}</span>
-                            </div>
-                            <div class="text-gray-700 whitespace-pre-wrap line-clamp-3">${data.content}</div>
+                    const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : "Recently";
+                    
+                    const card = document.createElement('div');
+                    card.className = "session-card";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-[10px] font-bold uppercase tracking-widest ${data.mode === 'quiz' ? 'text-blue-500' : 'text-gray-400'}">${data.mode}</span>
+                            <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">${date}</span>
                         </div>
+                        <div class="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">${data.content}</div>
                     `;
+                    container.appendChild(card);
                 });
-            } catch (e) {
-                console.error(e);
-                listElem.innerHTML = "<p class='text-red-500'>Error loading sessions. Make sure you have Firestore Indexes enabled.</p>";
+            } catch (error) {
+                console.error("Error loading sessions:", error);
+                container.innerHTML = `<p class="text-red-500 text-xs">Error loading archive. Please check Firestore Indexes.</p>`;
             }
-        });
+        }
+
+        // SIGN OUT
+        document.getElementById('logoutBtn').onclick = () => {
+            signOut(auth).then(() => window.location.href = "index.html");
+        };
     </script>
 </body>
 </html>
