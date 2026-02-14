@@ -9,18 +9,25 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; }
         .hero-text { font-size: 4.5rem; line-height: 1.1; letter-spacing: -0.04em; font-weight: 500; }
-        .glass-input { border: 1px solid #e5e5e5; border-radius: 8px; transition: all 0.3s ease; }
-        .glass-input:focus { border-color: #000; box-shadow: 0 0 0 4px rgba(0,0,0,0.02); outline: none; }
         .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; background: #fff; padding: 40px 24px; z-index: 50; }
         .main-content { margin-left: 280px; padding: 100px; max-width: 1000px; }
         .btn-black { background: #000; color: #fff; padding: 14px 32px; border-radius: 6px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
-        .btn-black:hover { opacity: 0.8; }
-        .btn-black:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-black:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .hidden { display: none !important; }
         
-        /* Smooth fade in for the output */
-        #outputArea { animation: fadeIn 0.6s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Premium Shimmer Effect */
+        .shimmer {
+            background: linear-gradient(90deg, #f6f7f8 0%, #edeef1 50%, #f6f7f8 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            color: transparent !important;
+            border-radius: 8px;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* Floating Input Styling */
+        .glass-input { border: 1px solid #e5e5e5; border-radius: 12px; transition: all 0.3s ease; background: #fafafa; }
+        .glass-input:focus { border-color: #000; background: #fff; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); outline: none; }
     </style>
 </head>
 <body>
@@ -31,55 +38,59 @@
             <a href="index.html" class="block font-medium text-black">New Session</a>
             <a href="saved.html" class="block text-gray-400 hover:text-black transition">Saved Sessions</a>
         </nav>
-
         <div id="auth-section" class="pt-8 border-t border-gray-100">
-            <button id="loginBtn" class="text-sm font-semibold hover:underline cursor-pointer">Log In with Google</button>
-            
+            <button id="loginBtn" class="text-sm font-semibold hover:underline">Log In with Google</button>
             <div id="user-profile" class="hidden">
                 <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Welcome back,</p>
-                <p id="display-name" class="font-medium text-lg text-black"></p>
-                <button id="logoutBtn" class="text-xs text-red-500 hover:underline mt-2 cursor-pointer">Sign Out</button>
+                <p id="display-name" class="font-medium text-lg"></p>
+                <button id="logoutBtn" class="text-xs text-red-500 hover:underline mt-2">Sign Out</button>
             </div>
         </div>
     </aside>
 
     <main class="main-content">
-        <section id="workspace">
-            <h2 class="hero-text mb-8">Make it <span class="text-gray-300">clear.</span></h2>
-            
-            <div class="flex items-center gap-6 mb-8 text-sm uppercase tracking-widest text-gray-400">
-                <label for="modeSelect" class="text-[10px] font-bold">Mode:</label>
-                <select id="modeSelect" class="bg-transparent border-b border-gray-200 py-1 focus:border-black outline-none text-black font-medium cursor-pointer">
+        <h2 class="hero-text mb-8">Make it <span class="text-gray-300">clear.</span></h2>
+        
+        <div class="flex items-center gap-8 mb-8">
+            <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Mode</span>
+                <select id="modeSelect" class="bg-transparent border-b border-gray-200 py-1 focus:border-black outline-none text-black font-medium">
                     <option value="summary">Structured Summary</option>
                     <option value="quiz">Quiz Mode</option>
                     <option value="speed">Speed Review</option>
                 </select>
             </div>
 
-            <textarea id="studyInput" class="glass-input w-full h-80 p-8 text-xl leading-relaxed mb-6" placeholder="Paste messy notes or textbook passages here..."></textarea>
-            
-            <div class="flex justify-between items-center">
-                <span id="status-msg" class="text-xs text-gray-400 uppercase tracking-widest italic"></span>
-                <button id="generateBtn" class="btn-black">Generate</button>
+            <div id="quizCountContainer" class="hidden flex flex-col animate-in fade-in slide-in-from-left">
+                <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Questions: <span id="countVal">5</span></span>
+                <input type="range" id="quizCount" min="5" max="10" value="5" class="accent-black">
             </div>
+        </div>
 
-            <div id="outputArea" class="hidden mt-16 p-12 border border-gray-100 rounded-xl shadow-sm bg-white">
-                <div class="flex justify-between items-start mb-6">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Analysis Result</h3>
-                    <button id="saveBtn" class="text-sm text-blue-600 font-semibold hover:underline">Save to Dashboard →</button>
+        <textarea id="studyInput" class="glass-input w-full h-80 p-8 text-xl leading-relaxed mb-6" placeholder="Paste messy notes here..."></textarea>
+        
+        <div class="flex justify-between items-center">
+            <span id="status-msg" class="text-xs text-gray-400 uppercase tracking-widest italic">Ready to analyze</span>
+            <button id="generateBtn" class="btn-black">Generate</button>
+        </div>
+
+        <div id="outputArea" class="hidden mt-16 p-12 border border-gray-100 rounded-2xl shadow-xl bg-white">
+            <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Analysis Result</h3>
+                <div class="flex gap-4">
+                    <button id="copyBtn" class="text-sm text-gray-400 hover:text-black font-medium transition">Copy</button>
+                    <button id="saveBtn" class="text-sm text-blue-600 font-bold hover:underline">Save to Dashboard →</button>
                 </div>
-                <div id="aiResult" class="prose prose-lg max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed text-lg"></div>
             </div>
-        </section>
+            <div id="aiResult" class="prose prose-lg max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed"></div>
+        </div>
     </main>
 
     <script type="module">
-        // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo",
             authDomain: "clarity-study-cd835.firebaseapp.com",
@@ -94,107 +105,74 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // --- AUTHENTICATION & NICKNAME LOGIC ---
+        // UI Logic for Quiz Mode Slider
+        document.getElementById('modeSelect').addEventListener('change', (e) => {
+            const container = document.getElementById('quizCountContainer');
+            e.target.value === 'quiz' ? container.classList.remove('hidden') : container.classList.add('hidden');
+        });
+
+        document.getElementById('quizCount').oninput = (e) => {
+            document.getElementById('countVal').innerText = e.target.value;
+        };
+
+        // Auth Logic (Alon's Name Recognition)
         onAuthStateChanged(auth, async (user) => {
-            const loginBtn = document.getElementById('loginBtn');
-            const userProfile = document.getElementById('user-profile');
-            const displayNameElem = document.getElementById('display-name');
-
             if (user) {
-                loginBtn.classList.add('hidden');
-                userProfile.classList.remove('hidden');
-
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    displayNameElem.innerText = userSnap.data().nickname;
-                } else {
-                    // Ask user for a nickname and remember it forever
-                    const nickname = prompt("Welcome! What should Clarity call you?");
-                    const finalName = nickname || user.displayName || "Student";
-                    await setDoc(userRef, { nickname: finalName, email: user.email });
-                    displayNameElem.innerText = finalName;
-                }
-            } else {
-                loginBtn.classList.remove('hidden');
-                userProfile.classList.add('hidden');
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('user-profile').classList.remove('hidden');
+                const userSnap = await getDoc(doc(db, "users", user.uid));
+                document.getElementById('display-name').innerText = userSnap.exists() ? userSnap.data().nickname : user.displayName;
             }
         });
 
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
-        // --- AI GENERATION LOGIC ---
-        const generateBtn = document.getElementById('generateBtn');
-        const outputArea = document.getElementById('outputArea');
-        const aiResult = document.getElementById('aiResult');
-        const statusMsg = document.getElementById('status-msg');
+        // Copy Function
+        document.getElementById('copyBtn').onclick = () => {
+            navigator.clipboard.writeText(document.getElementById('aiResult').innerText);
+            document.getElementById('copyBtn').innerText = "Copied!";
+            setTimeout(() => { document.getElementById('copyBtn').innerText = "Copy"; }, 2000);
+        };
 
-        generateBtn.onclick = async () => {
-            const text = document.getElementById('studyInput').value;
+        // AI Generation
+        document.getElementById('generateBtn').onclick = async () => {
+            const input = document.getElementById('studyInput').value;
             const mode = document.getElementById('modeSelect').value;
+            const count = document.getElementById('quizCount').value;
+            if(!input) return;
 
-            if (!text.trim()) {
-                alert("Please paste some content first.");
-                return;
-            }
-
-            generateBtn.disabled = true;
-            generateBtn.innerText = "Processing...";
-            statusMsg.innerText = "Clarity AI is analyzing your notes...";
-
+            const aiResult = document.getElementById('aiResult');
+            const outputArea = document.getElementById('outputArea');
+            
+            outputArea.classList.remove('hidden');
+            aiResult.classList.add('shimmer');
+            aiResult.innerText = "Processing your request through Groq Cloud...";
+            
             try {
-                // This calls the serverless function you created in api/generate.js
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, mode })
+                    body: JSON.stringify({ text: input, mode, count })
                 });
-                
                 const data = await response.json();
-                
-                if (data.result) {
-                    aiResult.innerText = data.result;
-                    outputArea.classList.remove('hidden');
-                    statusMsg.innerText = "Analysis complete.";
-                    window.scrollTo({ top: outputArea.offsetTop, behavior: 'smooth' });
-                } else {
-                    throw new Error("No response from AI");
-                }
+                aiResult.classList.remove('shimmer');
+                aiResult.innerText = data.result;
             } catch (err) {
-                console.error(err);
-                alert("AI failed to respond. Make sure your OpenAI key is set in Vercel settings.");
-            } finally {
-                generateBtn.disabled = false;
-                generateBtn.innerText = "Generate";
+                aiResult.innerText = "Error connecting to AI.";
             }
         };
 
-        // --- SAVE TO FIREBASE LOGIC ---
+        // Save Function
         document.getElementById('saveBtn').onclick = async () => {
-            if (!auth.currentUser) {
-                alert("Please log in to save your sessions.");
-                return;
-            }
-
-            const content = aiResult.innerText;
-            const mode = document.getElementById('modeSelect').value;
-
-            try {
-                document.getElementById('saveBtn').innerText = "Saving...";
-                await addDoc(collection(db, "sessions"), {
-                    uid: auth.currentUser.uid,
-                    content: content,
-                    mode: mode,
-                    timestamp: serverTimestamp()
-                });
-                document.getElementById('saveBtn').innerText = "Saved to Archive ✓";
-                setTimeout(() => { document.getElementById('saveBtn').innerText = "Save to Dashboard →"; }, 2000);
-            } catch (e) {
-                console.error(e);
-                alert("Failed to save session.");
-            }
+            if (!auth.currentUser) return alert("Please log in!");
+            await addDoc(collection(db, "sessions"), {
+                uid: auth.currentUser.uid,
+                content: document.getElementById('aiResult').innerText,
+                mode: document.getElementById('modeSelect').value,
+                timestamp: serverTimestamp()
+            });
+            document.getElementById('saveBtn').innerText = "Saved ✓";
         };
     </script>
 </body>
