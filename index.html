@@ -10,11 +10,19 @@
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; overflow-x: hidden; }
         .hero-text { font-size: 4.5rem; line-height: 1.1; letter-spacing: -0.04em; font-weight: 500; }
         .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; background: #fff; padding: 40px 24px; z-index: 40; }
-        .main-content { margin-left: 280px; padding: 100px; max-width: 1100px; }
+        .main-content { margin-left: 280px; padding: 120px 100px; max-width: 1100px; }
         
-        /* Logo Styling */
-        .logo-container { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 50; }
-        .app-logo { height: 45px; width: auto; object-fit: contain; }
+        /* Logo Styling - Updated for "Clarity Logo.png" */
+        .logo-container { 
+            position: absolute; 
+            top: 35px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 50; 
+            display: flex;
+            justify-content: center;
+        }
+        .app-logo { height: 50px; width: auto; object-fit: contain; }
 
         /* Sidebar Login Button */
         .google-login-sidebar { 
@@ -40,7 +48,7 @@
         .btn-black { background: #000; color: #fff; padding: 14px 32px; border-radius: 8px; font-weight: 500; transition: 0.2s; border: none; cursor: pointer; }
         .btn-black:hover { opacity: 0.8; transform: translateY(-1px); }
 
-        /* Modal GUI for Name Collection */
+        /* Modal GUI */
         #name-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; justify-content: center; }
         .modal-box { background: white; padding: 48px; border-radius: 32px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); width: 100%; max-width: 420px; text-align: center; border: 1px solid #f0f0f0; }
 
@@ -52,12 +60,12 @@
 <body>
 
     <div class="logo-container">
-        <img src="logo.png" alt="Clarity" class="app-logo">
+        <img src="Clarity Logo.png" alt="Clarity" class="app-logo">
     </div>
 
     <div id="name-modal" class="hidden">
         <div class="modal-box">
-            <h2 class="text-3xl font-bold tracking-tight mb-2">Welcome</h2>
+            <h2 class="text-3xl font-bold tracking-tight mb-2 text-black">Welcome</h2>
             <p class="text-gray-400 mb-8">What should Clarity call you?</p>
             <input type="text" id="nickname-input" placeholder="Your name" class="w-full p-4 border rounded-2xl mb-6 outline-none focus:border-black text-center text-xl bg-gray-50">
             <button id="save-name-btn" class="btn-black w-full text-lg py-4">Continue</button>
@@ -79,8 +87,8 @@
             
             <div id="user-profile" class="hidden">
                 <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Account</p>
-                <p id="display-name" class="font-medium text-lg"></p>
-                <button id="logoutBtn" class="text-xs text-red-500 hover:underline mt-2">Sign Out</button>
+                <p id="display-name" class="font-medium text-lg text-black"></p>
+                <button id="logoutBtn" class="text-xs text-red-500 hover:underline mt-2 cursor-pointer">Sign Out</button>
             </div>
         </div>
     </aside>
@@ -103,16 +111,16 @@
             </div>
         </div>
 
-        <textarea id="studyInput" class="w-full h-80 p-8 text-xl border border-gray-100 rounded-[2rem] bg-[#fafafa] focus:bg-white focus:border-black transition-all outline-none leading-relaxed mb-6" placeholder="Paste your messy notes..."></textarea>
+        <textarea id="studyInput" class="w-full h-80 p-8 text-xl border border-gray-100 rounded-[2.5rem] bg-[#fafafa] focus:bg-white focus:border-black transition-all outline-none leading-relaxed mb-6" placeholder="Paste your messy notes..."></textarea>
         
         <div class="flex justify-between items-center">
-            <span id="status-msg" class="text-[10px] text-gray-300 uppercase tracking-widest font-bold">Llama 3.3 Engine Active</span>
+            <span id="status-msg" class="text-[10px] text-gray-300 uppercase tracking-widest font-bold italic">AI Powered by Groq Cloud</span>
             <button id="generateBtn" class="btn-black">Generate</button>
         </div>
 
-        <div id="outputArea" class="hidden mt-16 p-12 border border-gray-100 rounded-[2.5rem] bg-white shadow-sm">
+        <div id="outputArea" class="hidden mt-16 p-12 border border-gray-100 rounded-[3rem] bg-white shadow-sm">
             <div class="flex justify-between items-center mb-8">
-                <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-300">Result</h3>
+                <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-300">Analysis Result</h3>
                 <div class="flex gap-6">
                     <button id="copyBtn" class="text-sm text-gray-400 hover:text-black transition font-medium">Copy</button>
                     <button id="saveBtn" class="text-sm text-blue-600 font-bold hover:underline">Save to Dashboard</button>
@@ -193,7 +201,7 @@
             const aiResult = document.getElementById('aiResult');
             document.getElementById('outputArea').classList.remove('hidden');
             aiResult.classList.add('shimmer');
-            aiResult.innerText = "Analyzing notes with Clarity AI...";
+            aiResult.innerText = "Processing your notes with AI...";
 
             try {
                 const res = await fetch('/api/generate', {
@@ -208,7 +216,7 @@
                 const data = await res.json();
                 aiResult.classList.remove('shimmer');
                 aiResult.innerText = data.result;
-            } catch (e) { aiResult.innerText = "Connection failed. Please check your AI key."; }
+            } catch (e) { aiResult.innerText = "Connection failed. Please check your Vercel logs."; }
         };
 
         document.getElementById('copyBtn').onclick = () => {
@@ -219,15 +227,16 @@
 
         document.getElementById('saveBtn').onclick = async () => {
             if(!auth.currentUser) return;
-            document.getElementById('saveBtn').innerText = "Saving...";
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "Saving...";
             await addDoc(collection(db, "sessions"), {
                 uid: auth.currentUser.uid,
                 content: document.getElementById('aiResult').innerText,
                 mode: document.getElementById('modeSelect').value,
                 timestamp: serverTimestamp()
             });
-            document.getElementById('saveBtn').innerText = "Saved ✓";
-            setTimeout(() => document.getElementById('saveBtn').innerText = "Save to Dashboard", 2000);
+            btn.innerText = "Saved ✓";
+            setTimeout(() => btn.innerText = "Save to Dashboard", 2000);
         };
     </script>
 </body>
