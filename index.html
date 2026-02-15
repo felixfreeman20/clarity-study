@@ -34,15 +34,25 @@
 
         .btn-primary { background: #000; color: #fff; padding: 22px; border-radius: 24px; font-weight: 600; width: 100%; margin-top: 30px; cursor: pointer; border: none; }
         .user-footer { padding: 40px 30px; border-top: 1px solid rgba(0,0,0,0.03); }
-        .hidden-ans { display: none; color: #10b981; font-weight: bold; border-left: 2px solid #10b981; padding-left: 10px; margin: 10px 0; }
+
+        /* Floating Onboarding UI */
+        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 1px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
+    <div id="onboarding-ui">
+        <p class="text-[10px] font-bold uppercase tracking-widest mb-2">New Profile</p>
+        <h3 class="text-xl font-bold mb-4">What should we call you?</h3>
+        <input type="text" id="nickInput" class="w-full border-b-2 border-black outline-none mb-6 p-2 text-lg" placeholder="Enter name...">
+        <button id="saveNickBtn" class="bg-black text-white font-bold py-4 px-4 rounded-2xl w-full hover:bg-zinc-800 transition">Complete Setup</button>
+    </div>
+
     <aside class="sidebar">
         <div class="logo-box"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
         <nav class="nav-area">
             <a href="index.html" class="nav-link active"><span>✦</span> Workspace</a>
-            <a href="saved.html" class="nav-link"><span>📁</span> Archive</a>
+            <a href="saved.html" class="nav-link hidden" id="archive-link"><span>📁</span> Archive</a>
         </nav>
         <div class="user-footer">
             <div id="logged-in-ui" class="hidden">
@@ -91,7 +101,6 @@
                     </div>
                 </div>
                 <div id="aiResult" class="prose max-w-none"></div>
-                <div id="quizControls" class="mt-8 hidden"><button onclick="revealAnswers()" class="bg-black text-white px-6 py-3 rounded-xl text-sm font-bold">Show Answers</button></div>
             </div>
         </div>
     </main>
@@ -109,6 +118,33 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         let currentMode = 'summary';
 
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('login-ui').classList.add('hidden');
+                document.getElementById('logged-in-ui').classList.remove('hidden');
+                document.getElementById('archive-link').classList.remove('hidden');
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists() && docSnap.data().nickname) {
+                    document.getElementById('user-display').innerText = docSnap.data().nickname;
+                } else {
+                    document.getElementById('onboarding-ui').style.display = 'block';
+                }
+            } else {
+                document.getElementById('login-ui').classList.remove('hidden');
+                document.getElementById('logged-in-ui').classList.add('hidden');
+                document.getElementById('archive-link').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('saveNickBtn').onclick = async () => {
+            const nick = document.getElementById('nickInput').value;
+            if(!nick) return;
+            await setDoc(doc(db, "users", auth.currentUser.uid), { nickname: nick }, { merge: true });
+            document.getElementById('user-display').innerText = nick;
+            document.getElementById('onboarding-ui').style.display = 'none';
+        };
+
         window.setMode = (mode, el) => {
             currentMode = mode;
             document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
@@ -117,20 +153,11 @@
         };
 
         window.pasteText = async () => { studyInput.value = await navigator.clipboard.readText(); updateWordCount(); };
-
-        window.downloadResult = () => {
-            const blob = new Blob([document.getElementById('aiResult').innerText], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `Clarity_Session_${currentMode}.txt`; a.click();
-        };
-
-        // Archive Saving Logic
+        
         window.saveToArchive = async () => {
-            if (!auth.currentUser) return alert("Please sign in to save to your Archive.");
-            const content = document.getElementById('aiResult').innerHTML;
-            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: content, mode: currentMode, timestamp: serverTimestamp() });
-            alert("Session archived successfully!");
+            if(!auth.currentUser) return alert("Sign in with Google to Archive!");
+            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
+            alert("Saved to Archive!");
         };
 
         const studyInput = document.getElementById('studyInput');
@@ -141,50 +168,16 @@
         studyInput.oninput = updateWordCount;
 
         document.getElementById('generateBtn').onclick = async () => {
-            const qCount = document.getElementById('qSlider').value;
-            const res = document.getElementById('aiResult');
+            if(!studyInput.value) return;
             document.getElementById('outputArea').classList.remove('hidden');
-            res.innerHTML = "Processing...";
-            
-            const prompt = currentMode === 'quiz' ? `Create a ${qCount} question quiz. Wrap answers in <span class='hidden-ans'>Answer: X</span>.` : "Summarize these notes.";
-            
-            try {
-                const response = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `${prompt} Notes: ${studyInput.value}` }) });
-                const data = await response.json();
-                res.innerHTML = marked.parse(data.choices[0].message.content);
-                if(currentMode === 'quiz') document.getElementById('quizControls').classList.remove('hidden');
-            } catch (err) { res.innerHTML = "Error."; }
+            document.getElementById('aiResult').innerHTML = "Generating...";
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Mode: ${currentMode}. Text: ${studyInput.value}` })});
+            const data = await res.json();
+            document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
         };
 
-        window.revealAnswers = () => document.querySelectorAll('.hidden-ans').forEach(a => a.style.display = 'block');
-        window.copyResult = () => { navigator.clipboard.writeText(document.getElementById('aiResult').innerText); alert("Copied!"); };
-
-        // Login Logic & Nickname Memory
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
         document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
-
-        onAuthStateChanged(auth, async (u) => { 
-            if(u) {
-                document.getElementById('login-ui').classList.add('hidden');
-                document.getElementById('logged-in-ui').classList.remove('hidden');
-                
-                const userRef = doc(db, "users", u.uid);
-                const docSnap = await getDoc(userRef);
-                
-                let nickname = "";
-                if (docSnap.exists() && docSnap.data().nickname) {
-                    nickname = docSnap.data().nickname;
-                } else {
-                    // First time login - prompt user
-                    nickname = prompt("Welcome to Clarity! What should we call you?") || u.displayName || "User";
-                    await setDoc(userRef, { nickname: nickname }, { merge: true });
-                }
-                document.getElementById('user-display').innerText = nickname;
-            } else {
-                document.getElementById('login-ui').classList.remove('hidden');
-                document.getElementById('logged-in-ui').classList.add('hidden');
-            }
-        });
     </script>
 </body>
 </html>
