@@ -40,7 +40,7 @@
                 <p id="user-display" class="font-bold text-lg text-black">Alon</p>
                 <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="google-btn border p-2 rounded w-full">Login with Google</button>
+            <button id="loginBtn" class="border p-2 rounded w-full">Login with Google</button>
         </div>
     </aside>
 
@@ -48,10 +48,10 @@
         <h2 class="text-6xl font-medium tracking-tighter mb-10 text-center">Make it <span class="text-gray-200">clear.</span></h2>
         
         <div class="mode-grid">
-            <div class="mode-card active" data-mode="summary"><span>📖</span><p class="font-bold text-[10px] mt-2 uppercase">Deep Dive</p></div>
-            <div class="mode-card" data-mode="speed"><span>⚡</span><p class="font-bold text-[10px] mt-2 uppercase">Speed Review</p></div>
-            <div class="mode-card" data-mode="quiz"><span>🧠</span><p class="font-bold text-[10px] mt-2 uppercase">Mastery Quiz</p></div>
-            <div class="mode-card" data-mode="glossary"><span>🏷️</span><p class="font-bold text-[10px] mt-2 uppercase">Glossary</p></div>
+            <div class="mode-card active" data-mode="summary">📖<p class="font-bold text-[10px] mt-2 uppercase">Deep Dive</p></div>
+            <div class="mode-card" data-mode="speed">⚡<p class="font-bold text-[10px] mt-2 uppercase">Speed Review</p></div>
+            <div class="mode-card" data-mode="quiz">🧠<p class="font-bold text-[10px] mt-2 uppercase">Mastery Quiz</p></div>
+            <div class="mode-card" data-mode="glossary">🏷️<p class="font-bold text-[10px] mt-2 uppercase">Glossary</p></div>
         </div>
 
         <div id="quizOptions" class="quiz-config">
@@ -62,7 +62,7 @@
             <input type="range" id="questionCount" min="5" max="20" value="10">
         </div>
 
-        <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
+        <textarea id="studyInput" class="glass-input" placeholder="Paste notes..."></textarea>
         <button id="generateBtn" class="btn-primary">Generate Session</button>
 
         <div id="outputArea">
@@ -120,7 +120,6 @@
 
         document.getElementById('questionCount').oninput = (e) => document.getElementById('countDisplay').innerText = e.target.value;
 
-        // FIXED GENERATE BUTTON
         document.getElementById('generateBtn').onclick = async () => {
             const text = document.getElementById('studyInput').value;
             if(!text) return;
@@ -129,22 +128,25 @@
             resDiv.innerText = "Clarity is thinking...";
 
             try {
-                const promptText = currentMode === 'quiz' ? `Create a ${document.getElementById('questionCount').value}-question quiz about: ${text}` : `Create a ${currentMode} of: ${text}`;
+                const qCount = document.getElementById('questionCount').value;
+                const promptText = currentMode === 'quiz' ? `Create a ${qCount}-question quiz about: ${text}` : `Create a ${currentMode} of: ${text}`;
                 
-                // Absolute path ensures it finds the /api folder on Vercel
+                // Using relative path for Vercel functions
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ promptText: promptText })
                 });
 
-                if (!response.ok) throw new Error('Bridge failed');
-
                 const data = await response.json();
-                resDiv.innerText = data.choices[0].message.content;
+                
+                if (data.error) {
+                    resDiv.innerText = "Error from bridge: " + data.error;
+                } else {
+                    resDiv.innerText = data.choices[0].message.content;
+                }
             } catch (e) {
-                console.error(e);
-                resDiv.innerText = "Bridge Error. Check Vercel Functions logs.";
+                resDiv.innerText = "Connection Error. Ensure you are on the .vercel.app URL.";
             }
         };
 
