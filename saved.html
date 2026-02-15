@@ -2,30 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background: #fff; }
         .sidebar { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; border-right: 1px solid #f0f0f0; padding: 40px 24px; }
-        .archive-container { margin-left: 260px; padding: 80px; max-width: 1100px; }
+        .archive-container { margin-left: 260px; padding: 80px; max-width: 1000px; }
         .session-card { background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 30px; margin-bottom: 20px; transition: 0.3s; }
-        .session-card:hover { border-color: #000; transform: translateY(-2px); }
         .badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; background: #f0f0f0; }
     </style>
 </head>
 <body>
     <aside class="sidebar">
         <nav class="space-y-6">
-            <a href="index.html" class="block text-gray-400 hover:text-black text-lg transition">✦ Workspace</a>
-            <a href="saved.html" class="block font-bold text-black text-lg italic">📁 Archive</a>
+            <a href="index.html" class="block text-gray-400 hover:text-black">✦ Workspace</a>
+            <a href="saved.html" class="block font-bold text-black italic">📁 Archive</a>
         </nav>
-        <div class="mt-20 pt-6 border-t"><p id="user-display" class="font-bold">Alon</p></div>
     </aside>
     <main class="archive-container">
-        <h1 class="text-5xl font-bold tracking-tight mb-4">Your Archive</h1>
-        <p class="text-gray-400 mb-12">All your AI-generated study guides and quizzes.</p>
-        <div id="archiveList" class="space-y-6"></div>
+        <h1 class="text-5xl font-bold mb-10">Archive</h1>
+        <div id="archiveList" class="space-y-6">
+            <p class="text-gray-300">Login to view your saved sessions.</p>
+        </div>
     </main>
 
     <script type="module">
@@ -48,15 +46,9 @@
                     const data = doc.data();
                     const card = document.createElement('div');
                     card.className = "session-card";
-                    card.innerHTML = `
-                        <div class="flex justify-between mb-4"><span class="badge">${data.mode}</span></div>
-                        <p class="text-gray-700 whitespace-pre-wrap">${data.content.substring(0, 300)}...</p>
-                        <a href="#" class="inline-block mt-4 font-bold text-sm underline">Open Guide →</a>
-                    `;
+                    card.innerHTML = `<span class="badge">${data.mode}</span><p class="mt-4 text-gray-700">${data.content.substring(0, 200)}...</p>`;
                     list.appendChild(card);
                 });
-            } else {
-                window.location.replace("login.html");
             }
         });
     </script>
