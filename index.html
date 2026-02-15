@@ -123,7 +123,7 @@
         let score = 0;
         let userAnswers = [];
 
-        // RESTORED: Word Count Functionality
+        // --- Word Counter ---
         const studyInput = document.getElementById('studyInput');
         studyInput.oninput = () => {
             const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -139,17 +139,55 @@
             }
         };
 
+        // --- RESTORED: Dropzone & File Upload Logic ---
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        
+        ['dragenter', 'dragover'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.remove('dragover'); }));
+        dropzone.addEventListener('drop', (ev) => { ev.preventDefault(); handleFiles(ev.dataTransfer.files[0]); });
+        fileInput.onchange = (e) => handleFiles(e.target.files[0]);
+
+        async function handleFiles(file) {
+            if (!file) return;
+            document.getElementById('uploadStatus').innerText = "Loading...";
+            if (file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let text = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        text += content.items.map(s => s.str).join(" ") + " ";
+                    }
+                    studyInput.value = text;
+                    studyInput.oninput(); // Update word count
+                    document.getElementById('uploadStatus').innerText = "PDF Ready";
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => { 
+                    studyInput.value = e.target.result; 
+                    studyInput.oninput(); // Update word count
+                    document.getElementById('uploadStatus').innerText = "Text Ready"; 
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // --- UI Modes ---
         window.setMode = (m, el) => {
             currentMode = m;
             document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            // Restore: Show slider only for quiz
             document.getElementById('quizSliderContainer').classList.toggle('hidden', m !== 'quiz');
         };
 
-        // Voice, Auth, and Interactive Logic remain exactly as previous verified version...
-        // [Logic included below for completeness]
-        
+        // --- Voice Logic ---
         const voiceBtn = document.getElementById('voiceBtn');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
@@ -158,6 +196,7 @@
             rec.onresult = (e) => { studyInput.value += e.results[0][0].transcript; voiceBtn.classList.remove('recording'); studyInput.oninput(); };
         }
 
+        // --- Generation Logic ---
         document.getElementById('generateBtn').onclick = async () => {
             if(!studyInput.value) return;
             document.getElementById('interactiveArea').classList.add('hidden');
@@ -235,6 +274,7 @@
             document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
         }
 
+        // --- Auth & Profile ---
         onAuthStateChanged(auth, async (u) => {
             if(u) {
                 document.getElementById('login-ui').classList.add('hidden');
