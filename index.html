@@ -22,7 +22,15 @@
         .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; }
         .mode-card.active { background: #000 !important; color: #fff !important; }
         
-        .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 16px; border: 1px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; font-size: 13px; color: #64748b; }
+        /* Dropzone with larger radius and padding */
+        .upload-compact { 
+            display: flex; align-items: center; justify-content: center; gap: 10px; 
+            background: rgba(255,255,255,0.5); padding: 35px; border-radius: 40px; 
+            border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; 
+            font-size: 14px; color: #64748b; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .upload-compact.dragover { border-color: #000; background: rgba(255, 255, 255, 0.9); transform: scale(1.01); color: #000; }
+
         .input-wrapper { position: relative; width: 100%; }
         .glass-input { width: 100%; height: 320px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 35px; resize: none; outline: none; font-size: 1.1rem; }
         
@@ -30,14 +38,10 @@
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 30px; right: 40px; }
         
         #quizSliderContainer { background: #fff; padding: 20px 30px; border-radius: 20px; border: 1px solid #000; margin-bottom: 20px; display: none; }
-        input[type=range] { width: 100%; accent-color: #000; cursor: pointer; }
-
         .btn-primary { background: #000; color: #fff; padding: 22px; border-radius: 24px; font-weight: 600; width: 100%; margin-top: 30px; cursor: pointer; border: none; }
         .user-footer { padding: 40px 30px; border-top: 1px solid rgba(0,0,0,0.03); }
 
-        /* Floating Onboarding UI */
-        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 1px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 1px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
     </style>
 </head>
 <body>
@@ -45,7 +49,7 @@
         <p class="text-[10px] font-bold uppercase tracking-widest mb-2">New Profile</p>
         <h3 class="text-xl font-bold mb-4">What should we call you?</h3>
         <input type="text" id="nickInput" class="w-full border-b-2 border-black outline-none mb-6 p-2 text-lg" placeholder="Enter name...">
-        <button id="saveNickBtn" class="bg-black text-white font-bold py-4 px-4 rounded-2xl w-full hover:bg-zinc-800 transition">Complete Setup</button>
+        <button id="saveNickBtn" class="bg-black text-white font-bold py-4 px-4 rounded-2xl w-full">Complete Setup</button>
     </div>
 
     <aside class="sidebar">
@@ -81,7 +85,10 @@
                 <input type="range" id="qSlider" min="5" max="20" value="10" oninput="document.getElementById('qVal').innerText = this.value">
             </div>
 
-            <label class="upload-compact"><span>📍</span> <span id="uploadStatus">Upload Document</span><input type="file" id="fileInput" class="hidden" accept=".pdf,.txt"></label>
+            <label id="dropzone" class="upload-compact">
+                <span>📍</span> <span id="uploadStatus">Drop your PDF here or click to upload</span>
+                <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
+            </label>
 
             <div class="input-wrapper">
                 <button onclick="pasteText()" class="paste-btn">PASTE</button>
@@ -110,7 +117,7 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
+        const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -118,6 +125,40 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         let currentMode = 'summary';
 
+        // Dropzone Logic
+        const dropzone = document.getElementById('dropzone');
+        ['dragenter', 'dragover'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.remove('dragover'); }));
+        dropzone.addEventListener('drop', (ev) => { handleFiles(ev.dataTransfer.files[0]); });
+        document.getElementById('fileInput').onchange = (e) => handleFiles(e.target.files[0]);
+
+        async function handleFiles(file) {
+            if (!file) return;
+            document.getElementById('uploadStatus').innerText = "Loading...";
+            if (file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let text = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        text += content.items.map(s => s.str).join(" ") + "\n";
+                    }
+                    studyInput.value = text;
+                    updateWordCount();
+                    document.getElementById('uploadStatus').innerText = "PDF Loaded Successfully";
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => { studyInput.value = e.target.result; updateWordCount(); document.getElementById('uploadStatus').innerText = "Text Loaded"; };
+                reader.readAsText(file);
+            }
+        }
+
+        // Auth & Navigation
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('login-ui').classList.add('hidden');
@@ -171,7 +212,16 @@
             if(!studyInput.value) return;
             document.getElementById('outputArea').classList.remove('hidden');
             document.getElementById('aiResult').innerHTML = "Generating...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Mode: ${currentMode}. Text: ${studyInput.value}` })});
+            
+            // Refined Prompt Logic for Speed Review
+            let prompt = `Mode: ${currentMode}.`;
+            if (currentMode === 'speed') {
+                prompt = "Mode: Speed Review. Focus ONLY on the most critical main points. Keep it extremely short and concise.";
+            } else if (currentMode === 'quiz') {
+                prompt = `Create a ${document.getElementById('qSlider').value} question quiz based on this.`;
+            }
+
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `${prompt} Text: ${studyInput.value}` })});
             const data = await res.json();
             document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
         };
