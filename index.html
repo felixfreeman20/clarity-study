@@ -10,34 +10,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        :root { --bg: #fff; --text: #1a1a1a; --card: #fff; --border: #f0f0f0; }
-        .dark-mode { --bg: #0a0a0a; --text: #f5f5f5; --card: #141414; --border: #222; }
+        :root { --bg: #ffffff; --text: #1a1a1a; --card: #ffffff; --border: #f0f0f0; --secondary-text: #666; }
+        .dark-mode { --bg: #0a0a0a; --text: #f5f5f5; --card: #141414; --border: #222; --secondary-text: #aaa; }
         
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; margin: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; margin: 0; }
         .orb { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; }
         .orb-1 { top: -100px; right: -100px; background: #4f46e5; }
         .orb-2 { bottom: -100px; left: -100px; background: #ec4899; }
         
         .sidebar { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; border-right: 1px solid var(--border); background: var(--card); padding: 40px 24px; z-index: 40; }
-        .workspace-container { max-width: 800px; margin: 0 auto; padding: 80px 20px; min-height: 100vh; }
+        .workspace-container { max-width: 800px; margin: 0 auto; padding: 80px 20px; min-height: 100vh; margin-left: 300px; }
         
         .mode-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.2s; color: var(--text); }
-        .mode-card.active { background: #000; color: #fff; border-color: #000; }
-        .dark-mode .mode-card.active { background: #fff; color: #000; }
+        .mode-card.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
-        .glass-input { width: 100%; height: 250px; border-radius: 24px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 1.1rem; outline: none; padding: 25px; resize: none; }
-        .btn-primary { background: var(--text); color: var(--bg); padding: 18px 0; border-radius: 18px; font-weight: 600; width: 100%; margin-top: 20px; cursor: pointer; }
+        .glass-input { width: 100%; height: 250px; border-radius: 24px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 1.1rem; outline: none; padding: 25px; resize: none; transition: border-color 0.3s; }
+        .glass-input:focus { border-color: #4f46e5; }
         
+        .btn-primary { background: var(--text); color: var(--bg); padding: 18px 0; border-radius: 18px; font-weight: 600; width: 100%; margin-top: 20px; cursor: pointer; border: none; }
+        
+        /* Result Area */
         #outputArea { margin-top: 40px; padding: 35px; border-radius: 25px; border: 1px solid var(--border); background: var(--card); display: none; }
         .loading-pulse { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
         
-        .counter { font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 8px; color: #999; }
+        .counter { font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 8px; color: var(--secondary-text); }
         .counter.limit { color: #ef4444; }
 
         /* Recent Activity Grid */
         .recent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
-        .recent-card { padding: 15px; border: 1px solid var(--border); border-radius: 15px; font-size: 13px; cursor: pointer; background: var(--card); }
+        .recent-card { padding: 15px; border: 1px solid var(--border); border-radius: 15px; font-size: 13px; cursor: pointer; background: var(--card); color: var(--text); transition: 0.2s; }
+        .recent-card:hover { transform: translateY(-2px); border-color: #4f46e5; }
+
+        /* Quiz Ans Styling */
+        .hidden-ans { display: none; background: #10b98122; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #10b981; }
+
+        /* PDF Preview */
+        .upload-zone { width: 100%; border: 2px dashed var(--border); border-radius: 20px; padding: 15px; text-align: center; margin-bottom: 15px; cursor: pointer; font-size: 12px; color: var(--secondary-text); }
+
+        @media print { .sidebar, .mode-grid, .glass-input, .btn-primary, .upload-zone, .counter, h3, #recentActivity { display: none !important; } .workspace-container { margin: 0; padding: 0; width: 100%; } #outputArea { border: none; display: block !important; } }
     </style>
 </head>
 <body>
@@ -46,20 +57,20 @@
     <aside class="sidebar flex flex-col">
         <div class="mb-10"><img src="Clarity Logo.png" alt="Clarity" class="h-12"></div>
         <nav class="space-y-6 flex-1">
-            <a href="#" class="flex items-center gap-3 font-bold italic">✦ Workspace</a>
-            <button id="themeToggle" class="text-sm text-gray-400 hover:text-black dark:hover:text-white transition">🌓 Toggle Dark Mode</button>
+            <a href="index.html" class="flex items-center gap-3 font-bold italic text-black dark:text-white">✦ Workspace</a>
+            <button id="themeToggle" class="text-sm text-gray-400 hover:text-indigo-500 transition">🌓 Switch Mode</button>
         </nav>
         <div id="user-section" class="pt-6 border-t border-gray-100">
             <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-black">Alon</p>
-                <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
+                <p id="user-display" class="font-bold text-sm">Alon</p>
+                <button id="logoutBtn" class="text-[10px] text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="text-sm font-medium text-gray-400">Login</button>
+            <button id="loginBtn" class="text-sm font-medium text-gray-400">Login with Google</button>
         </div>
     </aside>
 
     <main class="workspace-container">
-        <h2 class="text-5xl font-medium tracking-tighter mb-10 text-center">Make it <span class="text-gray-300">clear.</span></h2>
+        <h2 class="text-5xl font-medium tracking-tighter mb-10">Make it <span class="text-indigo-500">clear.</span></h2>
         
         <div class="mode-grid grid grid-cols-4 gap-3 mb-8">
             <div class="mode-card active" data-mode="summary">📖<p class="text-[9px] font-bold mt-1 uppercase">Deep Dive</p></div>
@@ -67,6 +78,11 @@
             <div class="mode-card" data-mode="quiz">🧠<p class="text-[9px] font-bold mt-1 uppercase">Quiz</p></div>
             <div class="mode-card" data-mode="glossary">🏷️<p class="text-[9px] font-bold mt-1 uppercase">Glossary</p></div>
         </div>
+
+        <label class="upload-zone" id="dropZone">
+            <span id="uploadText">📎 Click to upload a PDF or Text file</span>
+            <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
+        </label>
 
         <div class="relative">
             <textarea id="studyInput" class="glass-input" placeholder="Paste notes for a Deep Dive..."></textarea>
@@ -79,24 +95,23 @@
             <div class="flex justify-between items-center mb-6">
                 <span class="text-[10px] font-bold uppercase text-gray-400">Result</span>
                 <div class="flex gap-4">
-                    <button id="exportPdf" class="text-xs font-bold text-green-600">Export PDF</button>
-                    <button id="saveBtn" class="text-xs font-bold text-blue-600">Save Session</button>
+                    <button id="exportPdf" class="text-xs font-bold text-green-600">Print/PDF</button>
+                    <button id="saveBtn" class="text-xs font-bold text-blue-600">Save to Archive</button>
                 </div>
             </div>
-            <div id="aiResult" class="prose prose-slate max-w-none text-black dark:text-white"></div>
+            <div id="aiResult" class="prose prose-slate max-w-none dark:prose-invert"></div>
         </div>
 
         <div class="mt-20">
             <h3 class="text-sm font-bold uppercase text-gray-400 mb-4">Recent Activity</h3>
-            <div id="recentActivity" class="recent-grid">
-                </div>
+            <div id="recentActivity" class="recent-grid"></div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, limit, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
@@ -104,78 +119,130 @@
         const db = getFirestore(app);
 
         let currentMode = 'summary';
-        const placeholders = { summary: "Paste notes for a Deep Dive...", speed: "Paste notes for a Speed Review...", quiz: "Paste notes for a Mastery Quiz...", glossary: "Paste notes to extract key terms..." };
+        const placeholders = { summary: "Paste notes for a Deep Dive...", speed: "Paste notes for a Speed Review...", quiz: "Paste notes for a Mastery Quiz...", glossary: "Paste notes for a Glossary..." };
 
-        // 8. Dark Mode Toggle
+        // --- THEME & WORD LIMITS ---
         document.getElementById('themeToggle').onclick = () => document.body.classList.toggle('dark-mode');
 
-        // 2. Word Counter & Limit
-        const studyInput = document.getElementById('studyInput');
-        studyInput.oninput = () => {
-            const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const counter = document.getElementById('wordCount');
-            counter.innerText = `${words} / 2000 words`;
-            counter.classList.toggle('limit', words > 2000);
-            if(words > 2000) studyInput.value = studyInput.value.split(/\s+/).slice(0, 2000).join(" ");
+        document.getElementById('studyInput').oninput = function() {
+            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            document.getElementById('wordCount').innerText = `${words} / 2000 words`;
+            document.getElementById('wordCount').classList.toggle('limit', words > 2000);
+            if(words > 2000) this.value = this.value.split(/\s+/).slice(0, 2000).join(" ");
         };
 
-        // 1. Dynamic Placeholders
+        // --- MODE SWITCHING ---
         document.querySelectorAll('.mode-card').forEach(card => {
             card.onclick = () => {
                 document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 currentMode = card.dataset.mode;
-                studyInput.placeholder = placeholders[currentMode];
+                document.getElementById('studyInput').placeholder = placeholders[currentMode];
             };
         });
 
-        // 5. Recent Activity Feed
+        // --- FILE UPLOAD (PDF/TXT) ---
+        document.getElementById('fileInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('uploadText').innerText = `Reading ${file.name}...`;
+            if (file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let text = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        text += content.items.map(s => s.str).join(" ") + "\n";
+                    }
+                    document.getElementById('studyInput').value = text;
+                    document.getElementById('uploadText').innerText = "PDF Loaded!";
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('studyInput').value = e.target.result;
+                    document.getElementById('uploadText').innerText = "Text Loaded!";
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        // --- GENERATE AI RESPONSE ---
+        document.getElementById('generateBtn').onclick = async () => {
+            const val = document.getElementById('studyInput').value;
+            if(!val) return;
+            document.getElementById('outputArea').style.display = 'block';
+            document.getElementById('aiResult').innerHTML = `<div class="loading-pulse text-gray-400 italic">Clarity is distilling your notes...</div>`;
+
+            let promptSuffix = currentMode === 'quiz' ? "Create a 5-question multiple choice quiz. For each question, provide the correct answer at the end wrapped in <div class='hidden-ans'>Answer: [Correct]</div>." : "Summarize this clearly with headers and bullets.";
+            
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ promptText: `${promptSuffix} Also add 3 #tags. Notes: ${val}` })
+                });
+                const data = await res.json();
+                const htmlContent = marked.parse(data.choices[0].message.content);
+                document.getElementById('aiResult').innerHTML = htmlContent;
+
+                if(currentMode === 'quiz') {
+                    const btn = document.createElement('button');
+                    btn.innerText = "Check My Answers";
+                    btn.className = "mt-4 bg-indigo-500 text-white px-4 py-2 rounded-lg text-xs font-bold";
+                    btn.onclick = () => document.querySelectorAll('.hidden-ans').forEach(el => el.style.display = 'block');
+                    document.getElementById('aiResult').appendChild(btn);
+                }
+            } catch (e) { document.getElementById('aiResult').innerText = "Connection Error."; }
+        };
+
+        // --- RECENT ACTIVITY ---
         async function loadRecent() {
-            if (!auth.currentUser) return;
-            const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid), limit(4));
+            if(!auth.currentUser) return;
+            const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc"), limit(4));
             const snap = await getDocs(q);
-            const container = document.getElementById('recentActivity');
-            container.innerHTML = '';
-            snap.forEach(doc => {
-                const data = doc.data();
+            const grid = document.getElementById('recentActivity');
+            grid.innerHTML = '';
+            snap.forEach(d => {
                 const card = document.createElement('div');
                 card.className = 'recent-card';
-                card.innerHTML = `<strong>${data.mode.toUpperCase()}</strong><br><span class="text-gray-400">${new Date(data.timestamp?.seconds * 1000).toLocaleDateString()}</span>`;
+                card.innerHTML = `<strong>${d.data().mode.toUpperCase()}</strong><br><span class="text-[10px] opacity-50">${d.data().tags || '#study'}</span>`;
                 card.onclick = () => {
                     document.getElementById('outputArea').style.display = 'block';
-                    document.getElementById('aiResult').innerHTML = data.content;
+                    document.getElementById('aiResult').innerHTML = d.data().content;
                 };
-                container.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
-        // 3. Loading State & 10. Tags (System Prompt)
-        document.getElementById('generateBtn').onclick = async () => {
-            if(!studyInput.value) return;
-            const resDiv = document.getElementById('aiResult');
-            document.getElementById('outputArea').style.display = 'block';
-            resDiv.innerHTML = `<div class="loading-pulse text-gray-400 italic">Clarity is distilling your notes and auto-tagging themes...</div>`;
-
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Instructions: Summarize this and add relevant #tags at the end. Text: ${studyInput.value}` })
-                });
-                const data = await response.json();
-                resDiv.innerHTML = marked.parse(data.choices[0].message.content);
-            } catch (e) { resDiv.innerText = "Error connecting to bridge."; }
-        };
-
-        // 4. Export PDF (Basic Print)
+        // --- AUTH & SAVE ---
+        onAuthStateChanged(auth, u => { if(u){ 
+            document.getElementById('loginBtn').classList.add('hidden'); 
+            document.getElementById('logged-in-ui').classList.remove('hidden'); 
+            document.getElementById('user-display').innerText = u.displayName || "Alon";
+            loadRecent(); 
+        }});
+        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
         document.getElementById('exportPdf').onclick = () => window.print();
 
-        onAuthStateChanged(auth, (user) => { if(user) { document.getElementById('loginBtn').classList.add('hidden'); document.getElementById('logged-in-ui').classList.remove('hidden'); loadRecent(); } });
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
         document.getElementById('saveBtn').onclick = async () => {
-            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
-            loadRecent();
+            if(!auth.currentUser) return alert("Login to save!");
+            const content = document.getElementById('aiResult').innerHTML;
+            const tags = content.match(/#\w+/g)?.join(" ") || "#general";
+            await addDoc(collection(db, "sessions"), { 
+                uid: auth.currentUser.uid, 
+                content, 
+                mode: currentMode, 
+                tags, 
+                timestamp: serverTimestamp() 
+            });
             alert("Saved!");
+            loadRecent();
         };
     </script>
 </body>
