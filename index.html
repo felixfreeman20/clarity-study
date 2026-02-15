@@ -120,6 +120,7 @@
 
         document.getElementById('questionCount').oninput = (e) => document.getElementById('countDisplay').innerText = e.target.value;
 
+        // FIXED GENERATE BUTTON
         document.getElementById('generateBtn').onclick = async () => {
             const text = document.getElementById('studyInput').value;
             if(!text) return;
@@ -130,16 +131,20 @@
             try {
                 const promptText = currentMode === 'quiz' ? `Create a ${document.getElementById('questionCount').value}-question quiz about: ${text}` : `Create a ${currentMode} of: ${text}`;
                 
+                // Absolute path ensures it finds the /api folder on Vercel
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText })
+                    body: JSON.stringify({ promptText: promptText })
                 });
+
+                if (!response.ok) throw new Error('Bridge failed');
 
                 const data = await response.json();
                 resDiv.innerText = data.choices[0].message.content;
             } catch (e) {
-                resDiv.innerText = "Bridge Error. Ensure you are viewing this on Vercel, not GitHub Pages.";
+                console.error(e);
+                resDiv.innerText = "Bridge Error. Check Vercel Functions logs.";
             }
         };
 
