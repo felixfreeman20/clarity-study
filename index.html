@@ -9,67 +9,84 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Feature 2: Aura Backgrounds */
+        /* FEATURE 2: VISIBLE AURA BACKGROUNDS */
         body { 
             font-family: 'Inter', sans-serif; 
             background: #f8fafc; 
             margin: 0; 
             display: flex; 
             overflow-x: hidden;
-        }
-        .aura {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: -1;
-            opacity: 0.4;
-            animation: drift 20s infinite alternate;
-        }
-        .aura-1 { background: #e2e8f0; top: -10%; left: -10%; }
-        .aura-2 { background: #cbd5e1; bottom: -10%; right: -10%; animation-delay: -5s; }
-        
-        @keyframes drift {
-            from { transform: translate(0,0) scale(1); }
-            to { transform: translate(100px, 100px) scale(1.1); }
+            position: relative;
         }
 
-        /* Feature 3: The Reveal Animation */
+        .aura {
+            position: fixed;
+            width: 800px; /* Made larger */
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.25; /* Increased opacity */
+            animation: drift 25s infinite alternate ease-in-out;
+        }
+        /* Vibrant Colors for visibility */
+        .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
+        .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
+        
+        @keyframes drift {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(150px, 150px) scale(1.2); }
+        }
+
+        /* FEATURE 3: THE REVEAL ANIMATION */
         .reveal-up {
             animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes revealUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
-        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; }
+        /* Sidebar & Sidebar Glassmorphism */
+        .sidebar { 
+            width: 320px; 
+            height: 100vh; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(30px); 
+            border-right: 1px solid rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 50; 
+        }
         
+        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; z-index: 10; }
+        
+        /* Interactive Elements */
         .flashcard { background: white; border: 2px solid black; border-radius: 40px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; cursor: pointer; perspective: 1000px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; margin-top: 20px; }
         .flashcard.flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; border-radius: 38px; }
         .card-back { transform: rotateY(180deg); background: #f8fafc; color: #6366f1; }
 
-        .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .mode-card.active { background: #000 !important; color: #fff !important; }
+        .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0px #000; }
+        .mode-card:active { transform: translateY(2px); box-shadow: none; }
+        .mode-card.active { background: #000 !important; color: #fff !important; box-shadow: none; }
         
-        .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.5); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
+        .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
         .upload-compact.dragover { border-color: black; background: white; }
         
-        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 20px; right: 30px; }
 
-        #aiResult h3 { font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.25rem; color: #000; }
-
-        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 1px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
+        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 2px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
         .recording { color: red; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         
-        /* Next Step Buttons */
-        .next-step-btn { background: white; border: 1px solid black; padding: 12px 20px; border-radius: 15px; font-size: 12px; font-weight: bold; transition: 0.3s; cursor: pointer; }
-        .next-step-btn:hover { background: black; color: white; transform: translateY(-2px); }
+        /* NEXT STEPS DESIGN */
+        .next-step-btn { background: white; border: 2px solid black; padding: 14px 24px; border-radius: 18px; font-size: 13px; font-weight: 800; transition: 0.3s; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .next-step-btn:hover { background: #000; color: #fff; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -79,7 +96,7 @@
     <div id="onboarding-ui">
         <p class="text-[10px] font-bold uppercase tracking-widest mb-2">New Profile</p>
         <h3 class="text-xl font-bold mb-4">What should we call you?</h3>
-        <input type="text" id="nickInput" class="w-full border-b-2 border-black outline-none mb-6 p-2 text-lg" placeholder="Enter name...">
+        <input type="text" id="nickInput" class="w-full border-b-2 border-black outline-none mb-6 p-2 text-lg" placeholder="Your name...">
         <button id="saveNickBtn" class="bg-black text-white font-bold py-4 px-4 rounded-2xl w-full">Complete Setup</button>
     </div>
 
@@ -111,13 +128,13 @@
                 <div class="mode-card" onclick="setMode('flash', this)">📇<p class="text-[10px] font-bold mt-1 uppercase">Flashcards</p></div>
             </div>
 
-            <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border border-black reveal-up">
+            <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border-2 border-black reveal-up">
                 <div class="flex justify-between mb-2"><span class="text-xs font-bold uppercase">Questions</span> <span id="qVal" class="text-xs font-bold">5</span></div>
                 <input type="range" id="qSlider" min="3" max="25" value="5" class="w-full accent-black" oninput="document.getElementById('qVal').innerText = this.value">
             </div>
 
             <label id="dropzone" class="upload-compact">
-                <span id="uploadStatus" class="font-medium text-slate-400">Drop PDF or click to browse</span>
+                <span id="uploadStatus" class="font-bold text-slate-400">Drop PDF or click to browse</span>
                 <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
             </label>
 
@@ -130,9 +147,9 @@
                 <div id="wordCount" class="counter">0 / 2000 WORDS</div>
             </div>
 
-            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition">Start Session</button>
+            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition-all">Start Session</button>
 
-            <div id="interactiveArea" class="hidden mt-10 reveal-up">
+            <div id="interactiveArea" class="hidden mt-10">
                 <div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden">
                     <span class="text-xs font-bold uppercase opacity-40">Questions Progress</span>
                     <span id="scoreTracker" class="text-lg font-black tracking-tighter">1 / 5</span>
@@ -140,10 +157,10 @@
                 <div id="contentDisplay"></div>
             </div>
 
-            <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border shadow-sm reveal-up">
+            <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border-2 border-black shadow-sm">
                 <div id="aiResult" class="prose max-w-none"></div>
-                <div id="nextSteps" class="mt-10 pt-8 border-t border-slate-100 hidden">
-                    <p class="text-[10px] font-black uppercase tracking-widest mb-4 opacity-40">Continue Learning</p>
+                <div id="nextSteps" class="mt-10 pt-8 border-t-2 border-slate-100 hidden">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-4 opacity-40 text-indigo-600">Continue the Journey</p>
                     <div id="nextStepsButtons" class="flex flex-wrap gap-3"></div>
                 </div>
             </div>
@@ -166,7 +183,6 @@
         let score = 0;
         let userAnswers = [];
 
-        // Word Count
         const studyInput = document.getElementById('studyInput');
         studyInput.oninput = () => {
             const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -176,7 +192,6 @@
             btn.style.opacity = words > 2000 ? '0.5' : '1';
         };
 
-        // File Logic
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('fileInput');
@@ -185,7 +200,7 @@
 
         async function handleFiles(file) {
             if (!file) return;
-            document.getElementById('uploadStatus').innerText = "Parsing...";
+            document.getElementById('uploadStatus').innerText = "Analyzing PDF...";
             const reader = new FileReader();
             if (file.type === "application/pdf") {
                 reader.onload = async function() {
@@ -198,11 +213,11 @@
                         text += content.items.map(s => s.str).join(" ") + " ";
                     }
                     studyInput.value = text; studyInput.oninput();
-                    document.getElementById('uploadStatus').innerText = "PDF Loaded";
+                    document.getElementById('uploadStatus').innerText = "Ready.";
                 };
                 reader.readAsArrayBuffer(file);
             } else {
-                reader.onload = (e) => { studyInput.value = e.target.result; studyInput.oninput(); document.getElementById('uploadStatus').innerText = "Text Loaded"; };
+                reader.onload = (e) => { studyInput.value = e.target.result; studyInput.oninput(); document.getElementById('uploadStatus').innerText = "Ready."; };
                 reader.readAsText(file);
             }
         }
@@ -233,7 +248,8 @@
         async function startInteractive(input) {
             const area = document.getElementById('interactiveArea');
             area.classList.remove('hidden');
-            document.getElementById('contentDisplay').innerHTML = "Crafting Session...";
+            area.classList.add('reveal-up'); // Added Reveal
+            document.getElementById('contentDisplay').innerHTML = "Crafting your session...";
             const count = document.getElementById('qSlider').value;
             const prompt = currentMode === 'quiz' 
                 ? `JSON ONLY. Create ${count} questions. Format: [{"q":"","options":[],"correct":"","type":"mcq"}] Based on: ${input}`
@@ -251,7 +267,7 @@
         function renderQuiz() {
             const q = quizData[currentIdx];
             document.getElementById('scoreTracker').innerText = `${currentIdx + 1} / ${quizData.length}`;
-            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black">
+            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black reveal-up">
                 <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Question ${currentIdx + 1}</p>
                 <h3 class="text-2xl font-bold mb-6">${q.q}</h3>`;
             if(q.type === 'mcq') q.options.forEach(o => html += `<button onclick="handleAns('${o.replace(/'/g, "\\'")}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50 transition">${o}</button>`);
@@ -270,35 +286,38 @@
             document.getElementById('contentDisplay').innerHTML = "Grading...";
             const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. 2-sentence summary and 3 bullet points.` })});
             const data = await res.json();
-            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black">
+            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black reveal-up">
                 <h2 class="text-3xl font-black mb-2">${score} / ${quizData.length}</h2>
                 <div class="prose text-sm">${marked.parse(data.choices[0].message.content)}</div>
-                <button onclick="location.reload()" class="mt-6 font-bold underline">Try New Topic</button>
+                <button onclick="location.reload()" class="mt-6 font-bold underline">New Session</button>
             </div>`;
         }
 
         function renderFlashcard() {
             const f = quizData[currentIdx];
             document.getElementById('contentDisplay').innerHTML = `
+                <div class="reveal-up">
                 <div class="flashcard" onclick="this.classList.toggle('flipped')">
                     <div class="card-face card-front"><p class="text-xl font-bold">${f.front}</p></div>
                     <div class="card-face card-back"><p class="text-xl font-medium">${f.back}</p></div>
                 </div>
                 <div class="flex justify-between items-center mt-6 px-4">
-                    <button id="fPrev" class="font-bold text-xs border px-4 py-2 rounded-lg">PREV</button>
+                    <button id="fPrev" class="font-bold text-xs border-2 border-black px-4 py-2 rounded-lg">PREV</button>
                     <span class="font-black">${currentIdx + 1} / ${quizData.length}</span>
-                    <button id="fNext" class="font-bold text-xs border px-4 py-2 rounded-lg">NEXT</button>
+                    <button id="fNext" class="font-bold text-xs border-2 border-black px-4 py-2 rounded-lg">NEXT</button>
+                </div>
                 </div>`;
             document.getElementById('fPrev').onclick = () => { if(currentIdx > 0) { currentIdx--; renderFlashcard(); } };
             document.getElementById('fNext').onclick = () => { if(currentIdx < quizData.length - 1) { currentIdx++; renderFlashcard(); } };
         }
 
         async function runStandard(input) {
-            const out = document.getElementById('outputArea'); out.classList.remove('hidden');
+            const out = document.getElementById('outputArea'); 
+            out.classList.remove('hidden');
+            out.classList.add('reveal-up'); // Added Reveal
             document.getElementById('aiResult').innerHTML = "Thinking...";
             document.getElementById('nextSteps').classList.add('hidden');
             
-            // Feature 4: Requesting Related Topics
             let p = `Mode: ${currentMode}. Bullet points, bold headers. CONTENT: ${input}. 
                      At the very end of your response, add a section called "NEXT_TOPICS:" followed by 3 comma-separated concepts for further study.`;
             
@@ -306,7 +325,6 @@
             const data = await res.json();
             let text = data.choices[0].message.content;
             
-            // Parse out the next steps
             const parts = text.split("NEXT_TOPICS:");
             document.getElementById('aiResult').innerHTML = marked.parse(parts[0]);
             
@@ -317,7 +335,7 @@
                 topics.forEach(topic => {
                     const b = document.createElement('button');
                     b.className = "next-step-btn";
-                    b.innerText = `Dive into: ${topic}`;
+                    b.innerHTML = `<span>✧</span> Dive into: ${topic}`;
                     b.onclick = () => { 
                         studyInput.value = `Explain ${topic} in depth.`; 
                         window.scrollTo({top: 0, behavior: 'smooth'});
