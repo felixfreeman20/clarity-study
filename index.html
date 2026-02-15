@@ -22,7 +22,6 @@
         .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; }
         .mode-card.active { background: #000 !important; color: #fff !important; }
         
-        /* Dropzone Radius & Style */
         .upload-compact { 
             display: flex; align-items: center; justify-content: center; gap: 10px; 
             background: rgba(255,255,255,0.5); padding: 40px; border-radius: 40px; 
@@ -34,6 +33,13 @@
         .input-wrapper { position: relative; width: 100%; }
         .glass-input { width: 100%; height: 320px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 35px; resize: none; outline: none; font-size: 1.1rem; }
         
+        /* Readability spacing for AI output */
+        #aiResult { line-height: 1.8; color: #1e293b; }
+        #aiResult h3 { font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.25rem; color: #000; }
+        #aiResult ul { margin-bottom: 1.5rem; }
+        #aiResult li { margin-bottom: 0.5rem; }
+        #aiResult p { margin-bottom: 1.25rem; }
+
         .paste-btn { position: absolute; top: 20px; right: 25px; background: #f1f5f9; color: #000; padding: 6px 14px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); z-index: 10; }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 30px; right: 40px; }
         
@@ -117,7 +123,6 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // RESTORED KEY
         const firebaseConfig = { 
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", 
             authDomain: "clarity-study-cd835.firebaseapp.com", 
@@ -135,10 +140,7 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         let currentMode = 'summary';
 
-        // Fix Login Call
-        document.getElementById('loginBtn').onclick = () => {
-            signInWithPopup(auth, provider).catch(e => alert("Sign in failed: " + e.message));
-        };
+        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider).catch(e => alert(e.message));
         document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
 
         onAuthStateChanged(auth, async (user) => {
@@ -168,7 +170,6 @@
             document.getElementById('onboarding-ui').style.display = 'none';
         };
 
-        // Dropzone & Mode logic
         const dropzone = document.getElementById('dropzone');
         ['dragenter', 'dragover'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.add('dragover'); }));
         ['dragleave', 'drop'].forEach(e => dropzone.addEventListener(e, (ev) => { ev.preventDefault(); dropzone.classList.remove('dragover'); }));
@@ -210,7 +211,7 @@
 
         window.pasteText = async () => { studyInput.value = await navigator.clipboard.readText(); updateWordCount(); };
         window.saveToArchive = async () => {
-            if(!auth.currentUser) return alert("Please sign in first!");
+            if(!auth.currentUser) return alert("Sign in first!");
             await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
             alert("Archived!");
         };
@@ -228,10 +229,15 @@
             document.getElementById('aiResult').innerHTML = "Processing...";
             
             let systemPrompt = "";
-            if (currentMode === 'speed') systemPrompt = "Act as a study assistant. Provide a very short, bulleted list of only the 3-5 most critical main points. No fluff.";
-            else if (currentMode === 'quiz') systemPrompt = `Create a ${document.getElementById('qSlider').value} question quiz.`;
-            else if (currentMode === 'glossary') systemPrompt = "List key terms and short definitions.";
-            else systemPrompt = "Provide a comprehensive deep-dive summary.";
+            if (currentMode === 'speed') {
+                systemPrompt = "Act as a study assistant. Provide a very short, bulleted list of only the 3-5 most critical main points. Use bolding for keywords.";
+            } else if (currentMode === 'glossary') {
+                systemPrompt = "Create a glossary. Format as follows: **Term**: Simple definition. Use bullet points and add a line space between each term.";
+            } else if (currentMode === 'summary') {
+                systemPrompt = "Provide a deep-dive summary. Use clear bold headings (###), bullet points for details, and ample spacing between sections for readability.";
+            } else if (currentMode === 'quiz') {
+                systemPrompt = `Create a ${document.getElementById('qSlider').value} question quiz.`;
+            }
 
             const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `${systemPrompt} Content: ${studyInput.value}` })});
             const data = await res.json();
