@@ -9,50 +9,52 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; overflow-x: hidden; }
         
-        /* Gradient Orbs Background */
-        .orb { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; pointer-events: none; }
-        .orb-1 { top: -100px; right: -100px; background: #4f46e5; }
-        .orb-2 { bottom: -100px; left: -100px; background: #ec4899; }
+        /* Softer Gradient Orbs */
+        .orb { position: fixed; width: 500px; height: 500px; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.12; pointer-events: none; }
+        .orb-1 { top: -50px; right: -50px; background: #4f46e5; }
+        .orb-2 { bottom: -50px; left: -50px; background: #ec4899; }
 
-        /* Sidebar Styling */
-        .sidebar { width: 320px; height: 100vh; position: fixed; border-right: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 40px 24px; z-index: 40; }
-        .main-content { margin-left: 320px; padding: 180px 100px 100px 100px; max-width: 1400px; }
+        /* Sidebar - Workspace Style */
+        .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); padding: 40px 24px; z-index: 40; }
+        .main-content { margin-left: 280px; padding: 120px 80px; max-width: 1200px; }
         
-        /* Logo SCALED 2.5X */
-        .logo-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 50; }
-        .app-logo { height: 125px; width: auto; object-fit: contain; }
+        /* Logo (Refined Scaling) */
+        .logo-container { position: absolute; top: 35px; left: 50%; transform: translateX(-50%); z-index: 50; }
+        .app-logo { height: 90px; width: auto; object-fit: contain; }
 
-        /* Mode Grid Buttons */
-        .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        /* Mode Grid */
+        .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
         .mode-card { 
-            background: #fff; border: 1px solid #f0f0f0; padding: 24px; border-radius: 20px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fff; border: 1px solid #f0f0f0; padding: 20px; border-radius: 18px; text-align: center; cursor: pointer; transition: all 0.2s ease;
         }
-        .mode-card:hover { border-color: #000; transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .mode-card.active { background: #000; border-color: #000; color: #fff; }
-        .mode-title { font-weight: 600; font-size: 1.1rem; display: block; margin-top: 8px; }
+        .mode-card:hover { border-color: #000; transform: translateY(-2px); }
+        .mode-card.active { background: #000; color: #fff; border-color: #000; }
 
-        /* Textarea & Glass UI */
+        /* Heatmap Styling */
+        .heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
+        .heat-cell { width: 12px; height: 12px; border-radius: 2px; background: #f3f4f6; }
+        .heat-active { background: #000 !important; }
+
+        /* File Upload Zone */
+        .upload-zone { 
+            border: 2px dashed #e5e7eb; border-radius: 24px; padding: 20px; text-align: center; margin-bottom: 24px; transition: 0.3s; cursor: pointer;
+        }
+        .upload-zone:hover { border-color: #000; background: #fafafa; }
+
+        /* Input Glass */
         .glass-input { 
-            width: 100%; height: 400px; p-10; border-radius: 40px; border: 1px solid #f0f0f0; background: rgba(250, 250, 250, 0.5); backdrop-filter: blur(10px); 
-            font-size: 1.5rem; outline: none; transition: 0.3s; padding: 40px; line-height: 1.6;
+            width: 100%; height: 300px; border-radius: 32px; border: 1px solid #f0f0f0; background: rgba(250, 250, 250, 0.4); backdrop-filter: blur(10px); 
+            font-size: 1.1rem; outline: none; padding: 32px; line-height: 1.6;
         }
-        .glass-input:focus { border-color: #000; background: #fff; box-shadow: 0 0 0 10px rgba(0,0,0,0.02); }
 
-        .btn-generate { 
-            background: #000; color: #fff; padding: 24px 60px; border-radius: 20px; font-weight: 600; font-size: 1.2rem; transition: 0.3s;
-        }
-        .btn-generate:hover { transform: scale(1.02); background: #222; }
-
-        /* Loader Animation */
-        .loader-dots { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
-        .dot { width: 12px; height: 12px; background: #ddd; border-radius: 50%; animation: pulse 1.5s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        /* Soundscape Player */
+        .sound-btn { font-size: 10px; font-weight: bold; padding: 6px 12px; border: 1px solid #eee; border-radius: 20px; cursor: pointer; }
+        .sound-btn.playing { background: #000; color: #fff; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
-
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
 
@@ -61,139 +63,89 @@
     </div>
 
     <aside class="sidebar flex flex-col">
-        <div class="h-32"></div>
+        <div class="h-28"></div>
         <nav class="space-y-6 flex-1">
-            <a href="index.html" class="flex items-center gap-4 font-bold text-black text-xl">
-                <span>✦</span> New Session
-            </a>
-            <a href="saved.html" id="nav-saved" class="hidden flex items-center gap-4 text-gray-400 hover:text-black transition text-xl">
-                <span>📁</span> Archive
-            </a>
+            <a href="index.html" class="flex items-center gap-3 font-bold text-black text-lg italic">✦ New Session</a>
+            <a href="saved.html" class="flex items-center gap-3 text-gray-400 hover:text-black transition text-lg">📁 Archive</a>
+            
+            <div class="pt-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Study Streak</p>
+                <div class="heatmap">
+                    <div class="heat-cell"></div><div class="heat-cell heat-active"></div>
+                    <div class="heat-cell"></div><div class="heat-cell"></div>
+                    <div class="heat-cell heat-active"></div><div class="heat-cell"></div>
+                    <div class="heat-cell"></div>
+                    </div>
+            </div>
+
+            <div class="pt-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Focus Sounds</p>
+                <div class="flex gap-2 flex-wrap">
+                    <button class="sound-btn" onclick="toggleSound('lofi')">Lo-Fi</button>
+                    <button class="sound-btn" onclick="toggleSound('rain')">Rain</button>
+                </div>
+            </div>
         </nav>
 
         <div id="auth-section" class="pt-8 border-t border-gray-100">
-            <button id="loginBtn" class="w-full flex items-center justify-center gap-3 p-4 border rounded-xl hover:bg-gray-50 transition font-semibold">
-                <img src="GLogo.png" class="w-6 h-6"> Sign in
-            </button>
-            <div id="user-profile" class="hidden">
-                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Authenticated</p>
-                <p id="display-name" class="font-bold text-xl text-black"></p>
-                <button id="logoutBtn" class="text-sm text-red-500 hover:underline mt-2">Sign Out</button>
-            </div>
+            <p id="display-name" class="font-bold text-lg text-black">Alon</p>
+            <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
         </div>
     </aside>
 
     <main class="main-content">
-        <h2 class="text-[6rem] font-medium tracking-tight leading-none mb-12">Make it <span class="text-gray-200">clear.</span></h2>
+        <h2 class="text-6xl font-medium tracking-tight mb-10">Make it <span class="text-gray-200">clear.</span></h2>
 
         <div class="mode-grid">
             <div class="mode-card active" data-mode="summary">
-                <span class="text-3xl">📖</span>
-                <span class="mode-title">Deep Dive</span>
+                <span class="text-2xl">📖</span>
+                <p class="font-semibold text-xs mt-2">Deep Dive</p>
             </div>
             <div class="mode-card" data-mode="speed">
-                <span class="text-3xl">⚡</span>
-                <span class="mode-title">Speed Review</span>
+                <span class="text-2xl">⚡</span>
+                <p class="font-semibold text-xs mt-2">Speed Review</p>
             </div>
             <div class="mode-card" data-mode="quiz">
-                <span class="text-3xl">🧠</span>
-                <span class="mode-title">Mastery Quiz</span>
+                <span class="text-2xl">🧠</span>
+                <p class="font-semibold text-xs mt-2">Mastery Quiz</p>
             </div>
             <div class="mode-card" data-mode="vocab">
-                <span class="text-3xl">🏷️</span>
-                <span class="mode-title">Key Terms</span>
+                <span class="text-2xl">🏷️</span>
+                <p class="font-semibold text-xs mt-2">Glossary</p>
             </div>
         </div>
 
-        <div id="quizCountContainer" class="hidden mb-12 bg-gray-50 p-8 rounded-3xl inline-block">
-            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Question Count: <span id="countVal" class="text-black">10</span></label>
-            <input type="range" id="quizCount" min="5" max="20" value="10" class="w-64 accent-black cursor-pointer">
+        <div class="upload-zone" id="dropZone">
+            <p class="text-sm text-gray-400 font-medium">Drag PDFs or Images here to scan, or paste below</p>
         </div>
 
-        <textarea id="studyInput" class="glass-input mb-8" placeholder="Drop your notes here..."></textarea>
+        <textarea id="studyInput" class="glass-input mb-8" placeholder="Paste your messy notes here..."></textarea>
         
         <div class="flex justify-between items-center">
-            <div id="status-box" class="text-sm font-bold uppercase tracking-widest text-gray-300">
-                Ready to Process
+            <div class="flex items-center gap-4">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-300">✦ AI Llama 3 Ready</span>
             </div>
-            <button id="generateBtn" class="btn-generate">Generate Magic</button>
-        </div>
-
-        <div id="outputArea" class="hidden mt-20 p-16 border-2 border-black rounded-[4rem] bg-white shadow-2xl transition-all duration-500">
-            <div class="flex justify-between items-center mb-12">
-                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-300">Your AI Guide</h3>
-                <div class="flex gap-8">
-                    <button id="copyBtn" class="font-bold hover:text-blue-600 transition">Copy Text</button>
-                    <button id="saveBtn" class="font-bold text-blue-600 hover:underline">Save to Archive</button>
-                </div>
-            </div>
-            <div id="aiResult" class="prose prose-2xl max-w-none text-black leading-relaxed"></div>
+            <button id="generateBtn" class="bg-black text-white px-10 py-5 rounded-2xl font-bold hover:scale-105 transition">Generate Magic</button>
         </div>
     </main>
 
-    <script type="module">
-        // [Firebase Logic remains the same, just updating UI hookups]
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script>
+        // Simple Sound Toggle Logic
+        function toggleSound(type) {
+            const btn = event.target;
+            btn.classList.toggle('playing');
+            // Logic for actual audio files would go here
+        }
 
-        // CONFIG (Same as before)
-        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        let currentMode = 'summary';
-
-        // Mode Grid Interactivity
-        document.querySelectorAll('.mode-card').forEach(card => {
-            card.onclick = () => {
-                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                currentMode = card.dataset.mode;
-                
-                // Show/Hide Quiz Slider
-                const quizBox = document.getElementById('quizCountContainer');
-                currentMode === 'quiz' ? quizBox.classList.remove('hidden') : quizBox.classList.add('hidden');
-            };
-        });
-
-        document.getElementById('quizCount').oninput = (e) => document.getElementById('countVal').innerText = e.target.value;
-
-        // AUTH & GENERATE (Logic same as previous version but using 'currentMode' variable)
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                document.getElementById('loginBtn').classList.add('hidden');
-                document.getElementById('user-profile').classList.remove('hidden');
-                document.getElementById('nav-saved').classList.remove('hidden');
-                const userSnap = await getDoc(doc(db, "users", user.uid));
-                if (userSnap.exists()) document.getElementById('display-name').innerText = userSnap.data().nickname;
-            }
-        });
-
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
-        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
-
-        document.getElementById('generateBtn').onclick = async () => {
-            const text = document.getElementById('studyInput').value;
-            if(!text) return;
-            const resArea = document.getElementById('aiResult');
-            document.getElementById('outputArea').classList.remove('hidden');
-            resArea.innerHTML = `<div class="loader-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-
-            try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, mode: currentMode, count: document.getElementById('quizCount').value })
-                });
-                const data = await res.json();
-                resArea.innerText = data.result;
-            } catch (e) { resArea.innerText = "Error generating content."; }
+        // Drag and Drop Visual
+        const dropZone = document.getElementById('dropZone');
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.borderColor = '#000'; };
+        dropZone.ondragleave = () => { dropZone.style.borderColor = '#e5e7eb'; };
+        dropZone.ondrop = (e) => { 
+            e.preventDefault(); 
+            alert("File upload logic coming soon! For now, please paste text."); 
+            dropZone.style.borderColor = '#e5e7eb';
         };
-
-        // SAVE & COPY buttons logic remains the same...
     </script>
 </body>
 </html>
