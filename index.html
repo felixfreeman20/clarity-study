@@ -9,7 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        /* FEATURE 2: VISIBLE AURA BACKGROUNDS */
         body { 
             font-family: 'Inter', sans-serif; 
             background: #f8fafc; 
@@ -19,17 +18,17 @@
             position: relative;
         }
 
+        /* FEATURE: AURA BACKGROUNDS */
         .aura {
             position: fixed;
-            width: 800px; /* Made larger */
+            width: 800px;
             height: 800px;
             border-radius: 50%;
             filter: blur(120px);
             z-index: -1;
-            opacity: 0.25; /* Increased opacity */
+            opacity: 0.25;
             animation: drift 25s infinite alternate ease-in-out;
         }
-        /* Vibrant Colors for visibility */
         .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
         .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
         
@@ -38,7 +37,7 @@
             100% { transform: translate(150px, 150px) scale(1.2); }
         }
 
-        /* FEATURE 3: THE REVEAL ANIMATION */
+        /* FEATURE: REVEAL ANIMATIONS */
         .reveal-up {
             animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -47,7 +46,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Sidebar & Sidebar Glassmorphism */
         .sidebar { 
             width: 320px; 
             height: 100vh; 
@@ -64,7 +62,7 @@
         
         .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; z-index: 10; }
         
-        /* Interactive Elements */
+        /* Interactive Cards */
         .flashcard { background: white; border: 2px solid black; border-radius: 40px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; cursor: pointer; perspective: 1000px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; margin-top: 20px; }
         .flashcard.flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; border-radius: 38px; }
@@ -75,14 +73,17 @@
         .mode-card.active { background: #000 !important; color: #fff !important; box-shadow: none; }
         
         .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
-        .upload-compact.dragover { border-color: black; background: white; }
         
         .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 20px; right: 30px; }
 
+        /* FEATURE: MUSIC PLAYER UI */
+        .sound-pill { cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); background: white; padding: 8px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .sound-pill.active { border-color: black; background: black; color: white; }
+        .visualizer-bar { width: 3px; background: currentColor; animation: musicBars 0.6s infinite ease-in-out; }
+        @keyframes musicBars { 0%, 100% { height: 4px; } 50% { height: 12px; } }
+
         #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 2px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
-        .recording { color: red; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         
         /* NEXT STEPS DESIGN */
         .next-step-btn { background: white; border: 2px solid black; padding: 14px 24px; border-radius: 18px; font-size: 13px; font-weight: 800; transition: 0.3s; cursor: pointer; display: flex; align-items: center; gap: 8px; }
@@ -102,11 +103,32 @@
 
     <aside class="sidebar">
         <div class="logo-box"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
-        <nav class="nav-area px-6">
-            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white mb-4"><span>✦</span> Workspace</a>
+        
+        <nav class="nav-area px-6 mb-8">
+            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white mb-4 shadow-xl"><span>✦</span> Workspace</a>
             <a href="saved.html" id="archive-link" class="hidden flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>📁</span> Archive</a>
         </nav>
-        <div class="mt-auto p-8 border-t">
+
+        <div class="px-8 mb-8">
+            <p class="text-[9px] font-black uppercase tracking-widest mb-4 opacity-30">Focus Timer</p>
+            <div class="bg-white border-2 border-black rounded-2xl p-4 text-center">
+                <div id="timerDisplay" class="text-3xl font-black tabular-nums tracking-tighter mb-2">25:00</div>
+                <button id="timerBtn" class="text-[10px] font-bold bg-slate-100 px-4 py-1 rounded-full hover:bg-black hover:text-white transition">START CLOCK</button>
+            </div>
+        </div>
+
+        <div class="px-8 mb-8">
+            <p class="text-[9px] font-black uppercase tracking-widest mb-4 opacity-30">Flow State Audio</p>
+            <div id="lofiPill" class="sound-pill" onclick="toggleAudio('lofi')">
+                <div class="visualizer-bar hidden"></div> ☕ Lofi Study
+            </div>
+            <div id="rainPill" class="sound-pill" onclick="toggleAudio('rain')">
+                <div class="visualizer-bar hidden"></div> 🌧️ Storm Cloud
+            </div>
+            <audio id="audioPlayer" loop></audio>
+        </div>
+
+        <div class="mt-auto p-8 border-t bg-white/50">
             <div id="logged-in-ui" class="hidden">
                 <p id="user-display" class="font-bold text-lg mb-1"></p>
                 <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
@@ -143,15 +165,15 @@
                     <button id="voiceBtn" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold">🎤 VOICE</button>
                     <button onclick="pasteText()" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold">📋 PASTE</button>
                 </div>
-                <textarea id="studyInput" class="glass-input" placeholder="Paste notes or start speaking..."></textarea>
+                <textarea id="studyInput" class="glass-input" placeholder="What are we learning today?"></textarea>
                 <div id="wordCount" class="counter">0 / 2000 WORDS</div>
             </div>
 
-            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition-all">Start Session</button>
+            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition-all active:scale-[0.98]">Start Session</button>
 
             <div id="interactiveArea" class="hidden mt-10">
                 <div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden">
-                    <span class="text-xs font-bold uppercase opacity-40">Questions Progress</span>
+                    <span class="text-xs font-bold uppercase opacity-40">Progress</span>
                     <span id="scoreTracker" class="text-lg font-black tracking-tighter">1 / 5</span>
                 </div>
                 <div id="contentDisplay"></div>
@@ -160,7 +182,7 @@
             <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border-2 border-black shadow-sm">
                 <div id="aiResult" class="prose max-w-none"></div>
                 <div id="nextSteps" class="mt-10 pt-8 border-t-2 border-slate-100 hidden">
-                    <p class="text-[10px] font-black uppercase tracking-widest mb-4 opacity-40 text-indigo-600">Continue the Journey</p>
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-4 opacity-40 text-indigo-600">Smart Next Steps</p>
                     <div id="nextStepsButtons" class="flex flex-wrap gap-3"></div>
                 </div>
             </div>
@@ -176,6 +198,51 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Timer Logic
+        let timerSeconds = 1500;
+        let timerInterval;
+        document.getElementById('timerBtn').onclick = function() {
+            if(timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                this.innerText = "START CLOCK";
+            } else {
+                this.innerText = "STOP";
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    let m = Math.floor(timerSeconds / 60);
+                    let s = timerSeconds % 60;
+                    document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                    if(timerSeconds <= 0) clearInterval(timerInterval);
+                }, 1000);
+            }
+        };
+
+        // Audio Logic
+        window.toggleAudio = (type) => {
+            const player = document.getElementById('audioPlayer');
+            const lofi = document.getElementById('lofiPill');
+            const rain = document.getElementById('rainPill');
+            const urls = { 
+                lofi: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Placeholder, replace with your lofi stream
+                rain: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+            };
+
+            if(player.src.includes(urls[type]) && !player.paused) {
+                player.pause();
+                lofi.classList.remove('active'); rain.classList.remove('active');
+                lofi.querySelector('.visualizer-bar').classList.add('hidden');
+                rain.querySelector('.visualizer-bar').classList.add('hidden');
+            } else {
+                player.src = urls[type];
+                player.play();
+                lofi.classList.toggle('active', type === 'lofi');
+                rain.classList.toggle('active', type === 'rain');
+                lofi.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'lofi');
+                rain.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'rain');
+            }
+        };
 
         let currentMode = 'summary';
         let quizData = [];
@@ -200,7 +267,7 @@
 
         async function handleFiles(file) {
             if (!file) return;
-            document.getElementById('uploadStatus').innerText = "Analyzing PDF...";
+            document.getElementById('uploadStatus').innerText = "Reading Knowledge...";
             const reader = new FileReader();
             if (file.type === "application/pdf") {
                 reader.onload = async function() {
@@ -213,7 +280,7 @@
                         text += content.items.map(s => s.str).join(" ") + " ";
                     }
                     studyInput.value = text; studyInput.oninput();
-                    document.getElementById('uploadStatus').innerText = "Ready.";
+                    document.getElementById('uploadStatus').innerText = "Knowledge Absorbed.";
                 };
                 reader.readAsArrayBuffer(file);
             } else {
@@ -229,14 +296,6 @@
             document.getElementById('quizSliderContainer').classList.toggle('hidden', m !== 'quiz');
         };
 
-        const voiceBtn = document.getElementById('voiceBtn');
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            const rec = new SpeechRecognition();
-            voiceBtn.onclick = () => { rec.start(); voiceBtn.classList.add('recording'); };
-            rec.onresult = (e) => { studyInput.value += e.results[0][0].transcript; voiceBtn.classList.remove('recording'); studyInput.oninput(); };
-        }
-
         document.getElementById('generateBtn').onclick = async () => {
             if(!studyInput.value) return;
             document.getElementById('interactiveArea').classList.add('hidden');
@@ -248,8 +307,8 @@
         async function startInteractive(input) {
             const area = document.getElementById('interactiveArea');
             area.classList.remove('hidden');
-            area.classList.add('reveal-up'); // Added Reveal
-            document.getElementById('contentDisplay').innerHTML = "Crafting your session...";
+            area.classList.add('reveal-up');
+            document.getElementById('contentDisplay').innerHTML = "Initializing...";
             const count = document.getElementById('qSlider').value;
             const prompt = currentMode === 'quiz' 
                 ? `JSON ONLY. Create ${count} questions. Format: [{"q":"","options":[],"correct":"","type":"mcq"}] Based on: ${input}`
@@ -284,12 +343,12 @@
 
         async function finishQuiz() {
             document.getElementById('contentDisplay').innerHTML = "Grading...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. 2-sentence summary and 3 bullet points.` })});
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. Short summary and tips.` })});
             const data = await res.json();
             document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black reveal-up">
                 <h2 class="text-3xl font-black mb-2">${score} / ${quizData.length}</h2>
                 <div class="prose text-sm">${marked.parse(data.choices[0].message.content)}</div>
-                <button onclick="location.reload()" class="mt-6 font-bold underline">New Session</button>
+                <button onclick="location.reload()" class="mt-6 font-bold underline">End Session</button>
             </div>`;
         }
 
@@ -314,17 +373,16 @@
         async function runStandard(input) {
             const out = document.getElementById('outputArea'); 
             out.classList.remove('hidden');
-            out.classList.add('reveal-up'); // Added Reveal
-            document.getElementById('aiResult').innerHTML = "Thinking...";
+            out.classList.add('reveal-up');
+            document.getElementById('aiResult').innerHTML = "Generating Deep Dive...";
             document.getElementById('nextSteps').classList.add('hidden');
             
             let p = `Mode: ${currentMode}. Bullet points, bold headers. CONTENT: ${input}. 
-                     At the very end of your response, add a section called "NEXT_TOPICS:" followed by 3 comma-separated concepts for further study.`;
+                     End with "NEXT_TOPICS:" then 3 comma-separated topics.`;
             
             const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: p })});
             const data = await res.json();
             let text = data.choices[0].message.content;
-            
             const parts = text.split("NEXT_TOPICS:");
             document.getElementById('aiResult').innerHTML = marked.parse(parts[0]);
             
@@ -335,12 +393,8 @@
                 topics.forEach(topic => {
                     const b = document.createElement('button');
                     b.className = "next-step-btn";
-                    b.innerHTML = `<span>✧</span> Dive into: ${topic}`;
-                    b.onclick = () => { 
-                        studyInput.value = `Explain ${topic} in depth.`; 
-                        window.scrollTo({top: 0, behavior: 'smooth'});
-                        studyInput.oninput();
-                    };
+                    b.innerHTML = `<span>✧</span> ${topic}`;
+                    b.onclick = () => { studyInput.value = `Deep dive into ${topic}`; window.scrollTo({top:0, behavior:'smooth'}); studyInput.oninput(); };
                     btnContainer.appendChild(b);
                 });
                 document.getElementById('nextSteps').classList.remove('hidden');
