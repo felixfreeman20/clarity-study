@@ -12,188 +12,202 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); 
             color: #1a1a1a; 
             margin: 0; 
             min-height: 100vh;
+            display: flex;
         }
 
-        /* Sidebar Fix */
+        /* Sidebar: Clean & Spacious */
         .sidebar { 
-            width: 260px; 
+            width: 280px; 
             height: 100vh; 
             position: fixed; 
             left: 0; 
             top: 0; 
-            border-right: 1px solid rgba(0,0,0,0.05); 
-            background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(10px);
-            padding: 40px 24px; 
+            background: #fff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
             z-index: 50; 
+        }
+
+        /* Logo centered and larger */
+        .logo-box {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .app-logo {
+            height: 60px; /* Bigger logo */
+            width: auto;
+        }
+
+        .nav-area {
+            flex: 1;
+            padding: 30px 20px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 12px;
+            gap: 15px;
+            padding: 14px 20px;
+            border-radius: 14px;
             transition: 0.2s;
             color: #64748b;
             font-weight: 500;
             text-decoration: none;
+            margin-bottom: 8px;
         }
 
-        .nav-link.active { color: #000; background: rgba(0,0,0,0.03); }
-        .nav-link:hover { color: #000; }
-
-        /* Workspace Layout */
-        .workspace-container { 
-            max-width: 850px; 
-            margin-left: 320px; /* Pushes content away from sidebar */
-            padding: 80px 40px; 
+        .nav-link.active { 
+            color: #000; 
+            background: #f8fafc;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
         
-        /* Mode Cards with Thin Black Outline */
+        .nav-link:hover { color: #000; background: #f8fafc; }
+
+        /* Workspace: Centered with massive side room */
+        .workspace-container { 
+            flex: 1;
+            margin-left: 280px; 
+            padding: 100px 80px;
+            max-width: 1200px;
+        }
+
+        .content-card {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        
+        /* Mode Cards with Black Outline */
         .mode-card { 
-            background: #ffffff; 
-            border: 1px solid #000000; /* Thin Black Outline */
-            padding: 20px; 
+            background: #fff; 
+            border: 1px solid #000; 
+            padding: 24px 10px; 
             border-radius: 20px; 
             text-align: center; 
             cursor: pointer; 
-            transition: all 0.2s ease;
+            transition: 0.2s;
         }
 
-        .mode-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .mode-card.active { background: #000; color: #fff; }
 
         .glass-input { 
             width: 100%; 
-            height: 280px; 
+            height: 300px; 
             border-radius: 24px; 
-            border: 1px solid rgba(0,0,0,0.1); 
-            background: rgba(255, 255, 255, 0.9); 
-            color: #000; 
-            font-size: 1.05rem; 
-            outline: none; 
-            padding: 25px; 
+            border: 1px solid #e2e8f0; 
+            background: #fff; 
+            padding: 30px; 
             resize: none; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            outline: none;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .btn-primary { 
             background: #000; 
             color: #fff; 
-            padding: 18px 0; 
-            border-radius: 18px; 
+            padding: 20px; 
+            border-radius: 20px; 
             font-weight: 600; 
             width: 100%; 
-            margin-top: 20px; 
+            margin-top: 25px; 
             cursor: pointer; 
             border: none;
-            transition: 0.3s;
-        }
-        .btn-primary:hover { opacity: 0.8; transform: scale(0.99); }
-        
-        #outputArea { 
-            margin-top: 40px; 
-            padding: 40px; 
-            border-radius: 30px; 
-            background: #fff; 
-            border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
-            display: none; 
         }
 
         .upload-zone { 
             width: 100%; 
-            border: 1px dashed rgba(0,0,0,0.2); 
+            border: 2px dashed #e2e8f0; 
             border-radius: 20px; 
-            padding: 20px; 
+            padding: 25px; 
             text-align: center; 
-            margin-bottom: 20px; 
-            cursor: pointer; 
-            background: rgba(255,255,255,0.5);
-            font-size: 13px;
-            color: #64748b;
+            margin-bottom: 25px; 
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 14px;
         }
 
-        .recent-card { 
-            padding: 20px; 
-            border: 1px solid rgba(0,0,0,0.08); 
-            border-radius: 20px; 
-            background: #fff; 
-            cursor: pointer; 
-            transition: 0.2s;
+        .user-footer {
+            padding: 30px 20px;
+            border-top: 1px solid #f1f5f9;
         }
-        .recent-card:hover { border-color: #000; }
     </style>
 </head>
 <body>
     
-    <aside class="sidebar flex flex-col">
-        <div class="mb-12 px-3">
-            <img src="Clarity Logo.png" alt="Clarity" class="h-10">
+    <aside class="sidebar">
+        <div class="logo-box">
+            <img src="Clarity Logo.png" alt="Clarity" class="app-logo">
         </div>
         
-        <nav class="space-y-2 flex-1">
+        <nav class="nav-area">
             <a href="index.html" class="nav-link active">
-                <span>✦</span> Workspace
+                <span class="text-lg">✦</span> Workspace
             </a>
             <a href="saved.html" class="nav-link">
-                <span>📁</span> Archive
+                <span class="text-lg">📁</span> Archive
             </a>
         </nav>
 
-        <div id="user-section" class="pt-6 border-t border-gray-100">
+        <div class="user-footer">
             <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-sm mb-1">Alon</p>
+                <p id="user-display" class="font-bold text-sm">Alon</p>
                 <button id="logoutBtn" class="text-[11px] text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="text-sm font-medium text-gray-500 hover:text-black">Login</button>
+            <button id="loginBtn" class="text-sm font-medium text-gray-400 hover:text-black">Login</button>
         </div>
     </aside>
 
     <main class="workspace-container">
-        <header class="mb-12">
-            <h2 class="text-6xl font-semibold tracking-tighter">Make it <span class="text-indigo-600/40">clear.</span></h2>
-            <p class="text-gray-500 mt-4 text-lg">Distill your study material into structured knowledge.</p>
-        </header>
-        
-        <div class="grid grid-cols-4 gap-4 mb-8">
-            <div class="mode-card active" data-mode="summary">📖<p class="text-[10px] font-bold mt-2 uppercase">Deep Dive</p></div>
-            <div class="mode-card" data-mode="speed">⚡<p class="text-[10px] font-bold mt-2 uppercase">Speed Review</p></div>
-            <div class="mode-card" data-mode="quiz">🧠<p class="text-[10px] font-bold mt-2 uppercase">Quiz</p></div>
-            <div class="mode-card" data-mode="glossary">🏷️<p class="text-[10px] font-bold mt-2 uppercase">Glossary</p></div>
-        </div>
-
-        <label class="upload-zone" id="dropZone">
-            <span id="uploadText">Drop a PDF or click to browse</span>
-            <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
-        </label>
-
-        <div class="relative">
-            <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
-            <div id="wordCount" class="absolute bottom-6 right-8 text-[10px] font-bold text-gray-400 uppercase">0 / 2000 words</div>
-        </div>
-
-        <button id="generateBtn" class="btn-primary">Generate Session</button>
-
-        <div id="outputArea">
-            <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Study Session Result</span>
-                <div class="flex gap-4">
-                    <button id="exportPdf" class="text-xs font-bold text-gray-500 hover:text-black">Print PDF</button>
-                    <button id="saveBtn" class="text-xs font-bold text-indigo-600">Save to Archive</button>
-                </div>
+        <div class="content-card">
+            <header class="mb-14">
+                <h2 class="text-7xl font-bold tracking-tighter">Make it <span class="text-indigo-500/30">clear.</span></h2>
+                <p class="text-slate-400 mt-6 text-xl">Upload or paste to begin your session.</p>
+            </header>
+            
+            <div class="grid grid-cols-4 gap-5 mb-10">
+                <div class="mode-card active" data-mode="summary">📖<p class="text-[10px] font-bold mt-2 uppercase">Deep Dive</p></div>
+                <div class="mode-card" data-mode="speed">⚡<p class="text-[10px] font-bold mt-2 uppercase">Speed Review</p></div>
+                <div class="mode-card" data-mode="quiz">🧠<p class="text-[10px] font-bold mt-2 uppercase">Quiz</p></div>
+                <div class="mode-card" data-mode="glossary">🏷️<p class="text-[10px] font-bold mt-2 uppercase">Glossary</p></div>
             </div>
-            <div id="aiResult" class="prose prose-indigo max-w-none"></div>
-        </div>
 
-        <div class="mt-24">
-            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Recent Activity</h3>
-            <div id="recentActivity" class="grid grid-cols-2 gap-4"></div>
+            <label class="upload-zone" id="dropZone">
+                <span id="uploadText">Drop a PDF or click to browse</span>
+                <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
+            </label>
+
+            <div class="relative">
+                <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
+                <div id="wordCount" class="absolute bottom-8 right-8 text-[10px] font-bold text-slate-300 uppercase">0 / 2000 words</div>
+            </div>
+
+            <button id="generateBtn" class="btn-primary">Generate Session</button>
+
+            <div id="outputArea" class="mt-12 p-10 bg-white rounded-[32px] border border-slate-100 hidden">
+                <div class="flex justify-between items-center mb-8 border-b pb-6 border-slate-50">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Result</span>
+                    <div class="flex gap-6">
+                        <button id="exportPdf" class="text-xs font-bold text-slate-400 hover:text-black">PDF</button>
+                        <button id="saveBtn" class="text-xs font-bold text-indigo-600">Archive</button>
+                    </div>
+                </div>
+                <div id="aiResult" class="prose prose-indigo max-w-none"></div>
+            </div>
+
+            <div class="mt-24">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Recent Activity</h3>
+                <div id="recentActivity" class="grid grid-cols-2 gap-6"></div>
+            </div>
         </div>
     </main>
 
@@ -210,14 +224,14 @@
         let currentMode = 'summary';
         const studyInput = document.getElementById('studyInput');
 
-        // --- WORD COUNTER ---
+        // Word Count Logic
         studyInput.oninput = function() {
             const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             document.getElementById('wordCount').innerText = `${words} / 2000 words`;
             if(words > 2000) this.value = this.value.split(/\s+/).slice(0, 2000).join(" ");
         };
 
-        // --- MODES ---
+        // Mode Switching
         document.querySelectorAll('.mode-card').forEach(card => {
             card.onclick = () => {
                 document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
@@ -226,27 +240,26 @@
             };
         });
 
-        // --- GENERATE ---
+        // Generate Session
         document.getElementById('generateBtn').onclick = async () => {
-            const val = studyInput.value;
-            if(!val) return;
+            if(!studyInput.value) return;
             const resArea = document.getElementById('outputArea');
-            resArea.style.display = 'block';
-            document.getElementById('aiResult').innerHTML = `<p class="italic text-gray-400 animate-pulse">Clarity is processing...</p>`;
+            resArea.classList.remove('hidden');
+            document.getElementById('aiResult').innerHTML = `<p class="italic text-slate-300 animate-pulse">Clarity is distilling...</p>`;
 
             try {
                 const res = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Notes: ${val}` })
+                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Notes: ${studyInput.value}` })
                 });
                 const data = await res.json();
                 document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
                 resArea.scrollIntoView({ behavior: 'smooth' });
-            } catch (e) { document.getElementById('aiResult').innerText = "Error."; }
+            } catch (e) { document.getElementById('aiResult').innerText = "Bridge connection failed."; }
         };
 
-        // --- RECENT LOAD ---
+        // Load Activity
         async function loadRecent() {
             if(!auth.currentUser) return;
             const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc"), limit(2));
@@ -255,17 +268,17 @@
             grid.innerHTML = '';
             snap.forEach(d => {
                 const card = document.createElement('div');
-                card.className = 'recent-card';
-                card.innerHTML = `<span class="text-[10px] font-bold text-indigo-500 uppercase">${d.data().mode}</span><p class="text-sm font-medium mt-1">Stored Session</p>`;
+                card.className = 'p-6 bg-white border border-slate-100 rounded-[24px] cursor-pointer hover:border-black transition';
+                card.innerHTML = `<span class="text-[10px] font-bold text-indigo-500 uppercase">${d.data().mode}</span><p class="text-sm font-medium mt-2">Saved Session</p>`;
                 card.onclick = () => {
-                    document.getElementById('outputArea').style.display = 'block';
+                    document.getElementById('outputArea').classList.remove('hidden');
                     document.getElementById('aiResult').innerHTML = d.data().content;
                 };
                 grid.appendChild(card);
             });
         }
 
-        // --- AUTH & MISC ---
+        // Auth
         onAuthStateChanged(auth, u => { if(u){ 
             document.getElementById('loginBtn').classList.add('hidden'); 
             document.getElementById('logged-in-ui').classList.remove('hidden'); 
@@ -277,7 +290,7 @@
         document.getElementById('exportPdf').onclick = () => window.print();
         document.getElementById('saveBtn').onclick = async () => {
             await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
-            alert("Saved!"); loadRecent();
+            alert("Session archived."); loadRecent();
         };
     </script>
 </body>
