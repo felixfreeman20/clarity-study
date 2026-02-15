@@ -12,133 +12,111 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); 
+            /* Stronger multi-color light gradient */
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 15%, #e6e9f0 40%, #eef1f5 70%, #f1f5f9 100%); 
             color: #1a1a1a; 
             margin: 0; 
             min-height: 100vh;
             display: flex;
         }
 
-        /* Sidebar: Clean & Spacious */
         .sidebar { 
-            width: 280px; 
+            width: 320px; /* Wider sidebar for more breathing room */
             height: 100vh; 
             position: fixed; 
             left: 0; 
             top: 0; 
-            background: #fff;
-            border-right: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.95);
+            border-right: 1px solid rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            padding: 0;
             z-index: 50; 
         }
 
-        /* Logo centered and larger */
+        /* Large, perfectly centered logo */
         .logo-box {
-            height: 140px;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 20px;
         }
         .app-logo {
-            height: 60px; /* Bigger logo */
+            height: 100px; /* Much larger logo */
             width: auto;
+            object-fit: contain;
         }
 
         .nav-area {
             flex: 1;
-            padding: 30px 20px;
+            padding: 20px 30px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 14px 20px;
-            border-radius: 14px;
+            padding: 16px 24px;
+            border-radius: 18px;
             transition: 0.2s;
             color: #64748b;
             font-weight: 500;
             text-decoration: none;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .nav-link.active { 
             color: #000; 
-            background: #f8fafc;
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        
-        .nav-link:hover { color: #000; background: #f8fafc; }
 
-        /* Workspace: Centered with massive side room */
         .workspace-container { 
             flex: 1;
-            margin-left: 280px; 
-            padding: 100px 80px;
-            max-width: 1200px;
+            margin-left: 320px; /* Aligned with new sidebar width */
+            padding: 100px 120px; /* More room on the sides */
         }
 
-        .content-card {
-            max-width: 850px;
-            margin: 0 auto;
-        }
+        .content-card { max-width: 900px; margin: 0 auto; }
         
-        /* Mode Cards with Black Outline */
         .mode-card { 
             background: #fff; 
             border: 1px solid #000; 
-            padding: 24px 10px; 
-            border-radius: 20px; 
+            padding: 28px 10px; 
+            border-radius: 24px; 
             text-align: center; 
             cursor: pointer; 
             transition: 0.2s;
         }
-
         .mode-card.active { background: #000; color: #fff; }
 
         .glass-input { 
             width: 100%; 
-            height: 300px; 
-            border-radius: 24px; 
-            border: 1px solid #e2e8f0; 
+            height: 320px; 
+            border-radius: 28px; 
+            border: 1px solid rgba(0,0,0,0.08); 
             background: #fff; 
-            padding: 30px; 
+            padding: 35px; 
             resize: none; 
             outline: none;
-            font-size: 1.05rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
         }
 
         .btn-primary { 
             background: #000; 
             color: #fff; 
-            padding: 20px; 
-            border-radius: 20px; 
+            padding: 22px; 
+            border-radius: 24px; 
             font-weight: 600; 
             width: 100%; 
-            margin-top: 25px; 
-            cursor: pointer; 
+            margin-top: 30px; 
+            cursor: pointer;
             border: none;
         }
 
-        .upload-zone { 
-            width: 100%; 
-            border: 2px dashed #e2e8f0; 
-            border-radius: 20px; 
-            padding: 25px; 
-            text-align: center; 
-            margin-bottom: 25px; 
-            cursor: pointer;
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
         .user-footer {
-            padding: 30px 20px;
-            border-top: 1px solid #f1f5f9;
+            padding: 40px 30px;
+            border-top: 1px solid rgba(0,0,0,0.03);
         }
     </style>
 </head>
@@ -150,63 +128,38 @@
         </div>
         
         <nav class="nav-area">
-            <a href="index.html" class="nav-link active">
-                <span class="text-lg">✦</span> Workspace
-            </a>
-            <a href="saved.html" class="nav-link">
-                <span class="text-lg">📁</span> Archive
-            </a>
+            <a href="index.html" class="nav-link active"><span>✦</span> Workspace</a>
+            <a href="saved.html" class="nav-link"><span>📁</span> Archive</a>
         </nav>
 
         <div class="user-footer">
             <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-sm">Alon</p>
-                <button id="logoutBtn" class="text-[11px] text-red-500 hover:underline">Sign Out</button>
+                <p id="user-display" class="font-bold text-lg mb-1">Loading...</p>
+                <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="text-sm font-medium text-gray-400 hover:text-black">Login</button>
+            <button id="loginBtn" class="text-sm font-medium text-gray-400">Login</button>
         </div>
     </aside>
 
     <main class="workspace-container">
         <div class="content-card">
-            <header class="mb-14">
-                <h2 class="text-7xl font-bold tracking-tighter">Make it <span class="text-indigo-500/30">clear.</span></h2>
-                <p class="text-slate-400 mt-6 text-xl">Upload or paste to begin your session.</p>
+            <header class="mb-16">
+                <h2 class="text-8xl font-bold tracking-tighter">Make it <span class="text-indigo-400/40">clear.</span></h2>
+                <p class="text-slate-500 mt-8 text-2xl font-light">Distill your knowledge effortlessly.</p>
             </header>
             
-            <div class="grid grid-cols-4 gap-5 mb-10">
-                <div class="mode-card active" data-mode="summary">📖<p class="text-[10px] font-bold mt-2 uppercase">Deep Dive</p></div>
-                <div class="mode-card" data-mode="speed">⚡<p class="text-[10px] font-bold mt-2 uppercase">Speed Review</p></div>
-                <div class="mode-card" data-mode="quiz">🧠<p class="text-[10px] font-bold mt-2 uppercase">Quiz</p></div>
-                <div class="mode-card" data-mode="glossary">🏷️<p class="text-[10px] font-bold mt-2 uppercase">Glossary</p></div>
+            <div class="grid grid-cols-4 gap-6 mb-12">
+                <div class="mode-card active" data-mode="summary">📖<p class="text-[11px] font-bold mt-2 uppercase">Deep Dive</p></div>
+                <div class="mode-card" data-mode="speed">⚡<p class="text-[11px] font-bold mt-2 uppercase">Speed Review</p></div>
+                <div class="mode-card" data-mode="quiz">🧠<p class="text-[11px] font-bold mt-2 uppercase">Quiz</p></div>
+                <div class="mode-card" data-mode="glossary">🏷️<p class="text-[11px] font-bold mt-2 uppercase">Glossary</p></div>
             </div>
 
-            <label class="upload-zone" id="dropZone">
-                <span id="uploadText">Drop a PDF or click to browse</span>
-                <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
-            </label>
-
-            <div class="relative">
-                <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
-                <div id="wordCount" class="absolute bottom-8 right-8 text-[10px] font-bold text-slate-300 uppercase">0 / 2000 words</div>
-            </div>
-
+            <textarea id="studyInput" class="glass-input shadow-xl shadow-slate-200/50" placeholder="Paste your material here..."></textarea>
             <button id="generateBtn" class="btn-primary">Generate Session</button>
 
-            <div id="outputArea" class="mt-12 p-10 bg-white rounded-[32px] border border-slate-100 hidden">
-                <div class="flex justify-between items-center mb-8 border-b pb-6 border-slate-50">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Result</span>
-                    <div class="flex gap-6">
-                        <button id="exportPdf" class="text-xs font-bold text-slate-400 hover:text-black">PDF</button>
-                        <button id="saveBtn" class="text-xs font-bold text-indigo-600">Archive</button>
-                    </div>
-                </div>
-                <div id="aiResult" class="prose prose-indigo max-w-none"></div>
-            </div>
-
-            <div class="mt-24">
-                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Recent Activity</h3>
-                <div id="recentActivity" class="grid grid-cols-2 gap-6"></div>
+            <div id="outputArea" class="mt-16 p-12 bg-white rounded-[40px] shadow-2xl shadow-slate-200/50 hidden border border-slate-50">
+                <div id="aiResult" class="prose prose-indigo prose-xl max-w-none"></div>
             </div>
         </div>
     </main>
@@ -221,77 +174,44 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentMode = 'summary';
-        const studyInput = document.getElementById('studyInput');
-
-        // Word Count Logic
-        studyInput.oninput = function() {
-            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            document.getElementById('wordCount').innerText = `${words} / 2000 words`;
-            if(words > 2000) this.value = this.value.split(/\s+/).slice(0, 2000).join(" ");
-        };
-
-        // Mode Switching
-        document.querySelectorAll('.mode-card').forEach(card => {
-            card.onclick = () => {
-                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                currentMode = card.dataset.mode;
-            };
+        // --- NICKNAME FIX ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('loginBtn').classList.add('hidden');
+                document.getElementById('logged-in-ui').classList.remove('hidden');
+                
+                // Fetch the nickname from Firestore instead of Google Display Name
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    document.getElementById('user-display').innerText = userDoc.data().nickname;
+                } else {
+                    document.getElementById('user-display').innerText = "Alon";
+                }
+            }
         });
 
-        // Generate Session
+        // Generate Logic
         document.getElementById('generateBtn').onclick = async () => {
-            if(!studyInput.value) return;
+            const val = document.getElementById('studyInput').value;
+            if(!val) return;
             const resArea = document.getElementById('outputArea');
             resArea.classList.remove('hidden');
-            document.getElementById('aiResult').innerHTML = `<p class="italic text-slate-300 animate-pulse">Clarity is distilling...</p>`;
+            document.getElementById('aiResult').innerHTML = `<p class="italic text-slate-300 animate-pulse">Distilling...</p>`;
 
             try {
                 const res = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Notes: ${studyInput.value}` })
+                    body: JSON.stringify({ promptText: val })
                 });
                 const data = await res.json();
                 document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
                 resArea.scrollIntoView({ behavior: 'smooth' });
-            } catch (e) { document.getElementById('aiResult').innerText = "Bridge connection failed."; }
+            } catch (e) { document.getElementById('aiResult').innerText = "Error."; }
         };
 
-        // Load Activity
-        async function loadRecent() {
-            if(!auth.currentUser) return;
-            const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc"), limit(2));
-            const snap = await getDocs(q);
-            const grid = document.getElementById('recentActivity');
-            grid.innerHTML = '';
-            snap.forEach(d => {
-                const card = document.createElement('div');
-                card.className = 'p-6 bg-white border border-slate-100 rounded-[24px] cursor-pointer hover:border-black transition';
-                card.innerHTML = `<span class="text-[10px] font-bold text-indigo-500 uppercase">${d.data().mode}</span><p class="text-sm font-medium mt-2">Saved Session</p>`;
-                card.onclick = () => {
-                    document.getElementById('outputArea').classList.remove('hidden');
-                    document.getElementById('aiResult').innerHTML = d.data().content;
-                };
-                grid.appendChild(card);
-            });
-        }
-
-        // Auth
-        onAuthStateChanged(auth, u => { if(u){ 
-            document.getElementById('loginBtn').classList.add('hidden'); 
-            document.getElementById('logged-in-ui').classList.remove('hidden'); 
-            document.getElementById('user-display').innerText = u.displayName || "Alon";
-            loadRecent(); 
-        }});
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
         document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
-        document.getElementById('exportPdf').onclick = () => window.print();
-        document.getElementById('saveBtn').onclick = async () => {
-            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
-            alert("Session archived."); loadRecent();
-        };
     </script>
 </body>
 </html>
