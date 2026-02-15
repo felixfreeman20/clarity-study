@@ -29,13 +29,7 @@
             <a href="saved.html" class="nav-link active"><span>📁</span> Archive</a>
         </nav>
         <div class="user-footer" style="padding: 40px 30px; border-top: 1px solid rgba(0,0,0,0.03);">
-            <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-lg mb-1"></p>
-                <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
-            </div>
-            <div id="login-ui">
-                <button id="loginBtn" class="text-sm font-bold text-black hover:underline">Sign in with Google</button>
-            </div>
+            <p id="user-display" class="font-bold text-lg mb-1"></p>
         </div>
     </aside>
 
@@ -46,35 +40,22 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
-
-        onAuthStateChanged(auth, async (u) => { 
-            if(u) {
-                document.getElementById('login-ui').classList.add('hidden');
-                document.getElementById('logged-in-ui').classList.remove('hidden');
-
-                const userRef = doc(db, "users", u.uid);
-                const docSnap = await getDoc(userRef);
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                const docRef = await getDoc(doc(db, "users", user.uid));
+                document.getElementById('user-display').innerText = docRef.exists() ? docRef.data().nickname : "User";
                 
-                let nickname = "";
-                if (docSnap.exists() && docSnap.data().nickname) {
-                    nickname = docSnap.data().nickname;
-                } else {
-                    nickname = prompt("Welcome to Clarity! What should we call you?") || u.displayName || "User";
-                    await setDoc(userRef, { nickname: nickname }, { merge: true });
-                }
-                document.getElementById('user-display').innerText = nickname;
-                
-                const q = query(collection(db, "sessions"), where("uid", "==", u.uid));
+                const q = query(collection(db, "sessions"), where("uid", "==", user.uid));
                 const snap = await getDocs(q);
                 const list = document.getElementById('archiveList');
                 snap.forEach(d => {
@@ -87,10 +68,6 @@
                     `;
                     list.appendChild(item);
                 });
-            } else {
-                // Instantly block access if not logged in
-                alert("Please sign in to access your Archive.");
-                window.location.href = "index.html";
             }
         });
 
