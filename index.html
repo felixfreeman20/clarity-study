@@ -10,101 +10,190 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        :root { --bg: #ffffff; --text: #1a1a1a; --card: #ffffff; --border: #f0f0f0; --secondary-text: #666; }
-        .dark-mode { --bg: #0a0a0a; --text: #f5f5f5; --card: #141414; --border: #222; --secondary-text: #aaa; }
-        
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; margin: 0; }
-        .orb { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; }
-        .orb-1 { top: -100px; right: -100px; background: #4f46e5; }
-        .orb-2 { bottom: -100px; left: -100px; background: #ec4899; }
-        
-        .sidebar { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; border-right: 1px solid var(--border); background: var(--card); padding: 40px 24px; z-index: 40; }
-        .workspace-container { max-width: 800px; margin: 0 auto; padding: 80px 20px; min-height: 100vh; margin-left: 300px; }
-        
-        .mode-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.2s; color: var(--text); }
-        .mode-card.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); 
+            color: #1a1a1a; 
+            margin: 0; 
+            min-height: 100vh;
+        }
 
-        .glass-input { width: 100%; height: 250px; border-radius: 24px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 1.1rem; outline: none; padding: 25px; resize: none; transition: border-color 0.3s; }
-        .glass-input:focus { border-color: #4f46e5; }
+        /* Sidebar Fix */
+        .sidebar { 
+            width: 260px; 
+            height: 100vh; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            border-right: 1px solid rgba(0,0,0,0.05); 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(10px);
+            padding: 40px 24px; 
+            z-index: 50; 
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: 0.2s;
+            color: #64748b;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .nav-link.active { color: #000; background: rgba(0,0,0,0.03); }
+        .nav-link:hover { color: #000; }
+
+        /* Workspace Layout */
+        .workspace-container { 
+            max-width: 850px; 
+            margin-left: 320px; /* Pushes content away from sidebar */
+            padding: 80px 40px; 
+        }
         
-        .btn-primary { background: var(--text); color: var(--bg); padding: 18px 0; border-radius: 18px; font-weight: 600; width: 100%; margin-top: 20px; cursor: pointer; border: none; }
+        /* Mode Cards with Thin Black Outline */
+        .mode-card { 
+            background: #ffffff; 
+            border: 1px solid #000000; /* Thin Black Outline */
+            padding: 20px; 
+            border-radius: 20px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+        }
+
+        .mode-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .mode-card.active { background: #000; color: #fff; }
+
+        .glass-input { 
+            width: 100%; 
+            height: 280px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(0,0,0,0.1); 
+            background: rgba(255, 255, 255, 0.9); 
+            color: #000; 
+            font-size: 1.05rem; 
+            outline: none; 
+            padding: 25px; 
+            resize: none; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        }
+
+        .btn-primary { 
+            background: #000; 
+            color: #fff; 
+            padding: 18px 0; 
+            border-radius: 18px; 
+            font-weight: 600; 
+            width: 100%; 
+            margin-top: 20px; 
+            cursor: pointer; 
+            border: none;
+            transition: 0.3s;
+        }
+        .btn-primary:hover { opacity: 0.8; transform: scale(0.99); }
         
-        /* Result Area */
-        #outputArea { margin-top: 40px; padding: 35px; border-radius: 25px; border: 1px solid var(--border); background: var(--card); display: none; }
-        .loading-pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        
-        .counter { font-size: 10px; font-weight: bold; text-transform: uppercase; margin-top: 8px; color: var(--secondary-text); }
-        .counter.limit { color: #ef4444; }
+        #outputArea { 
+            margin-top: 40px; 
+            padding: 40px; 
+            border-radius: 30px; 
+            background: #fff; 
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            display: none; 
+        }
 
-        /* Recent Activity Grid */
-        .recent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
-        .recent-card { padding: 15px; border: 1px solid var(--border); border-radius: 15px; font-size: 13px; cursor: pointer; background: var(--card); color: var(--text); transition: 0.2s; }
-        .recent-card:hover { transform: translateY(-2px); border-color: #4f46e5; }
+        .upload-zone { 
+            width: 100%; 
+            border: 1px dashed rgba(0,0,0,0.2); 
+            border-radius: 20px; 
+            padding: 20px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            cursor: pointer; 
+            background: rgba(255,255,255,0.5);
+            font-size: 13px;
+            color: #64748b;
+        }
 
-        /* Quiz Ans Styling */
-        .hidden-ans { display: none; background: #10b98122; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #10b981; }
-
-        /* PDF Preview */
-        .upload-zone { width: 100%; border: 2px dashed var(--border); border-radius: 20px; padding: 15px; text-align: center; margin-bottom: 15px; cursor: pointer; font-size: 12px; color: var(--secondary-text); }
-
-        @media print { .sidebar, .mode-grid, .glass-input, .btn-primary, .upload-zone, .counter, h3, #recentActivity { display: none !important; } .workspace-container { margin: 0; padding: 0; width: 100%; } #outputArea { border: none; display: block !important; } }
+        .recent-card { 
+            padding: 20px; 
+            border: 1px solid rgba(0,0,0,0.08); 
+            border-radius: 20px; 
+            background: #fff; 
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        .recent-card:hover { border-color: #000; }
     </style>
 </head>
 <body>
-    <div class="orb orb-1"></div><div class="orb orb-2"></div>
     
     <aside class="sidebar flex flex-col">
-        <div class="mb-10"><img src="Clarity Logo.png" alt="Clarity" class="h-12"></div>
-        <nav class="space-y-6 flex-1">
-            <a href="index.html" class="flex items-center gap-3 font-bold italic text-black dark:text-white">✦ Workspace</a>
-            <button id="themeToggle" class="text-sm text-gray-400 hover:text-indigo-500 transition">🌓 Switch Mode</button>
+        <div class="mb-12 px-3">
+            <img src="Clarity Logo.png" alt="Clarity" class="h-10">
+        </div>
+        
+        <nav class="space-y-2 flex-1">
+            <a href="index.html" class="nav-link active">
+                <span>✦</span> Workspace
+            </a>
+            <a href="saved.html" class="nav-link">
+                <span>📁</span> Archive
+            </a>
         </nav>
+
         <div id="user-section" class="pt-6 border-t border-gray-100">
             <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-sm">Alon</p>
-                <button id="logoutBtn" class="text-[10px] text-red-500 hover:underline">Sign Out</button>
+                <p id="user-display" class="font-bold text-sm mb-1">Alon</p>
+                <button id="logoutBtn" class="text-[11px] text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="text-sm font-medium text-gray-400">Login with Google</button>
+            <button id="loginBtn" class="text-sm font-medium text-gray-500 hover:text-black">Login</button>
         </div>
     </aside>
 
     <main class="workspace-container">
-        <h2 class="text-5xl font-medium tracking-tighter mb-10">Make it <span class="text-indigo-500">clear.</span></h2>
+        <header class="mb-12">
+            <h2 class="text-6xl font-semibold tracking-tighter">Make it <span class="text-indigo-600/40">clear.</span></h2>
+            <p class="text-gray-500 mt-4 text-lg">Distill your study material into structured knowledge.</p>
+        </header>
         
-        <div class="mode-grid grid grid-cols-4 gap-3 mb-8">
-            <div class="mode-card active" data-mode="summary">📖<p class="text-[9px] font-bold mt-1 uppercase">Deep Dive</p></div>
-            <div class="mode-card" data-mode="speed">⚡<p class="text-[9px] font-bold mt-1 uppercase">Speed Review</p></div>
-            <div class="mode-card" data-mode="quiz">🧠<p class="text-[9px] font-bold mt-1 uppercase">Quiz</p></div>
-            <div class="mode-card" data-mode="glossary">🏷️<p class="text-[9px] font-bold mt-1 uppercase">Glossary</p></div>
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="mode-card active" data-mode="summary">📖<p class="text-[10px] font-bold mt-2 uppercase">Deep Dive</p></div>
+            <div class="mode-card" data-mode="speed">⚡<p class="text-[10px] font-bold mt-2 uppercase">Speed Review</p></div>
+            <div class="mode-card" data-mode="quiz">🧠<p class="text-[10px] font-bold mt-2 uppercase">Quiz</p></div>
+            <div class="mode-card" data-mode="glossary">🏷️<p class="text-[10px] font-bold mt-2 uppercase">Glossary</p></div>
         </div>
 
         <label class="upload-zone" id="dropZone">
-            <span id="uploadText">📎 Click to upload a PDF or Text file</span>
+            <span id="uploadText">Drop a PDF or click to browse</span>
             <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
         </label>
 
         <div class="relative">
-            <textarea id="studyInput" class="glass-input" placeholder="Paste notes for a Deep Dive..."></textarea>
-            <div id="wordCount" class="counter">0 / 2000 words</div>
+            <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
+            <div id="wordCount" class="absolute bottom-6 right-8 text-[10px] font-bold text-gray-400 uppercase">0 / 2000 words</div>
         </div>
 
         <button id="generateBtn" class="btn-primary">Generate Session</button>
 
         <div id="outputArea">
-            <div class="flex justify-between items-center mb-6">
-                <span class="text-[10px] font-bold uppercase text-gray-400">Result</span>
+            <div class="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Study Session Result</span>
                 <div class="flex gap-4">
-                    <button id="exportPdf" class="text-xs font-bold text-green-600">Print/PDF</button>
-                    <button id="saveBtn" class="text-xs font-bold text-blue-600">Save to Archive</button>
+                    <button id="exportPdf" class="text-xs font-bold text-gray-500 hover:text-black">Print PDF</button>
+                    <button id="saveBtn" class="text-xs font-bold text-indigo-600">Save to Archive</button>
                 </div>
             </div>
-            <div id="aiResult" class="prose prose-slate max-w-none dark:prose-invert"></div>
+            <div id="aiResult" class="prose prose-indigo max-w-none"></div>
         </div>
 
-        <div class="mt-20">
-            <h3 class="text-sm font-bold uppercase text-gray-400 mb-4">Recent Activity</h3>
-            <div id="recentActivity" class="recent-grid"></div>
+        <div class="mt-24">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Recent Activity</h3>
+            <div id="recentActivity" class="grid grid-cols-2 gap-4"></div>
         </div>
     </main>
 
@@ -119,98 +208,55 @@
         const db = getFirestore(app);
 
         let currentMode = 'summary';
-        const placeholders = { summary: "Paste notes for a Deep Dive...", speed: "Paste notes for a Speed Review...", quiz: "Paste notes for a Mastery Quiz...", glossary: "Paste notes for a Glossary..." };
+        const studyInput = document.getElementById('studyInput');
 
-        // --- THEME & WORD LIMITS ---
-        document.getElementById('themeToggle').onclick = () => document.body.classList.toggle('dark-mode');
-
-        document.getElementById('studyInput').oninput = function() {
+        // --- WORD COUNTER ---
+        studyInput.oninput = function() {
             const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             document.getElementById('wordCount').innerText = `${words} / 2000 words`;
-            document.getElementById('wordCount').classList.toggle('limit', words > 2000);
             if(words > 2000) this.value = this.value.split(/\s+/).slice(0, 2000).join(" ");
         };
 
-        // --- MODE SWITCHING ---
+        // --- MODES ---
         document.querySelectorAll('.mode-card').forEach(card => {
             card.onclick = () => {
                 document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 currentMode = card.dataset.mode;
-                document.getElementById('studyInput').placeholder = placeholders[currentMode];
             };
         });
 
-        // --- FILE UPLOAD (PDF/TXT) ---
-        document.getElementById('fileInput').onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            document.getElementById('uploadText').innerText = `Reading ${file.name}...`;
-            if (file.type === "application/pdf") {
-                const reader = new FileReader();
-                reader.onload = async function() {
-                    const typedarray = new Uint8Array(this.result);
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let text = "";
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const content = await page.getTextContent();
-                        text += content.items.map(s => s.str).join(" ") + "\n";
-                    }
-                    document.getElementById('studyInput').value = text;
-                    document.getElementById('uploadText').innerText = "PDF Loaded!";
-                };
-                reader.readAsArrayBuffer(file);
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('studyInput').value = e.target.result;
-                    document.getElementById('uploadText').innerText = "Text Loaded!";
-                };
-                reader.readAsText(file);
-            }
-        };
-
-        // --- GENERATE AI RESPONSE ---
+        // --- GENERATE ---
         document.getElementById('generateBtn').onclick = async () => {
-            const val = document.getElementById('studyInput').value;
+            const val = studyInput.value;
             if(!val) return;
-            document.getElementById('outputArea').style.display = 'block';
-            document.getElementById('aiResult').innerHTML = `<div class="loading-pulse text-gray-400 italic">Clarity is distilling your notes...</div>`;
+            const resArea = document.getElementById('outputArea');
+            resArea.style.display = 'block';
+            document.getElementById('aiResult').innerHTML = `<p class="italic text-gray-400 animate-pulse">Clarity is processing...</p>`;
 
-            let promptSuffix = currentMode === 'quiz' ? "Create a 5-question multiple choice quiz. For each question, provide the correct answer at the end wrapped in <div class='hidden-ans'>Answer: [Correct]</div>." : "Summarize this clearly with headers and bullets.";
-            
             try {
                 const res = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText: `${promptSuffix} Also add 3 #tags. Notes: ${val}` })
+                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Notes: ${val}` })
                 });
                 const data = await res.json();
-                const htmlContent = marked.parse(data.choices[0].message.content);
-                document.getElementById('aiResult').innerHTML = htmlContent;
-
-                if(currentMode === 'quiz') {
-                    const btn = document.createElement('button');
-                    btn.innerText = "Check My Answers";
-                    btn.className = "mt-4 bg-indigo-500 text-white px-4 py-2 rounded-lg text-xs font-bold";
-                    btn.onclick = () => document.querySelectorAll('.hidden-ans').forEach(el => el.style.display = 'block');
-                    document.getElementById('aiResult').appendChild(btn);
-                }
-            } catch (e) { document.getElementById('aiResult').innerText = "Connection Error."; }
+                document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
+                resArea.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) { document.getElementById('aiResult').innerText = "Error."; }
         };
 
-        // --- RECENT ACTIVITY ---
+        // --- RECENT LOAD ---
         async function loadRecent() {
             if(!auth.currentUser) return;
-            const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc"), limit(4));
+            const q = query(collection(db, "sessions"), where("uid", "==", auth.currentUser.uid), orderBy("timestamp", "desc"), limit(2));
             const snap = await getDocs(q);
             const grid = document.getElementById('recentActivity');
             grid.innerHTML = '';
             snap.forEach(d => {
                 const card = document.createElement('div');
                 card.className = 'recent-card';
-                card.innerHTML = `<strong>${d.data().mode.toUpperCase()}</strong><br><span class="text-[10px] opacity-50">${d.data().tags || '#study'}</span>`;
+                card.innerHTML = `<span class="text-[10px] font-bold text-indigo-500 uppercase">${d.data().mode}</span><p class="text-sm font-medium mt-1">Stored Session</p>`;
                 card.onclick = () => {
                     document.getElementById('outputArea').style.display = 'block';
                     document.getElementById('aiResult').innerHTML = d.data().content;
@@ -219,7 +265,7 @@
             });
         }
 
-        // --- AUTH & SAVE ---
+        // --- AUTH & MISC ---
         onAuthStateChanged(auth, u => { if(u){ 
             document.getElementById('loginBtn').classList.add('hidden'); 
             document.getElementById('logged-in-ui').classList.remove('hidden'); 
@@ -229,20 +275,9 @@
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
         document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
         document.getElementById('exportPdf').onclick = () => window.print();
-
         document.getElementById('saveBtn').onclick = async () => {
-            if(!auth.currentUser) return alert("Login to save!");
-            const content = document.getElementById('aiResult').innerHTML;
-            const tags = content.match(/#\w+/g)?.join(" ") || "#general";
-            await addDoc(collection(db, "sessions"), { 
-                uid: auth.currentUser.uid, 
-                content, 
-                mode: currentMode, 
-                tags, 
-                timestamp: serverTimestamp() 
-            });
-            alert("Saved!");
-            loadRecent();
+            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
+            alert("Saved!"); loadRecent();
         };
     </script>
 </body>
