@@ -5,79 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #fff; margin: 0; display: flex; }
-        .bottom-gradient { position: fixed; bottom: 0; left: 0; width: 100%; height: 40vh; background: linear-gradient(0deg, #eef1f5 0%, transparent 100%); z-index: -1; }
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: #fff; border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
-        .logo-box { height: 200px; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .app-logo { height: 100px; width: auto; }
-        .nav-area { flex: 1; padding: 20px 30px; }
-        .nav-link { display: flex; align-items: center; gap: 15px; padding: 16px 24px; border-radius: 18px; color: #64748b; font-weight: 500; text-decoration: none; margin-bottom: 12px; }
-        .nav-link.active { color: #000; background: #f8fafc; }
-        .archive-container { flex: 1; margin-left: 320px; padding: 100px 120px; }
-        .session-card { background: #fff; border: 1px solid rgba(0,0,0,0.05); padding: 30px; border-radius: 24px; margin-bottom: 20px; position: relative; }
-        .dl-btn { position: absolute; top: 30px; right: 30px; font-size: 11px; font-weight: bold; color: #6366f1; cursor: pointer; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; }
+        
+        /* FEATURE: AURA BACKGROUNDS (Consistent with Workspace) */
+        .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; animation: drift 25s infinite alternate ease-in-out; }
+        .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
+        .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
+        @keyframes drift { from { transform: translate(0,0); } to { transform: translate(100px, 100px); } }
+
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
+        .main-content { flex: 1; margin-left: 320px; padding: 60px 80px; }
+
+        /* FEATURE 1: KNOWLEDGE GALLERY CARDS */
+        .knowledge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 40px; }
+        .knowledge-card { 
+            background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 30px; padding: 30px; 
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; height: 320px;
+        }
+        .knowledge-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(99, 102, 241, 0.1); border-color: #6366f1; }
+        .mode-badge { position: absolute; top: 20px; right: 20px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; background: #f1f5f9; }
+
+        /* FEATURE 3: GLASS SEARCH */
+        .search-container { position: relative; max-width: 600px; margin-bottom: 40px; }
+        .glass-search { width: 100%; padding: 18px 25px 18px 55px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); outline: none; font-weight: 500; transition: 0.3s; }
+        .glass-search:focus { border-color: black; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); opacity: 0.3; }
+
+        /* FEATURE 4: SEMANTIC LINKING CHIPS */
+        .semantic-banner { background: #000; color: white; border-radius: 24px; padding: 25px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; display: none; }
+        .link-chip { background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; margin-right: 8px; }
+
+        .empty-state { text-align: center; padding: 100px 0; opacity: 0.3; }
     </style>
 </head>
 <body>
-    <div class="bottom-gradient"></div>
+    <div class="aura aura-1"></div>
+    <div class="aura aura-2"></div>
+
     <aside class="sidebar">
-        <div class="logo-box"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
-        <nav class="nav-area">
-            <a href="index.html" class="nav-link"><span>✦</span> Workspace</a>
-            <a href="saved.html" class="nav-link active"><span>📁</span> Archive</a>
+        <div class="p-10"><img src="Clarity Logo.png" alt="Clarity" class="w-32"></div>
+        <nav class="px-6">
+            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>✦</span> Workspace</a>
+            <a href="saved.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white shadow-xl"><span>📁</span> Archive</a>
         </nav>
-        <div class="user-footer" style="padding: 40px 30px; border-top: 1px solid rgba(0,0,0,0.03);">
-            <p id="user-display" class="font-bold text-lg mb-1"></p>
-        </div>
     </aside>
 
-    <main class="archive-container">
-        <h2 class="text-6xl font-bold tracking-tighter mb-12">Your <span class="text-indigo-400/40">Archive.</span></h2>
-        <div id="archiveList"></div>
+    <main class="main-content">
+        <header class="mb-12">
+            <h1 class="text-5xl font-extrabold tracking-tighter mb-4">Library.</h1>
+            <p class="text-slate-400 font-medium">Your collective intelligence, organized by AI.</p>
+        </header>
+
+        <div id="semanticLinkArea" class="semantic-banner reveal-up">
+            <div>
+                <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-1">AI Insight</p>
+                <h3 id="semanticText" class="text-lg font-bold">You've mastered 3 topics in Biology. Ready for a challenge?</h3>
+            </div>
+            <button class="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm">Create Master Quiz</button>
+        </div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="librarySearch" class="glass-search" placeholder="Search topics, keywords, or modes...">
+        </div>
+
+        <div id="gridContainer" class="knowledge-grid">
+            </div>
+
+        <div id="emptyState" class="empty-state hidden">
+            <p class="text-xl font-bold">Your library is empty.</p>
+            <p class="text-sm">Start a deep dive to save your first insight.</p>
+        </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        let allLogs = [];
+
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = "index.html";
-            } else {
-                const docRef = await getDoc(doc(db, "users", user.uid));
-                document.getElementById('user-display').innerText = docRef.exists() ? docRef.data().nickname : "User";
+            if (user) {
+                const q = query(collection(db, "study_logs"), where("userId", "==", user.uid), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
                 
-                const q = query(collection(db, "sessions"), where("uid", "==", user.uid));
-                const snap = await getDocs(q);
-                const list = document.getElementById('archiveList');
-                snap.forEach(d => {
-                    const item = document.createElement('div');
-                    item.className = 'session-card';
-                    item.innerHTML = `
-                        <span class="dl-btn" onclick="downloadSession('${d.id}')">DOWNLOAD</span>
-                        <h3 class="font-bold text-indigo-500 uppercase text-xs mb-2">${d.data().mode}</h3>
-                        <div id="content-${d.id}">${d.data().content}</div>
-                    `;
-                    list.appendChild(item);
-                });
+                if(querySnapshot.empty) {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                } else {
+                    querySnapshot.forEach((doc) => {
+                        allLogs.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderLibrary(allLogs);
+                    checkSemanticLinks(allLogs);
+                }
+            } else {
+                window.location.href = "index.html";
             }
         });
 
-        window.downloadSession = (id) => {
-            const text = document.getElementById(`content-${id}`).innerText;
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `Clarity_Archive_${id}.txt`; a.click();
+        function renderLibrary(logs) {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = "";
+            logs.forEach(log => {
+                const date = log.timestamp?.toDate().toLocaleDateString() || "Recent";
+                const preview = log.content.substring(0, 150) + "...";
+                
+                const card = document.createElement('div');
+                card.className = "knowledge-card reveal-up";
+                card.innerHTML = `
+                    <div class="mode-badge">${log.mode}</div>
+                    <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-4">${date}</p>
+                    <h3 class="text-xl font-bold mb-3 line-clamp-2">${log.topic || "Untitled Session"}</h3>
+                    <div class="text-sm text-slate-500 leading-relaxed mb-6 overflow-hidden">${preview}</div>
+                    <div class="mt-auto flex gap-2">
+                        ${log.tags ? log.tags.map(t => `<span class="link-chip">#${t}</span>`).join('') : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // FEATURE 3: SEARCH LOGIC
+        document.getElementById('librarySearch').oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allLogs.filter(log => 
+                log.topic?.toLowerCase().includes(val) || 
+                log.content?.toLowerCase().includes(val) ||
+                log.mode?.toLowerCase().includes(val)
+            );
+            renderLibrary(filtered);
         };
+
+        // FEATURE 4: SEMANTIC LINKING (Find common themes)
+        function checkSemanticLinks(logs) {
+            const topics = logs.map(l => l.topic?.toLowerCase()).filter(Boolean);
+            const frequency = {};
+            topics.forEach(t => { frequency[t] = (frequency[t] || 0) + 1; });
+            
+            const common = Object.keys(frequency).find(key => frequency[key] >= 3);
+            if(common) {
+                document.getElementById('semanticLinkArea').style.display = 'flex';
+                document.getElementById('semanticText').innerText = `You've revisited "${common}" multiple times. Ready for a Master Quiz?`;
+            }
+        }
     </script>
 </body>
 </html>
