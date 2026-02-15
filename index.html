@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 15%, #e6e9f0 40%, #eef1f5 70%, #f1f5f9 100%); margin: 0; display: flex; }
         .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.95); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
@@ -15,22 +15,29 @@
         .app-logo { height: 80px; width: auto; }
         .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; }
         
+        /* Interactive Flashcards */
         .flashcard { background: white; border: 2px solid black; border-radius: 40px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; cursor: pointer; perspective: 1000px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; margin-top: 20px; }
         .flashcard.flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; border-radius: 38px; }
         .card-back { transform: rotateY(180deg); background: #f8fafc; color: #6366f1; }
 
+        /* Mode Cards */
         .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; }
         .mode-card.active { background: #000 !important; color: #fff !important; }
         
+        /* Upload Area */
         .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.5); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
         .upload-compact.dragover { border-color: black; background: white; }
-        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
         
-        #aiResult { line-height: 1.8; color: #1e293b; }
-        #aiResult h3 { font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.25rem; color: #000; }
+        /* Input Area & Counter */
+        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 20px; right: 30px; }
 
+        /* Output Formatting */
+        #aiResult { line-height: 1.8; color: #1e293b; }
+        #aiResult h3 { font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.25rem; color: #000; }
+
+        /* Onboarding & Voice Animation */
         #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 1px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
         .recording { color: red; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -53,7 +60,7 @@
         <div class="mt-auto p-8 border-t">
             <div id="logged-in-ui" class="hidden">
                 <p id="user-display" class="font-bold text-lg mb-1"></p>
-                <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
+                <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
             </div>
             <div id="login-ui">
                 <button id="loginBtn" class="text-sm font-bold hover:underline">Sign in with Google</button>
@@ -74,7 +81,7 @@
 
             <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border border-black">
                 <div class="flex justify-between mb-2"><span class="text-xs font-bold uppercase">Questions</span> <span id="qVal" class="text-xs font-bold">5</span></div>
-                <input type="range" id="qSlider" min="3" max="10" value="5" class="w-full accent-black" oninput="document.getElementById('qVal').innerText = this.value">
+                <input type="range" id="qSlider" min="3" max="25" value="5" class="w-full accent-black" oninput="document.getElementById('qVal').innerText = this.value">
             </div>
 
             <label id="dropzone" class="upload-compact">
@@ -84,18 +91,18 @@
 
             <div class="relative">
                 <div class="absolute top-4 right-4 flex gap-2 z-10">
-                    <button id="voiceBtn" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold">🎤 VOICE</button>
-                    <button onclick="pasteText()" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold">📋 PASTE</button>
+                    <button id="voiceBtn" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold hover:bg-slate-200">🎤 VOICE</button>
+                    <button onclick="pasteText()" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold hover:bg-slate-200">📋 PASTE</button>
                 </div>
                 <textarea id="studyInput" class="glass-input" placeholder="Paste notes or start speaking..."></textarea>
                 <div id="wordCount" class="counter">0 / 2000 WORDS</div>
             </div>
 
-            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg">Start Session</button>
+            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:scale-[1.01] transition duration-200">Start Session</button>
 
             <div id="interactiveArea" class="hidden mt-10">
                 <div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden">
-                    <span class="text-xs font-bold uppercase opacity-40">Live Score</span>
+                    <span class="text-xs font-bold uppercase opacity-40 tracking-widest">Live Score</span>
                     <span id="scoreTracker" class="text-lg font-black tracking-tighter">0 / 0</span>
                 </div>
                 <div id="contentDisplay"></div>
@@ -108,6 +115,7 @@
     </main>
 
     <script type="module">
+        // --- Firebase Configuration ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -117,13 +125,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- Global State ---
         let currentMode = 'summary';
         let quizData = [];
         let currentIdx = 0;
         let score = 0;
         let userAnswers = [];
 
-        // --- Word Counter ---
+        // --- Word Counter Logic ---
         const studyInput = document.getElementById('studyInput');
         studyInput.oninput = () => {
             const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -132,14 +141,16 @@
                 document.getElementById('wordCount').style.color = 'red';
                 document.getElementById('generateBtn').disabled = true;
                 document.getElementById('generateBtn').style.opacity = '0.5';
+                document.getElementById('generateBtn').innerText = "Word Limit Exceeded";
             } else {
                 document.getElementById('wordCount').style.color = '#94a3b8';
                 document.getElementById('generateBtn').disabled = false;
                 document.getElementById('generateBtn').style.opacity = '1';
+                document.getElementById('generateBtn').innerText = "Start Session";
             }
         };
 
-        // --- RESTORED: Dropzone & File Upload Logic ---
+        // --- PDF & File Upload Logic (RESTORED) ---
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('fileInput');
@@ -151,7 +162,7 @@
 
         async function handleFiles(file) {
             if (!file) return;
-            document.getElementById('uploadStatus').innerText = "Loading...";
+            document.getElementById('uploadStatus').innerText = "Extracting text...";
             if (file.type === "application/pdf") {
                 const reader = new FileReader();
                 reader.onload = async function() {
@@ -164,16 +175,16 @@
                         text += content.items.map(s => s.str).join(" ") + " ";
                     }
                     studyInput.value = text;
-                    studyInput.oninput(); // Update word count
-                    document.getElementById('uploadStatus').innerText = "PDF Ready";
+                    studyInput.oninput(); // Trigger word count update
+                    document.getElementById('uploadStatus').innerText = "PDF Ready. Review text below.";
                 };
                 reader.readAsArrayBuffer(file);
             } else {
                 const reader = new FileReader();
                 reader.onload = (e) => { 
                     studyInput.value = e.target.result; 
-                    studyInput.oninput(); // Update word count
-                    document.getElementById('uploadStatus').innerText = "Text Ready"; 
+                    studyInput.oninput(); // Trigger word count update
+                    document.getElementById('uploadStatus').innerText = "Text File Ready."; 
                 };
                 reader.readAsText(file);
             }
@@ -184,19 +195,29 @@
             currentMode = m;
             document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
+            // Toggle visibility of the question amount slider
             document.getElementById('quizSliderContainer').classList.toggle('hidden', m !== 'quiz');
         };
 
-        // --- Voice Logic ---
+        // --- Voice-to-Text & Paste ---
         const voiceBtn = document.getElementById('voiceBtn');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             const rec = new SpeechRecognition();
-            voiceBtn.onclick = () => { rec.start(); voiceBtn.classList.add('recording'); };
-            rec.onresult = (e) => { studyInput.value += e.results[0][0].transcript; voiceBtn.classList.remove('recording'); studyInput.oninput(); };
+            voiceBtn.onclick = () => { rec.start(); voiceBtn.classList.add('recording'); voiceBtn.innerText = "🛑 LISTENING"; };
+            rec.onresult = (e) => { 
+                studyInput.value += e.results[0][0].transcript + " "; 
+                voiceBtn.classList.remove('recording'); 
+                voiceBtn.innerText = "🎤 VOICE";
+                studyInput.oninput(); 
+            };
         }
+        window.pasteText = async () => { 
+            studyInput.value += await navigator.clipboard.readText(); 
+            studyInput.oninput(); 
+        };
 
-        // --- Generation Logic ---
+        // --- Generation Router ---
         document.getElementById('generateBtn').onclick = async () => {
             if(!studyInput.value) return;
             document.getElementById('interactiveArea').classList.add('hidden');
@@ -205,36 +226,79 @@
             else await runStandard(studyInput.value);
         };
 
+        // --- Interactive Modes (Quiz/Flashcards) ---
         async function startInteractive(input) {
             const area = document.getElementById('interactiveArea');
             area.classList.remove('hidden');
-            document.getElementById('contentDisplay').innerHTML = "Generating...";
+            // Added visual loading state
+            document.getElementById('contentDisplay').innerHTML = `
+                <div class="flex flex-col items-center justify-center p-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
+                    <p class="font-bold">Clarity is analyzing your material...</p>
+                </div>`;
+            
             const count = document.getElementById('qSlider').value;
             const prompt = currentMode === 'quiz' 
-                ? `Create a ${count} question JSON array quiz based on: ${input}. Mix MCQ and open questions. format: [{"q":"","options":[],"correct":"","type":"mcq"}]`
-                : `Create 10 flashcards as a JSON array: [{"front":"","back":""}]. Based on: ${input}`;
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: prompt })});
-            const data = await res.json();
-            quizData = JSON.parse(data.choices[0].message.content);
-            currentIdx = 0; score = 0; userAnswers = [];
-            if(currentMode === 'quiz') { document.getElementById('scoreBox').classList.remove('hidden'); renderQuiz(); }
-            else { document.getElementById('scoreBox').classList.add('hidden'); renderFlashcard(); }
+                ? `ACT AS A DATA GENERATOR. Return ONLY a valid JSON array of ${count} questions. No conversational text. 
+                   Format: [{"q":"question text","options":["opt1","opt2","opt3","opt4"],"correct":"opt1","type":"mcq"}] 
+                   Based on: ${input}`
+                : `ACT AS A DATA GENERATOR. Return ONLY a valid JSON array of 15 flashcards. No conversational text. 
+                   Format: [{"front":"term","back":"definition"}] 
+                   Based on: ${input}`;
+
+            try {
+                const res = await fetch('/api/generate', { 
+                    method: 'POST', 
+                    body: JSON.stringify({ promptText: prompt })
+                });
+                const data = await res.json();
+                let rawContent = data.choices[0].message.content;
+
+                // JSON Extraction Filter (Fixes the "stuck on generating" bug)
+                const jsonMatch = rawContent.match(/\[[\s\S]*\]/);
+                if (jsonMatch) {
+                    quizData = JSON.parse(jsonMatch[0]);
+                } else {
+                    throw new Error("Invalid JSON format received from AI");
+                }
+
+                currentIdx = 0; score = 0; userAnswers = [];
+                if(currentMode === 'quiz') { 
+                    document.getElementById('scoreBox').classList.remove('hidden'); 
+                    renderQuiz(); 
+                } else { 
+                    document.getElementById('scoreBox').classList.add('hidden'); 
+                    renderFlashcard(); 
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('contentDisplay').innerHTML = `
+                    <div class="text-center p-10 bg-red-50 rounded-[30px]">
+                        <p class="text-red-500 font-bold mb-4">Generation failed or timed out.</p>
+                        <button onclick="location.reload()" class="bg-black text-white px-6 py-2 rounded-xl font-bold">Try Again</button>
+                    </div>`;
+            }
         }
 
         function renderQuiz() {
             const q = quizData[currentIdx];
             document.getElementById('scoreTracker').innerText = `${score} / ${quizData.length}`;
-            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black">
-                <p class="text-xs font-bold opacity-30 mb-2 uppercase">Question ${currentIdx + 1}</p>
-                <h3 class="text-2xl font-bold mb-6">${q.q}</h3>`;
-            if(q.type === 'mcq') q.options.forEach(o => html += `<button onclick="handleAns('${o}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50">${o}</button>`);
-            else html += `<input type="text" id="openAns" class="w-full border-b-2 border-black mb-6 p-2 outline-none"><button onclick="handleAns(document.getElementById('openAns').value)" class="bg-black text-white px-8 py-3 rounded-xl font-bold">Next</button>`;
+            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black shadow-xl">
+                <p class="text-xs font-bold opacity-30 mb-2 uppercase tracking-widest">Question ${currentIdx + 1}</p>
+                <h3 class="text-2xl font-bold mb-8">${q.q}</h3>`;
+            
+            if(q.type === 'mcq') {
+                q.options.forEach(o => html += `<button onclick="handleAns('${o}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50 hover:border-black transition">${o}</button>`);
+            } else {
+                html += `<input type="text" id="openAns" class="w-full border-b-2 border-black mb-8 p-3 outline-none text-lg" placeholder="Type your answer...">
+                         <button onclick="handleAns(document.getElementById('openAns').value)" class="bg-black text-white px-8 py-4 rounded-xl font-bold">Submit Answer</button>`;
+            }
             document.getElementById('contentDisplay').innerHTML = html;
         }
 
         window.handleAns = (ans) => {
             const correct = quizData[currentIdx].correct;
-            if(ans.toLowerCase() === correct.toLowerCase()) score++;
+            if(ans.toLowerCase().trim() === correct.toLowerCase().trim()) score++;
             userAnswers.push({ q: quizData[currentIdx].q, user: ans, correct });
             currentIdx++;
             if(currentIdx < quizData.length) renderQuiz();
@@ -242,13 +306,23 @@
         };
 
         async function finishQuiz() {
-            document.getElementById('contentDisplay').innerHTML = "Analyzing...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Analyze: ${JSON.stringify(userAnswers)}. Give a performance summary and "How to Improve" tips.` })});
+            document.getElementById('contentDisplay').innerHTML = `
+                <div class="flex flex-col items-center justify-center p-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
+                    <p class="font-bold">Grading your answers and writing advice...</p>
+                </div>`;
+            
+            const res = await fetch('/api/generate', { 
+                method: 'POST', 
+                body: JSON.stringify({ promptText: `Analyze these user quiz results: ${JSON.stringify(userAnswers)}. Give a brief encouraging performance summary and 3 bullet points on "How to Improve" based on what they got wrong.` })
+            });
             const data = await res.json();
-            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black">
-                <h2 class="text-3xl font-black mb-4">Results: ${score} / ${quizData.length}</h2>
-                <div class="prose">${marked.parse(data.choices[0].message.content)}</div>
-                <button onclick="location.reload()" class="mt-8 font-bold underline">Try Again</button>
+            
+            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-12 rounded-[40px] border-2 border-black shadow-2xl">
+                <h2 class="text-4xl font-black mb-2 tracking-tighter">Results</h2>
+                <p class="text-2xl font-bold text-indigo-600 mb-8">${score} / ${quizData.length} Correct</p>
+                <div class="prose max-w-none mb-8">${marked.parse(data.choices[0].message.content)}</div>
+                <button onclick="location.reload()" class="bg-black text-white px-8 py-4 rounded-xl font-bold">Try a new topic</button>
             </div>`;
         }
 
@@ -256,42 +330,63 @@
             const f = quizData[currentIdx];
             document.getElementById('contentDisplay').innerHTML = `
                 <div class="flashcard" onclick="this.classList.toggle('flipped')">
-                    <div class="card-face card-front"><p class="text-xl font-bold">${f.front}</p></div>
-                    <div class="card-face card-back"><p class="text-xl font-bold">${f.back}</p></div>
+                    <div class="card-face card-front"><p class="text-2xl font-bold">${f.front}</p></div>
+                    <div class="card-face card-back"><p class="text-xl font-medium">${f.back}</p></div>
                 </div>
-                <div class="flex justify-between mt-6 px-4">
-                    <button onclick="currentIdx > 0 ? (currentIdx--, renderFlashcard()) : null" class="font-bold opacity-40">PREV</button>
-                    <span class="font-black">${currentIdx + 1} / ${quizData.length}</span>
-                    <button onclick="currentIdx < quizData.length -1 ? (currentIdx++, renderFlashcard()) : null" class="font-bold">NEXT</button>
+                <div class="flex justify-between items-center mt-8 px-4">
+                    <button onclick="currentIdx > 0 ? (currentIdx--, renderFlashcard()) : null" class="font-bold text-sm bg-white border px-4 py-2 rounded-lg ${currentIdx === 0 ? 'opacity-30' : 'hover:bg-slate-50'}">PREV</button>
+                    <span class="font-black text-lg">${currentIdx + 1} / ${quizData.length}</span>
+                    <button onclick="currentIdx < quizData.length -1 ? (currentIdx++, renderFlashcard()) : null" class="font-bold text-sm bg-white border px-4 py-2 rounded-lg ${currentIdx === quizData.length - 1 ? 'opacity-30' : 'hover:bg-slate-50'}">NEXT</button>
                 </div>`;
         }
 
+        // --- Standard Modes (Deep Dive & Speed Review) ---
         async function runStandard(input) {
-            const out = document.getElementById('outputArea'); out.classList.remove('hidden');
-            document.getElementById('aiResult').innerHTML = "Writing...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Mode: ${currentMode}. Bullet points, bold headers. Content: ${input}` })});
+            const out = document.getElementById('outputArea'); 
+            out.classList.remove('hidden');
+            document.getElementById('aiResult').innerHTML = `<div class="animate-pulse flex space-x-4"><div class="flex-1 space-y-4 py-1"><div class="h-4 bg-slate-200 rounded w-3/4"></div><div class="h-4 bg-slate-200 rounded"></div><div class="h-4 bg-slate-200 rounded w-5/6"></div></div></div>`;
+            
+            let prompt = `Mode: ${currentMode}. Use bullet points and clear bold headings. Content: ${input}`;
+            if (currentMode === 'speed') prompt = `Mode: Speed Review. Give me exactly 3 to 5 extremely concise, high-level bullet points summarizing this content: ${input}`;
+
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: prompt })});
             const data = await res.json();
             document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
         }
 
-        // --- Auth & Profile ---
-        onAuthStateChanged(auth, async (u) => {
-            if(u) {
+        // --- Firebase Auth & Nickname Logic ---
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
                 document.getElementById('login-ui').classList.add('hidden');
                 document.getElementById('logged-in-ui').classList.remove('hidden');
                 document.getElementById('archive-link').classList.remove('hidden');
-                const s = await getDoc(doc(db, "users", u.uid));
-                if(s.exists()) document.getElementById('user-display').innerText = s.data().nickname;
-                else document.getElementById('onboarding-ui').style.display = 'block';
+                
+                // Fetch user specific nickname from firestore database
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if(snap.exists() && snap.data().nickname) {
+                    document.getElementById('user-display').innerText = snap.data().nickname;
+                    document.getElementById('onboarding-ui').style.display = 'none';
+                } else {
+                    document.getElementById('onboarding-ui').style.display = 'block';
+                }
+            } else {
+                document.getElementById('login-ui').classList.remove('hidden');
+                document.getElementById('logged-in-ui').classList.add('hidden');
+                document.getElementById('archive-link').classList.add('hidden');
             }
         });
+
         document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+        
+        document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
         document.getElementById('saveNickBtn').onclick = async () => {
-            const n = document.getElementById('nickInput').value;
-            if(n) await setDoc(doc(db, "users", auth.currentUser.uid), {nickname: n});
-            location.reload();
+            const nickname = document.getElementById('nickInput').value;
+            if(nickname && auth.currentUser) {
+                await setDoc(doc(db, "users", auth.currentUser.uid), { nickname: nickname });
+                location.reload();
+            }
         };
-        window.pasteText = async () => { studyInput.value = await navigator.clipboard.readText(); studyInput.oninput(); };
     </script>
 </body>
 </html>
