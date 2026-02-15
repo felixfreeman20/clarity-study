@@ -9,11 +9,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 15%, #e6e9f0 40%, #eef1f5 70%, #f1f5f9 100%); margin: 0; display: flex; }
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.95); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
-        .logo-box { height: 150px; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .app-logo { height: 80px; width: auto; }
-        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; }
+        /* Feature 2: Aura Backgrounds */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f8fafc; 
+            margin: 0; 
+            display: flex; 
+            overflow-x: hidden;
+        }
+        .aura {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: drift 20s infinite alternate;
+        }
+        .aura-1 { background: #e2e8f0; top: -10%; left: -10%; }
+        .aura-2 { background: #cbd5e1; bottom: -10%; right: -10%; animation-delay: -5s; }
+        
+        @keyframes drift {
+            from { transform: translate(0,0) scale(1); }
+            to { transform: translate(100px, 100px) scale(1.1); }
+        }
+
+        /* Feature 3: The Reveal Animation */
+        .reveal-up {
+            animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
+        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; }
         
         .flashcard { background: white; border: 2px solid black; border-radius: 40px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; cursor: pointer; perspective: 1000px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; margin-top: 20px; }
         .flashcard.flipped { transform: rotateY(180deg); }
@@ -26,18 +58,24 @@
         .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.5); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
         .upload-compact.dragover { border-color: black; background: white; }
         
-        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
+        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 20px; right: 30px; }
 
-        #aiResult { line-height: 1.8; color: #1e293b; }
         #aiResult h3 { font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; font-size: 1.25rem; color: #000; }
 
         #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 1px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
         .recording { color: red; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        /* Next Step Buttons */
+        .next-step-btn { background: white; border: 1px solid black; padding: 12px 20px; border-radius: 15px; font-size: 12px; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        .next-step-btn:hover { background: black; color: white; transform: translateY(-2px); }
     </style>
 </head>
 <body>
+    <div class="aura aura-1"></div>
+    <div class="aura aura-2"></div>
+
     <div id="onboarding-ui">
         <p class="text-[10px] font-bold uppercase tracking-widest mb-2">New Profile</p>
         <h3 class="text-xl font-bold mb-4">What should we call you?</h3>
@@ -73,7 +111,7 @@
                 <div class="mode-card" onclick="setMode('flash', this)">📇<p class="text-[10px] font-bold mt-1 uppercase">Flashcards</p></div>
             </div>
 
-            <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border border-black">
+            <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border border-black reveal-up">
                 <div class="flex justify-between mb-2"><span class="text-xs font-bold uppercase">Questions</span> <span id="qVal" class="text-xs font-bold">5</span></div>
                 <input type="range" id="qSlider" min="3" max="25" value="5" class="w-full accent-black" oninput="document.getElementById('qVal').innerText = this.value">
             </div>
@@ -92,9 +130,9 @@
                 <div id="wordCount" class="counter">0 / 2000 WORDS</div>
             </div>
 
-            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg">Start Session</button>
+            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition">Start Session</button>
 
-            <div id="interactiveArea" class="hidden mt-10">
+            <div id="interactiveArea" class="hidden mt-10 reveal-up">
                 <div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden">
                     <span class="text-xs font-bold uppercase opacity-40">Questions Progress</span>
                     <span id="scoreTracker" class="text-lg font-black tracking-tighter">1 / 5</span>
@@ -102,8 +140,12 @@
                 <div id="contentDisplay"></div>
             </div>
 
-            <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border shadow-sm">
+            <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border shadow-sm reveal-up">
                 <div id="aiResult" class="prose max-w-none"></div>
+                <div id="nextSteps" class="mt-10 pt-8 border-t border-slate-100 hidden">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-4 opacity-40">Continue Learning</p>
+                    <div id="nextStepsButtons" class="flex flex-wrap gap-3"></div>
+                </div>
             </div>
         </div>
     </main>
@@ -124,22 +166,17 @@
         let score = 0;
         let userAnswers = [];
 
-        // Word Count Logic
+        // Word Count
         const studyInput = document.getElementById('studyInput');
         studyInput.oninput = () => {
             const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             document.getElementById('wordCount').innerText = `${words} / 2000 WORDS`;
             const btn = document.getElementById('generateBtn');
-            if (words > 2000) {
-                document.getElementById('wordCount').style.color = 'red';
-                btn.disabled = true; btn.style.opacity = '0.5';
-            } else {
-                document.getElementById('wordCount').style.color = '#94a3b8';
-                btn.disabled = false; btn.style.opacity = '1';
-            }
+            btn.disabled = words > 2000;
+            btn.style.opacity = words > 2000 ? '0.5' : '1';
         };
 
-        // PDF / File Logic
+        // File Logic
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('fileInput');
@@ -148,7 +185,7 @@
 
         async function handleFiles(file) {
             if (!file) return;
-            document.getElementById('uploadStatus').innerText = "Reading...";
+            document.getElementById('uploadStatus').innerText = "Parsing...";
             const reader = new FileReader();
             if (file.type === "application/pdf") {
                 reader.onload = async function() {
@@ -196,7 +233,7 @@
         async function startInteractive(input) {
             const area = document.getElementById('interactiveArea');
             area.classList.remove('hidden');
-            document.getElementById('contentDisplay').innerHTML = "Analyzing content...";
+            document.getElementById('contentDisplay').innerHTML = "Crafting Session...";
             const count = document.getElementById('qSlider').value;
             const prompt = currentMode === 'quiz' 
                 ? `JSON ONLY. Create ${count} questions. Format: [{"q":"","options":[],"correct":"","type":"mcq"}] Based on: ${input}`
@@ -204,8 +241,7 @@
 
             const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: prompt })});
             const data = await res.json();
-            const raw = data.choices[0].message.content;
-            const jsonMatch = raw.match(/\[[\s\S]*\]/);
+            const jsonMatch = data.choices[0].message.content.match(/\[[\s\S]*\]/);
             quizData = JSON.parse(jsonMatch[0]);
             currentIdx = 0; score = 0; userAnswers = [];
             if(currentMode === 'quiz') { document.getElementById('scoreBox').classList.remove('hidden'); renderQuiz(); }
@@ -215,30 +251,29 @@
         function renderQuiz() {
             const q = quizData[currentIdx];
             document.getElementById('scoreTracker').innerText = `${currentIdx + 1} / ${quizData.length}`;
-            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black shadow-lg">
+            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black">
                 <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Question ${currentIdx + 1}</p>
                 <h3 class="text-2xl font-bold mb-6">${q.q}</h3>`;
-            if(q.type === 'mcq') q.options.forEach(o => html += `<button onclick="handleAns('${o.replace(/'/g, "\\'")}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50">${o}</button>`);
+            if(q.type === 'mcq') q.options.forEach(o => html += `<button onclick="handleAns('${o.replace(/'/g, "\\'")}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50 transition">${o}</button>`);
             else html += `<input type="text" id="openAns" class="w-full border-b-2 border-black mb-6 p-2 outline-none"><button onclick="handleAns(document.getElementById('openAns').value)" class="bg-black text-white px-8 py-3 rounded-xl font-bold">Next</button>`;
             document.getElementById('contentDisplay').innerHTML = html;
         }
 
         window.handleAns = (ans) => {
-            const correct = quizData[currentIdx].correct;
-            if(ans.toLowerCase().trim() === correct.toLowerCase().trim()) score++;
-            userAnswers.push({ q: quizData[currentIdx].q, user: ans, correct });
+            if(ans.toLowerCase().trim() === quizData[currentIdx].correct.toLowerCase().trim()) score++;
+            userAnswers.push({ q: quizData[currentIdx].q, user: ans, correct: quizData[currentIdx].correct });
             if(currentIdx < quizData.length - 1) { currentIdx++; renderQuiz(); }
             else { finishQuiz(); }
         };
 
         async function finishQuiz() {
             document.getElementById('contentDisplay').innerHTML = "Grading...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. Give a 2-sentence summary and 3 bullet points for improvement.` })});
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. 2-sentence summary and 3 bullet points.` })});
             const data = await res.json();
             document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black">
-                <h2 class="text-3xl font-black mb-2">Score: ${score} / ${quizData.length}</h2>
+                <h2 class="text-3xl font-black mb-2">${score} / ${quizData.length}</h2>
                 <div class="prose text-sm">${marked.parse(data.choices[0].message.content)}</div>
-                <button onclick="location.reload()" class="mt-6 font-bold underline">Start New Topic</button>
+                <button onclick="location.reload()" class="mt-6 font-bold underline">Try New Topic</button>
             </div>`;
         }
 
@@ -260,12 +295,38 @@
 
         async function runStandard(input) {
             const out = document.getElementById('outputArea'); out.classList.remove('hidden');
-            document.getElementById('aiResult').innerHTML = "Writing...";
-            let p = `Mode: ${currentMode}. Bullet points, bold headers. Content: ${input}`;
-            if(currentMode === 'speed') p = `Give 3-5 concise high-level bullet points for: ${input}`;
+            document.getElementById('aiResult').innerHTML = "Thinking...";
+            document.getElementById('nextSteps').classList.add('hidden');
+            
+            // Feature 4: Requesting Related Topics
+            let p = `Mode: ${currentMode}. Bullet points, bold headers. CONTENT: ${input}. 
+                     At the very end of your response, add a section called "NEXT_TOPICS:" followed by 3 comma-separated concepts for further study.`;
+            
             const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: p })});
             const data = await res.json();
-            document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
+            let text = data.choices[0].message.content;
+            
+            // Parse out the next steps
+            const parts = text.split("NEXT_TOPICS:");
+            document.getElementById('aiResult').innerHTML = marked.parse(parts[0]);
+            
+            if(parts[1]) {
+                const topics = parts[1].split(",").map(t => t.trim());
+                const btnContainer = document.getElementById('nextStepsButtons');
+                btnContainer.innerHTML = "";
+                topics.forEach(topic => {
+                    const b = document.createElement('button');
+                    b.className = "next-step-btn";
+                    b.innerText = `Dive into: ${topic}`;
+                    b.onclick = () => { 
+                        studyInput.value = `Explain ${topic} in depth.`; 
+                        window.scrollTo({top: 0, behavior: 'smooth'});
+                        studyInput.oninput();
+                    };
+                    btnContainer.appendChild(b);
+                });
+                document.getElementById('nextSteps').classList.remove('hidden');
+            }
         }
 
         onAuthStateChanged(auth, async (u) => {
