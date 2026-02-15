@@ -10,16 +10,30 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; }
         
-        /* FEATURE: AURA BACKGROUNDS (Consistent with Workspace) */
-        .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; animation: drift 25s infinite alternate ease-in-out; }
+        /* AURA BACKGROUNDS */
+        .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.25; animation: drift 25s infinite alternate ease-in-out; }
         .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
         .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
         @keyframes drift { from { transform: translate(0,0); } to { transform: translate(100px, 100px); } }
 
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
-        .main-content { flex: 1; margin-left: 320px; padding: 60px 80px; }
+        /* SIDEBAR MATCHED TO WORKSPACE */
+        .sidebar { 
+            width: 320px; 
+            height: 100vh; 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(30px); 
+            border-right: 1px solid rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 50; 
+        }
 
-        /* FEATURE 1: KNOWLEDGE GALLERY CARDS */
+        .main-content { flex: 1; margin-left: 320px; padding: 60px 100px; }
+
+        /* KNOWLEDGE GALLERY */
         .knowledge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 40px; }
         .knowledge-card { 
             background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 30px; padding: 30px; 
@@ -27,19 +41,27 @@
             display: flex; flex-direction: column; height: 320px;
         }
         .knowledge-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(99, 102, 241, 0.1); border-color: #6366f1; }
+        
         .mode-badge { position: absolute; top: 20px; right: 20px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; background: #f1f5f9; }
 
-        /* FEATURE 3: GLASS SEARCH */
+        /* GLASS SEARCH */
         .search-container { position: relative; max-width: 600px; margin-bottom: 40px; }
         .glass-search { width: 100%; padding: 18px 25px 18px 55px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); outline: none; font-weight: 500; transition: 0.3s; }
-        .glass-search:focus { border-color: black; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .glass-search:focus { border-color: black; }
         .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); opacity: 0.3; }
 
-        /* FEATURE 4: SEMANTIC LINKING CHIPS */
-        .semantic-banner { background: #000; color: white; border-radius: 24px; padding: 25px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; display: none; }
-        .link-chip { background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; margin-right: 8px; }
+        /* SEMANTIC BANNER */
+        .semantic-banner { background: #000; color: white; border-radius: 24px; padding: 25px; margin-bottom: 40px; display: none; align-items: center; justify-content: space-between; }
+        .link-chip { background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; margin-right: 8px; }
 
-        .empty-state { text-align: center; padding: 100px 0; opacity: 0.3; }
+        /* AUDIO UI (Consistent with Workspace) */
+        .sound-pill { cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); background: white; padding: 8px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .sound-pill.active { border-color: black; background: black; color: white; }
+        .visualizer-bar { width: 3px; background: currentColor; animation: musicBars 0.6s infinite ease-in-out; }
+        @keyframes musicBars { 0%, 100% { height: 4px; } 50% { height: 12px; } }
+
+        .reveal-up { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes revealUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -47,11 +69,30 @@
     <div class="aura aura-2"></div>
 
     <aside class="sidebar">
-        <div class="p-10"><img src="Clarity Logo.png" alt="Clarity" class="w-32"></div>
-        <nav class="px-6">
+        <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
+        
+        <nav class="nav-area px-6 mb-8">
             <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>✦</span> Workspace</a>
             <a href="saved.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white shadow-xl"><span>📁</span> Archive</a>
         </nav>
+
+        <div class="px-8 mb-8">
+            <p class="text-[9px] font-black uppercase tracking-widest mb-4 opacity-30">Flow State Audio</p>
+            <div id="lofiPill" class="sound-pill" onclick="toggleAudio('lofi')">
+                <div class="visualizer-bar hidden"></div> ☕ Lofi Study
+            </div>
+            <div id="rainPill" class="sound-pill" onclick="toggleAudio('rain')">
+                <div class="visualizer-bar hidden"></div> 🌧️ Rain
+            </div>
+            <audio id="audioPlayer" loop></audio>
+        </div>
+
+        <div class="mt-auto p-8 border-t bg-white/50">
+            <div id="logged-in-ui" class="hidden">
+                <p id="user-display" class="font-bold text-lg mb-1"></p>
+                <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
+            </div>
+        </div>
     </aside>
 
     <main class="main-content">
@@ -63,9 +104,9 @@
         <div id="semanticLinkArea" class="semantic-banner reveal-up">
             <div>
                 <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-1">AI Insight</p>
-                <h3 id="semanticText" class="text-lg font-bold">You've mastered 3 topics in Biology. Ready for a challenge?</h3>
+                <h3 id="semanticText" class="text-lg font-bold"></h3>
             </div>
-            <button class="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm">Create Master Quiz</button>
+            <button class="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm">Challenge Me</button>
         </div>
 
         <div class="search-container">
@@ -73,12 +114,9 @@
             <input type="text" id="librarySearch" class="glass-search" placeholder="Search topics, keywords, or modes...">
         </div>
 
-        <div id="gridContainer" class="knowledge-grid">
-            </div>
-
-        <div id="emptyState" class="empty-state hidden">
-            <p class="text-xl font-bold">Your library is empty.</p>
-            <p class="text-sm">Start a deep dive to save your first insight.</p>
+        <div id="gridContainer" class="knowledge-grid"></div>
+        <div id="emptyState" class="hidden py-20 text-center opacity-30">
+            <p class="text-xl font-bold">The library is quiet...</p>
         </div>
     </main>
 
@@ -94,17 +132,41 @@
 
         let allLogs = [];
 
+        // AUDIO TOGGLE (Identical to Workspace)
+        window.toggleAudio = (type) => {
+            const player = document.getElementById('audioPlayer');
+            const lofi = document.getElementById('lofiPill');
+            const rain = document.getElementById('rainPill');
+            const urls = { 
+                lofi: 'https://stream.zeno.fm/0r0xa792kwzuv', 
+                rain: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg'
+            };
+
+            if(player.src === urls[type] && !player.paused) {
+                player.pause();
+                lofi.classList.remove('active'); rain.classList.remove('active');
+                lofi.querySelector('.visualizer-bar').classList.add('hidden');
+                rain.querySelector('.visualizer-bar').classList.add('hidden');
+            } else {
+                player.src = urls[type];
+                player.play();
+                lofi.classList.toggle('active', type === 'lofi');
+                rain.classList.toggle('active', type === 'rain');
+                lofi.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'lofi');
+                rain.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'rain');
+            }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                document.getElementById('user-display').innerText = user.displayName || "User";
                 const q = query(collection(db, "study_logs"), where("userId", "==", user.uid), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
                 
                 if(querySnapshot.empty) {
                     document.getElementById('emptyState').classList.remove('hidden');
                 } else {
-                    querySnapshot.forEach((doc) => {
-                        allLogs.push({ id: doc.id, ...doc.data() });
-                    });
+                    querySnapshot.forEach((doc) => allLogs.push({ id: doc.id, ...doc.data() }));
                     renderLibrary(allLogs);
                     checkSemanticLinks(allLogs);
                 }
@@ -118,15 +180,13 @@
             container.innerHTML = "";
             logs.forEach(log => {
                 const date = log.timestamp?.toDate().toLocaleDateString() || "Recent";
-                const preview = log.content.substring(0, 150) + "...";
-                
                 const card = document.createElement('div');
                 card.className = "knowledge-card reveal-up";
                 card.innerHTML = `
                     <div class="mode-badge">${log.mode}</div>
                     <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-4">${date}</p>
-                    <h3 class="text-xl font-bold mb-3 line-clamp-2">${log.topic || "Untitled Session"}</h3>
-                    <div class="text-sm text-slate-500 leading-relaxed mb-6 overflow-hidden">${preview}</div>
+                    <h3 class="text-xl font-bold mb-3 line-clamp-2">${log.topic || "Session"}</h3>
+                    <div class="text-sm text-slate-500 leading-relaxed mb-6 overflow-hidden">${log.content.substring(0, 150)}...</div>
                     <div class="mt-auto flex gap-2">
                         ${log.tags ? log.tags.map(t => `<span class="link-chip">#${t}</span>`).join('') : ''}
                     </div>
@@ -135,27 +195,23 @@
             });
         }
 
-        // FEATURE 3: SEARCH LOGIC
         document.getElementById('librarySearch').oninput = (e) => {
             const val = e.target.value.toLowerCase();
             const filtered = allLogs.filter(log => 
                 log.topic?.toLowerCase().includes(val) || 
-                log.content?.toLowerCase().includes(val) ||
-                log.mode?.toLowerCase().includes(val)
+                log.content?.toLowerCase().includes(val)
             );
             renderLibrary(filtered);
         };
 
-        // FEATURE 4: SEMANTIC LINKING (Find common themes)
         function checkSemanticLinks(logs) {
             const topics = logs.map(l => l.topic?.toLowerCase()).filter(Boolean);
-            const frequency = {};
-            topics.forEach(t => { frequency[t] = (frequency[t] || 0) + 1; });
-            
-            const common = Object.keys(frequency).find(key => frequency[key] >= 3);
+            const freq = {};
+            topics.forEach(t => { freq[t] = (freq[t] || 0) + 1; });
+            const common = Object.keys(freq).find(key => freq[key] >= 3);
             if(common) {
                 document.getElementById('semanticLinkArea').style.display = 'flex';
-                document.getElementById('semanticText').innerText = `You've revisited "${common}" multiple times. Ready for a Master Quiz?`;
+                document.getElementById('semanticText').innerText = `You've revisited "${common}" 3 times. Ready for a Master Quiz?`;
             }
         }
     </script>
