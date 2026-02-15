@@ -5,25 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Inter', sans-serif; background: #fff; color: #1a1a1a; margin: 0; overflow-x: hidden; }
         .orb { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; }
         .orb-1 { top: -100px; right: -100px; background: #4f46e5; }
         .orb-2 { bottom: -100px; left: -100px; background: #ec4899; }
         .workspace-container { max-width: 800px; margin: 0 auto; padding: 100px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* Sidebar Styling */
         .sidebar { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; border-right: 1px solid #f0f0f0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 40px 24px; z-index: 40; }
         .logo-container { position: absolute; top: 35px; left: 50%; transform: translateX(-50%); z-index: 50; }
         .app-logo { height: 85px; width: auto; }
+
+        /* UI Elements */
         .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; margin-bottom: 30px; }
         .mode-card { background: #fff; border: 1px solid #f0f0f0; padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.2s; }
         .mode-card.active { background: #000; color: #fff; border-color: #000; }
-        .quiz-config { width: 100%; background: #fafafa; padding: 15px 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #eee; display: none; }
-        input[type="range"] { accent-color: #000; width: 100%; cursor: pointer; }
-        .glass-input { width: 100%; height: 300px; border-radius: 24px; border: 1px solid #f0f0f0; background: rgba(255, 255, 255, 0.5); font-size: 1.1rem; outline: none; padding: 25px; line-height: 1.6; transition: 0.3s; resize: none; }
+        
+        /* Upload Area */
+        .upload-zone { width: 100%; border: 2px dashed #eee; border-radius: 24px; padding: 20px; text-align: center; margin-bottom: 20px; transition: 0.3s; cursor: pointer; }
+        .upload-zone:hover { border-color: #000; background: #fafafa; }
+
+        .glass-input { width: 100%; height: 250px; border-radius: 24px; border: 1px solid #f0f0f0; background: rgba(255, 255, 255, 0.5); font-size: 1.1rem; outline: none; padding: 25px; line-height: 1.6; transition: 0.3s; resize: none; }
         .btn-primary { background: #000; color: #fff; padding: 18px 0; border-radius: 18px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; }
+        
+        /* Result Area with Pulse Loading */
         #outputArea { margin-top: 40px; width: 100%; padding: 35px; border-radius: 25px; border: 1px solid #eee; background: #fff; display: none; }
-        .google-btn { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; border: 1px solid #eee; cursor: pointer; transition: 0.2s; width: 100%; background: white; }
+        .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+
+        /* Markdown Styling Overrides */
+        #aiResult h1, #aiResult h2 { font-weight: 700; margin-top: 20px; margin-bottom: 10px; }
+        #aiResult ul { list-style-type: disc; padding-left: 20px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -36,14 +53,12 @@
             <a href="index.html" class="flex items-center gap-3 font-bold text-black text-lg italic">✦ Workspace</a>
             <a href="saved.html" class="flex items-center gap-3 text-gray-400 hover:text-black transition text-lg">📁 Archive</a>
         </nav>
-        <div class="pt-6 border-t border-gray-100">
+        <div class="pt-6 border-t border-gray-100" id="user-section">
             <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-lg text-black">Alon</p>
+                <p id="user-display" class="font-bold text-lg text-black">User</p>
                 <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="google-btn">
-                <span class="text-sm font-medium">Login with Google</span>
-            </button>
+            <button id="loginBtn" class="w-full text-left text-sm font-medium text-gray-400">Login with Google</button>
         </div>
     </aside>
 
@@ -57,15 +72,12 @@
             <div class="mode-card" data-mode="glossary">🏷️<p class="font-bold text-[10px] mt-2 uppercase">Glossary</p></div>
         </div>
 
-        <div id="quizOptions" class="quiz-config">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-[10px] font-bold uppercase text-gray-400">Questions</span>
-                <span id="countDisplay" class="font-bold text-black">10</span>
-            </div>
-            <input type="range" id="questionCount" min="5" max="20" value="10">
-        </div>
+        <label class="upload-zone" id="dropZone">
+            <span class="text-sm font-medium text-gray-500" id="uploadText">Drop a PDF or Text file here</span>
+            <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
+        </label>
 
-        <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
+        <textarea id="studyInput" class="glass-input" placeholder="Paste notes..."></textarea>
         <button id="generateBtn" class="btn-primary">Generate Session</button>
 
         <div id="outputArea">
@@ -73,7 +85,7 @@
                 <span class="text-[10px] font-bold uppercase text-gray-300">Result</span>
                 <button id="saveBtn" class="text-sm font-bold text-blue-600">Save to Archive</button>
             </div>
-            <div id="aiResult" class="prose max-w-none text-black whitespace-pre-wrap"></div>
+            <div id="aiResult" class="prose prose-slate max-w-none text-black"></div>
         </div>
     </main>
 
@@ -89,6 +101,7 @@
 
         let currentMode = 'summary';
 
+        // Auth Logic
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('loginBtn').classList.add('hidden');
@@ -99,8 +112,7 @@
         });
 
         document.getElementById('loginBtn').onclick = async () => {
-            const provider = new GoogleAuthProvider();
-            const result = await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, new GoogleAuthProvider());
             const userRef = doc(db, "users", result.user.uid);
             const userDoc = await getDoc(userRef);
             if (!userDoc.exists()) {
@@ -110,53 +122,81 @@
             window.location.reload();
         };
 
-        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
+        // 3. PDF and Text File Upload Logic
+        const fileInput = document.getElementById('fileInput');
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('uploadText').innerText = `Reading ${file.name}...`;
 
-        document.querySelectorAll('.mode-card').forEach(card => {
-            card.onclick = () => {
-                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                currentMode = card.dataset.mode;
-                document.getElementById('quizOptions').style.display = currentMode === 'quiz' ? 'block' : 'none';
-            };
-        });
+            if (file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let fullText = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        fullText += content.items.map(item => item.str).join(" ") + "\n";
+                    }
+                    document.getElementById('studyInput').value = fullText;
+                    document.getElementById('uploadText').innerText = "PDF Loaded!";
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('studyInput').value = e.target.result;
+                    document.getElementById('uploadText').innerText = "Text Loaded!";
+                };
+                reader.readAsText(file);
+            }
+        };
 
-        document.getElementById('questionCount').oninput = (e) => document.getElementById('countDisplay').innerText = e.target.value;
-
-        // UPDATED FETCH LOGIC TO HANDLE ERRORS CLEARLY
+        // Generate Logic with Markdown and Loading state
         document.getElementById('generateBtn').onclick = async () => {
             const text = document.getElementById('studyInput').value;
             if(!text) return;
+            
+            const outArea = document.getElementById('outputArea');
             const resDiv = document.getElementById('aiResult');
-            document.getElementById('outputArea').style.display = 'block';
-            resDiv.innerText = "Clarity is thinking...";
+            
+            outArea.style.display = 'block';
+            resDiv.innerHTML = `<div class="loading-pulse text-gray-400 italic">Clarity is distilling your notes...</div>`;
 
             try {
-                const qCount = document.getElementById('questionCount').value;
-                const promptText = currentMode === 'quiz' ? `Create a ${qCount}-question quiz about: ${text}` : `Create a ${currentMode} of: ${text}`;
-                
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText: promptText })
+                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Notes: ${text}` })
                 });
 
                 const data = await response.json();
                 
                 if (response.ok) {
-                    resDiv.innerText = data.choices[0].message.content;
+                    // APPLY MARKDOWN STYLING HERE
+                    resDiv.innerHTML = marked.parse(data.choices[0].message.content);
                 } else {
-                    // Show error message as text instead of [object Object]
-                    resDiv.innerHTML = `<span class="text-red-500 font-bold">Bridge Error:</span><br>${data.error || 'Unknown error occurred.'}`;
+                    resDiv.innerText = "Error: " + data.error;
                 }
             } catch (e) {
-                resDiv.innerText = "Connection Error. Please ensure you are viewing this on your Vercel URL.";
+                resDiv.innerText = "Connection Error.";
             }
         };
 
+        // UI Tabs
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.onclick = () => {
+                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentMode = card.dataset.mode;
+            };
+        });
+
         document.getElementById('saveBtn').onclick = async () => {
             if (!auth.currentUser) return alert("Login to save!");
-            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerText, mode: currentMode, timestamp: serverTimestamp() });
+            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerHTML, mode: currentMode, timestamp: serverTimestamp() });
             alert("Saved to Archive!");
         };
     </script>
