@@ -19,22 +19,25 @@
         .workspace-container { flex: 1; margin-left: 320px; padding: 100px 120px; }
         .content-card { max-width: 900px; margin: 0 auto; }
         
-        /* Fixed Buttons */
         .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; }
         .mode-card.active { background: #000 !important; color: #fff !important; }
         
+        /* Minimalist PDF Upload */
+        .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.5); padding: 12px; border-radius: 16px; border: 1px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; font-size: 13px; color: #64748b; }
+        .upload-compact:hover { border-color: #000; color: #000; }
+
+        .input-wrapper { position: relative; width: 100%; }
         .glass-input { width: 100%; height: 320px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 35px; resize: none; outline: none; font-size: 1.1rem; }
+        
+        /* Paste Button Positioned Top Right */
+        .paste-btn { position: absolute; top: 20px; right: 25px; background: #f1f5f9; color: #000; padding: 6px 14px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; border: 1px solid rgba(0,0,0,0.05); z-index: 10; }
+        .paste-btn:hover { background: #000; color: #fff; }
+
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 30px; right: 40px; }
         .counter.limit { color: #ef4444; }
         
-        /* PDF Uploader Style */
-        .upload-zone { width: 100%; border: 2px dashed rgba(0,0,0,0.1); border-radius: 24px; padding: 25px; text-align: center; margin-bottom: 25px; cursor: pointer; color: #64748b; transition: 0.2s; }
-        .upload-zone:hover { border-color: #000; color: #000; }
-
         .btn-primary { background: #000; color: #fff; padding: 22px; border-radius: 24px; font-weight: 600; width: 100%; margin-top: 30px; cursor: pointer; border: none; }
         .user-footer { padding: 40px 30px; border-top: 1px solid rgba(0,0,0,0.03); }
-        
-        /* Quiz Hidden Answer */
         .hidden-ans { display: none; color: #10b981; font-weight: bold; margin-top: 8px; }
     </style>
 </head>
@@ -53,23 +56,24 @@
 
     <main class="workspace-container">
         <div class="content-card">
-            <header class="mb-16">
+            <header class="mb-14">
                 <h2 class="text-8xl font-bold tracking-tighter">Make it <span class="text-indigo-400/40">clear.</span></h2>
             </header>
 
-            <div class="grid grid-cols-4 gap-6 mb-12">
+            <div class="grid grid-cols-4 gap-6 mb-10">
                 <div class="mode-card active" onclick="setMode('summary', this)">📖<p class="text-[11px] font-bold mt-2 uppercase">Deep Dive</p></div>
                 <div class="mode-card" onclick="setMode('speed', this)">⚡<p class="text-[11px] font-bold mt-2 uppercase">Speed Review</p></div>
                 <div class="mode-card" onclick="setMode('quiz', this)">🧠<p class="text-[11px] font-bold mt-2 uppercase">Quiz</p></div>
                 <div class="mode-card" onclick="setMode('glossary', this)">🏷️<p class="text-[11px] font-bold mt-2 uppercase">Glossary</p></div>
             </div>
 
-            <label class="upload-zone">
-                <span id="uploadStatus">📎 Drop PDF or Click to Upload</span>
+            <label class="upload-compact">
+                <span>📍</span> <span id="uploadStatus">Upload Document</span>
                 <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
             </label>
 
-            <div class="relative">
+            <div class="input-wrapper">
+                <button onclick="pasteText()" class="paste-btn">PASTE</button>
                 <textarea id="studyInput" class="glass-input" placeholder="Paste your material here..."></textarea>
                 <div id="wordCount" class="counter">0 / 2000 WORDS</div>
             </div>
@@ -79,7 +83,7 @@
             <div id="outputArea" class="mt-16 p-12 bg-white rounded-[40px] hidden border border-slate-100 shadow-xl">
                 <div class="flex justify-between items-center mb-6 border-b pb-4">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Result</span>
-                    <button onclick="copyResult()" class="text-xs font-bold text-indigo-600 hover:underline">Copy to Clipboard</button>
+                    <button onclick="copyResult()" class="text-xs font-bold text-indigo-600 hover:underline">Copy</button>
                 </div>
                 <div id="aiResult" class="prose max-w-none"></div>
                 <div id="quizControls" class="mt-8 hidden">
@@ -104,31 +108,37 @@
         let currentMode = 'summary';
         const studyInput = document.getElementById('studyInput');
 
-        // Mode Switching Fix
+        // Functional Paste Button
+        window.pasteText = async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                studyInput.value = text;
+                updateWordCount();
+            } catch (err) { alert("Clipboard permission denied."); }
+        };
+
         window.setMode = (mode, el) => {
             currentMode = mode;
             document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            studyInput.placeholder = `Paste notes for ${mode}...`;
         };
 
-        // Word Limit Fix
-        studyInput.oninput = function() {
-            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+        function updateWordCount() {
+            const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             const counter = document.getElementById('wordCount');
             counter.innerText = `${words} / 2000 WORDS`;
             if (words > 2000) {
                 counter.classList.add('limit');
-                this.value = this.value.split(/\s+/).slice(0, 2000).join(" ");
+                studyInput.value = studyInput.value.split(/\s+/).slice(0, 2000).join(" ");
             } else { counter.classList.remove('limit'); }
-        };
+        }
 
-        // PDF Engine Restored
+        studyInput.oninput = updateWordCount;
+
         document.getElementById('fileInput').onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            document.getElementById('uploadStatus').innerText = "Reading File...";
-            
+            document.getElementById('uploadStatus').innerText = "Loading...";
             if (file.type === "application/pdf") {
                 const reader = new FileReader();
                 reader.onload = async function() {
@@ -141,37 +151,34 @@
                         fullText += textContent.items.map(s => s.str).join(" ") + "\n";
                     }
                     studyInput.value = fullText;
-                    document.getElementById('uploadStatus').innerText = "PDF Loaded!";
+                    updateWordCount();
+                    document.getElementById('uploadStatus').innerText = "PDF Loaded";
                 };
                 reader.readAsArrayBuffer(file);
             } else {
                 const reader = new FileReader();
-                reader.onload = (ev) => { studyInput.value = ev.target.result; document.getElementById('uploadStatus').innerText = "Text Loaded!"; };
+                reader.onload = (ev) => { studyInput.value = ev.target.result; updateWordCount(); document.getElementById('uploadStatus').innerText = "Text Loaded"; };
                 reader.readAsText(file);
             }
         };
 
-        // Generate Session Fix
         document.getElementById('generateBtn').onclick = async () => {
-            if(!studyInput.value) return alert("Please add notes first!");
+            if(!studyInput.value) return;
             const out = document.getElementById('outputArea');
             const res = document.getElementById('aiResult');
             out.classList.remove('hidden');
-            res.innerHTML = "Clarity is distilling your notes...";
-
-            const modePrompt = currentMode === 'quiz' ? "Create a 5-question quiz. Wrap the correct answer in <span class='hidden-ans'>Answer: X</span>." : "Summarize these notes clearly.";
+            res.innerHTML = "Processing...";
 
             try {
                 const response = await fetch('/api/generate', { 
                     method: 'POST', 
-                    body: JSON.stringify({ promptText: `${modePrompt} Content: ${studyInput.value}` })
+                    body: JSON.stringify({ promptText: `Mode: ${currentMode}. Notes: ${studyInput.value}` })
                 });
                 const data = await response.json();
                 res.innerHTML = marked.parse(data.choices[0].message.content);
-                
                 if (currentMode === 'quiz') document.getElementById('quizControls').classList.remove('hidden');
                 else document.getElementById('quizControls').classList.add('hidden');
-            } catch (err) { res.innerHTML = "Error generating session."; }
+            } catch (err) { res.innerHTML = "Bridge error."; }
         };
 
         window.revealAnswers = () => document.querySelectorAll('.hidden-ans').forEach(a => a.style.display = 'block');
@@ -181,6 +188,7 @@
             const docRef = await getDoc(doc(db, "users", u.uid));
             document.getElementById('user-display').innerText = docRef.exists() ? docRef.data().nickname : "Alon";
         }});
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
     </script>
 </body>
 </html>
