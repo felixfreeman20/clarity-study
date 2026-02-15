@@ -7,144 +7,156 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; }
-        .sidebar { width: 280px; height: 100vh; position: fixed; border-right: 1px solid #f0f0f0; background: #fff; padding: 40px 24px; z-index: 40; }
-        .main-content { margin-left: 280px; padding: 100px; max-width: 1100px; }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; margin: 0; overflow-x: hidden; }
         
-        /* Logo Styling */
-        .logo-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 50; }
-        .app-logo { height: 40px; width: auto; object-fit: contain; }
+        /* Gradient Orbs */
+        .orb { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.1; pointer-events: none; }
+        .orb-1 { top: -100px; right: -100px; background: #4f46e5; }
+        .orb-2 { bottom: -100px; left: -100px; background: #ec4899; }
 
-        /* Session Card Styling */
+        /* Sidebar & Layout */
+        .sidebar { width: 320px; height: 100vh; position: fixed; border-right: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); padding: 40px 24px; z-index: 40; }
+        .main-content { margin-left: 320px; padding: 180px 80px 100px 80px; max-width: 1600px; }
+        
+        /* Logo Fix (Matches index.html) */
+        .logo-container { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 50; }
+        .app-logo { height: 125px; width: auto; object-fit: contain; }
+
+        /* Bento Grid Layout */
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 30px; }
+        
         .session-card { 
+            background: rgba(255, 255, 255, 0.6); 
             border: 1px solid #f0f0f0; 
-            border-radius: 20px; 
-            padding: 32px; 
-            transition: all 0.3s ease; 
-            background: #fff;
+            padding: 40px; 
+            border-radius: 40px; 
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 500px;
         }
         .session-card:hover { 
+            transform: translateY(-10px); 
             border-color: #000; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.05); 
+            background: #fff;
         }
 
-        .hidden { display: none !important; }
+        .card-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; tracking-widest; color: #9ca3af; margin-bottom: 12px; display: block; }
+        .card-content { font-size: 1.1rem; line-height: 1.6; color: #4b5563; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+        .card-footer { margin-top: auto; padding-top: 24px; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+        .read-time { font-size: 12px; color: #9ca3af; font-weight: 600; }
+
+        .empty-state { text-align: center; padding: 100px; color: #9ca3af; grid-column: 1 / -1; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
     <div class="logo-container">
-        <img src="logo.png" alt="Clarity Logo" class="app-logo">
+        <img src="Clarity Logo.png" alt="Clarity" class="app-logo">
     </div>
 
     <aside class="sidebar flex flex-col">
-        <div class="h-20"></div> 
-        <nav class="space-y-4 flex-1">
-            <a href="index.html" class="block text-gray-400 hover:text-black transition">New Session</a>
-            <a href="saved.html" class="block font-semibold text-black">Saved Sessions</a>
+        <div class="h-32"></div>
+        <nav class="space-y-6 flex-1">
+            <a href="index.html" class="flex items-center gap-4 text-gray-400 hover:text-black transition text-xl font-medium">
+                <span>✦</span> New Session
+            </a>
+            <a href="saved.html" class="flex items-center gap-4 font-bold text-black text-xl">
+                <span>📁</span> Archive
+            </a>
         </nav>
 
         <div id="auth-section" class="pt-8 border-t border-gray-100">
             <div id="user-profile">
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Account</p>
-                <p id="display-name" class="font-medium text-lg text-black">Loading...</p>
-                <button id="logoutBtn" class="text-xs text-red-500 hover:underline mt-2 cursor-pointer">Sign Out</button>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Authenticated</p>
+                <p id="display-name" class="font-bold text-xl text-black">Alon</p>
+                <button id="logoutBtn" class="text-sm text-red-500 hover:underline mt-2">Sign Out</button>
             </div>
         </div>
     </aside>
 
     <main class="main-content">
-        <header class="mb-12">
-            <h2 class="text-4xl font-medium tracking-tight">Your Archive</h2>
-            <p class="text-gray-400 mt-2">All your AI-generated study guides and quizzes.</p>
-        </header>
+        <div class="mb-16">
+            <h2 class="text-6xl font-medium tracking-tight mb-4">Your <span class="text-gray-200">Archive.</span></h2>
+            <p class="text-xl text-gray-400">Review your past breakthroughs.</p>
+        </div>
 
-        <div id="sessions-container" class="space-y-8">
-            <div id="loading-state" class="text-gray-300 italic tracking-widest text-xs uppercase">Fetching your notes...</div>
+        <div id="sessions-grid" class="bento-grid">
+            <div id="loading" class="empty-state">
+                <p class="text-2xl animate-pulse">Accessing your vault...</p>
+            </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo",
-            authDomain: "clarity-study-cd835.firebaseapp.com",
-            projectId: "clarity-study-cd835",
-            storageBucket: "clarity-study-cd835.firebasestorage.app",
-            messagingSenderId: "92484724607",
-            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // LOCK PAGE & LOAD DATA
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // If not logged in, boot back to home
-                window.location.href = "index.html";
-            } else {
-                // 1. Get Nickname for Sidebar
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-                document.getElementById('display-name').innerText = userSnap.exists() ? userSnap.data().nickname : user.displayName;
-
-                // 2. Load Saved Sessions
+            if (user) {
+                document.getElementById('display-name').innerText = user.displayName || "Explorer";
                 loadSessions(user.uid);
+            } else {
+                window.location.href = "index.html";
             }
         });
 
         async function loadSessions(uid) {
-            const container = document.getElementById('sessions-container');
-            const q = query(
-                collection(db, "sessions"), 
-                where("uid", "==", uid), 
-                orderBy("timestamp", "desc")
-            );
-
+            const grid = document.getElementById('sessions-grid');
             try {
+                const q = query(
+                    collection(db, "sessions"), 
+                    where("uid", "==", uid),
+                    orderBy("timestamp", "desc")
+                );
+                
                 const querySnapshot = await getDocs(q);
-                document.getElementById('loading-state').classList.add('hidden');
+                grid.innerHTML = '';
 
                 if (querySnapshot.empty) {
-                    container.innerHTML = `<p class="text-gray-400 italic">No saved sessions yet. Go generate some magic!</p>`;
+                    grid.innerHTML = '<div class="empty-state text-2xl">No study sets yet. Start a new session to fill your archive!</div>';
                     return;
                 }
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : "Recently";
+                    const modeEmoji = data.mode === 'quiz' ? '🧠' : data.mode === 'speed' ? '⚡' : '📖';
                     
                     const card = document.createElement('div');
-                    card.className = "session-card";
+                    card.className = 'session-card';
                     card.innerHTML = `
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-[10px] font-bold uppercase tracking-widest ${data.mode === 'quiz' ? 'text-blue-500' : 'text-gray-400'}">${data.mode}</span>
-                            <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">${date}</span>
+                        <span class="card-tag">${modeEmoji} ${data.mode || 'Summary'}</span>
+                        <div class="card-content">${data.content}</div>
+                        <div class="card-footer">
+                            <span class="read-time">${date}</span>
+                            <button class="text-black font-bold text-sm hover:underline">Open Guide →</button>
                         </div>
-                        <div class="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">${data.content}</div>
                     `;
-                    container.appendChild(card);
+                    grid.appendChild(card);
                 });
-            } catch (error) {
-                console.error("Error loading sessions:", error);
-                container.innerHTML = `<p class="text-red-500 text-xs">Error loading archive. Please check Firestore Indexes.</p>`;
+            } catch (e) {
+                console.error(e);
+                grid.innerHTML = '<div class="empty-state text-red-500">Error loading sessions. Ensure Firestore Indexes are enabled.</div>';
             }
         }
 
-        // SIGN OUT
-        document.getElementById('logoutBtn').onclick = () => {
-            signOut(auth).then(() => window.location.href = "index.html");
-        };
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
     </script>
 </body>
 </html>
