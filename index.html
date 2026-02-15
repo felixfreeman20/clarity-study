@@ -23,6 +23,7 @@
         .glass-input { width: 100%; height: 300px; border-radius: 24px; border: 1px solid #f0f0f0; background: rgba(255, 255, 255, 0.5); font-size: 1.1rem; outline: none; padding: 25px; line-height: 1.6; transition: 0.3s; resize: none; }
         .btn-primary { background: #000; color: #fff; padding: 18px 0; border-radius: 18px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; }
         #outputArea { margin-top: 40px; width: 100%; padding: 35px; border-radius: 25px; border: 1px solid #eee; background: #fff; display: none; }
+        .google-btn { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; border: 1px solid #eee; cursor: pointer; transition: 0.2s; width: 100%; background: white; }
     </style>
 </head>
 <body>
@@ -40,7 +41,9 @@
                 <p id="user-display" class="font-bold text-lg text-black">Alon</p>
                 <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
             </div>
-            <button id="loginBtn" class="border p-2 rounded w-full">Login with Google</button>
+            <button id="loginBtn" class="google-btn">
+                <span class="text-sm font-medium">Login with Google</span>
+            </button>
         </div>
     </aside>
 
@@ -62,7 +65,7 @@
             <input type="range" id="questionCount" min="5" max="20" value="10">
         </div>
 
-        <textarea id="studyInput" class="glass-input" placeholder="Paste notes..."></textarea>
+        <textarea id="studyInput" class="glass-input" placeholder="Paste your notes here..."></textarea>
         <button id="generateBtn" class="btn-primary">Generate Session</button>
 
         <div id="outputArea">
@@ -70,7 +73,7 @@
                 <span class="text-[10px] font-bold uppercase text-gray-300">Result</span>
                 <button id="saveBtn" class="text-sm font-bold text-blue-600">Save to Archive</button>
             </div>
-            <div id="aiResult" class="prose max-w-none text-black"></div>
+            <div id="aiResult" class="prose max-w-none text-black whitespace-pre-wrap"></div>
         </div>
     </main>
 
@@ -120,6 +123,7 @@
 
         document.getElementById('questionCount').oninput = (e) => document.getElementById('countDisplay').innerText = e.target.value;
 
+        // UPDATED FETCH LOGIC TO HANDLE ERRORS CLEARLY
         document.getElementById('generateBtn').onclick = async () => {
             const text = document.getElementById('studyInput').value;
             if(!text) return;
@@ -131,7 +135,6 @@
                 const qCount = document.getElementById('questionCount').value;
                 const promptText = currentMode === 'quiz' ? `Create a ${qCount}-question quiz about: ${text}` : `Create a ${currentMode} of: ${text}`;
                 
-                // Using relative path for Vercel functions
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -140,20 +143,21 @@
 
                 const data = await response.json();
                 
-                if (data.error) {
-                    resDiv.innerText = "Error from bridge: " + data.error;
-                } else {
+                if (response.ok) {
                     resDiv.innerText = data.choices[0].message.content;
+                } else {
+                    // Show error message as text instead of [object Object]
+                    resDiv.innerHTML = `<span class="text-red-500 font-bold">Bridge Error:</span><br>${data.error || 'Unknown error occurred.'}`;
                 }
             } catch (e) {
-                resDiv.innerText = "Connection Error. Ensure you are on the .vercel.app URL.";
+                resDiv.innerText = "Connection Error. Please ensure you are viewing this on your Vercel URL.";
             }
         };
 
         document.getElementById('saveBtn').onclick = async () => {
             if (!auth.currentUser) return alert("Login to save!");
             await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: document.getElementById('aiResult').innerText, mode: currentMode, timestamp: serverTimestamp() });
-            alert("Saved!");
+            alert("Saved to Archive!");
         };
     </script>
 </body>
