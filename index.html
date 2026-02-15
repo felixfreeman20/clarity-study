@@ -8,136 +8,46 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            /* Stronger multi-color light gradient */
-            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 15%, #e6e9f0 40%, #eef1f5 70%, #f1f5f9 100%); 
-            color: #1a1a1a; 
-            margin: 0; 
-            min-height: 100vh;
-            display: flex;
-        }
-
-        .sidebar { 
-            width: 320px; /* Wider sidebar for more breathing room */
-            height: 100vh; 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            background: rgba(255, 255, 255, 0.95);
-            border-right: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            z-index: 50; 
-        }
-
-        /* Large, perfectly centered logo */
-        .logo-box {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .app-logo {
-            height: 100px; /* Much larger logo */
-            width: auto;
-            object-fit: contain;
-        }
-
-        .nav-area {
-            flex: 1;
-            padding: 20px 30px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 16px 24px;
-            border-radius: 18px;
-            transition: 0.2s;
-            color: #64748b;
-            font-weight: 500;
-            text-decoration: none;
-            margin-bottom: 12px;
-        }
-
-        .nav-link.active { 
-            color: #000; 
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-
-        .workspace-container { 
-            flex: 1;
-            margin-left: 320px; /* Aligned with new sidebar width */
-            padding: 100px 120px; /* More room on the sides */
-        }
-
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 15%, #e6e9f0 40%, #eef1f5 70%, #f1f5f9 100%); margin: 0; display: flex; }
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.95); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
+        .logo-box { height: 200px; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .app-logo { height: 100px; width: auto; }
+        .nav-area { flex: 1; padding: 20px 30px; }
+        .nav-link { display: flex; align-items: center; gap: 15px; padding: 16px 24px; border-radius: 18px; color: #64748b; font-weight: 500; text-decoration: none; margin-bottom: 12px; }
+        .nav-link.active { color: #000; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .workspace-container { flex: 1; margin-left: 320px; padding: 100px 120px; }
         .content-card { max-width: 900px; margin: 0 auto; }
         
-        .mode-card { 
-            background: #fff; 
-            border: 1px solid #000; 
-            padding: 28px 10px; 
-            border-radius: 24px; 
-            text-align: center; 
-            cursor: pointer; 
-            transition: 0.2s;
-        }
-        .mode-card.active { background: #000; color: #fff; }
+        /* Fixed Buttons */
+        .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .mode-card.active { background: #000 !important; color: #fff !important; }
+        
+        .glass-input { width: 100%; height: 320px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: #fff; padding: 35px; resize: none; outline: none; font-size: 1.1rem; }
+        .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 30px; right: 40px; }
+        .counter.limit { color: #ef4444; }
+        
+        /* PDF Uploader Style */
+        .upload-zone { width: 100%; border: 2px dashed rgba(0,0,0,0.1); border-radius: 24px; padding: 25px; text-align: center; margin-bottom: 25px; cursor: pointer; color: #64748b; transition: 0.2s; }
+        .upload-zone:hover { border-color: #000; color: #000; }
 
-        .glass-input { 
-            width: 100%; 
-            height: 320px; 
-            border-radius: 28px; 
-            border: 1px solid rgba(0,0,0,0.08); 
-            background: #fff; 
-            padding: 35px; 
-            resize: none; 
-            outline: none;
-            font-size: 1.1rem;
-        }
-
-        .btn-primary { 
-            background: #000; 
-            color: #fff; 
-            padding: 22px; 
-            border-radius: 24px; 
-            font-weight: 600; 
-            width: 100%; 
-            margin-top: 30px; 
-            cursor: pointer;
-            border: none;
-        }
-
-        .user-footer {
-            padding: 40px 30px;
-            border-top: 1px solid rgba(0,0,0,0.03);
-        }
+        .btn-primary { background: #000; color: #fff; padding: 22px; border-radius: 24px; font-weight: 600; width: 100%; margin-top: 30px; cursor: pointer; border: none; }
+        .user-footer { padding: 40px 30px; border-top: 1px solid rgba(0,0,0,0.03); }
+        
+        /* Quiz Hidden Answer */
+        .hidden-ans { display: none; color: #10b981; font-weight: bold; margin-top: 8px; }
     </style>
 </head>
 <body>
-    
     <aside class="sidebar">
-        <div class="logo-box">
-            <img src="Clarity Logo.png" alt="Clarity" class="app-logo">
-        </div>
-        
+        <div class="logo-box"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
         <nav class="nav-area">
             <a href="index.html" class="nav-link active"><span>✦</span> Workspace</a>
             <a href="saved.html" class="nav-link"><span>📁</span> Archive</a>
         </nav>
-
         <div class="user-footer">
-            <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-lg mb-1">Loading...</p>
-                <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
-            </div>
-            <button id="loginBtn" class="text-sm font-medium text-gray-400">Login</button>
+            <p id="user-display" class="font-bold text-lg mb-1">Alon</p>
+            <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
         </div>
     </aside>
 
@@ -145,73 +55,132 @@
         <div class="content-card">
             <header class="mb-16">
                 <h2 class="text-8xl font-bold tracking-tighter">Make it <span class="text-indigo-400/40">clear.</span></h2>
-                <p class="text-slate-500 mt-8 text-2xl font-light">Distill your knowledge effortlessly.</p>
             </header>
-            
+
             <div class="grid grid-cols-4 gap-6 mb-12">
-                <div class="mode-card active" data-mode="summary">📖<p class="text-[11px] font-bold mt-2 uppercase">Deep Dive</p></div>
-                <div class="mode-card" data-mode="speed">⚡<p class="text-[11px] font-bold mt-2 uppercase">Speed Review</p></div>
-                <div class="mode-card" data-mode="quiz">🧠<p class="text-[11px] font-bold mt-2 uppercase">Quiz</p></div>
-                <div class="mode-card" data-mode="glossary">🏷️<p class="text-[11px] font-bold mt-2 uppercase">Glossary</p></div>
+                <div class="mode-card active" onclick="setMode('summary', this)">📖<p class="text-[11px] font-bold mt-2 uppercase">Deep Dive</p></div>
+                <div class="mode-card" onclick="setMode('speed', this)">⚡<p class="text-[11px] font-bold mt-2 uppercase">Speed Review</p></div>
+                <div class="mode-card" onclick="setMode('quiz', this)">🧠<p class="text-[11px] font-bold mt-2 uppercase">Quiz</p></div>
+                <div class="mode-card" onclick="setMode('glossary', this)">🏷️<p class="text-[11px] font-bold mt-2 uppercase">Glossary</p></div>
             </div>
 
-            <textarea id="studyInput" class="glass-input shadow-xl shadow-slate-200/50" placeholder="Paste your material here..."></textarea>
+            <label class="upload-zone">
+                <span id="uploadStatus">📎 Drop PDF or Click to Upload</span>
+                <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
+            </label>
+
+            <div class="relative">
+                <textarea id="studyInput" class="glass-input" placeholder="Paste your material here..."></textarea>
+                <div id="wordCount" class="counter">0 / 2000 WORDS</div>
+            </div>
+
             <button id="generateBtn" class="btn-primary">Generate Session</button>
 
-            <div id="outputArea" class="mt-16 p-12 bg-white rounded-[40px] shadow-2xl shadow-slate-200/50 hidden border border-slate-50">
-                <div id="aiResult" class="prose prose-indigo prose-xl max-w-none"></div>
+            <div id="outputArea" class="mt-16 p-12 bg-white rounded-[40px] hidden border border-slate-100 shadow-xl">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Result</span>
+                    <button onclick="copyResult()" class="text-xs font-bold text-indigo-600 hover:underline">Copy to Clipboard</button>
+                </div>
+                <div id="aiResult" class="prose max-w-none"></div>
+                <div id="quizControls" class="mt-8 hidden">
+                    <button onclick="revealAnswers()" class="bg-black text-white px-6 py-3 rounded-xl text-sm font-bold">Show Answers</button>
+                </div>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, limit, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- NICKNAME FIX ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                document.getElementById('loginBtn').classList.add('hidden');
-                document.getElementById('logged-in-ui').classList.remove('hidden');
-                
-                // Fetch the nickname from Firestore instead of Google Display Name
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    document.getElementById('user-display').innerText = userDoc.data().nickname;
-                } else {
-                    document.getElementById('user-display').innerText = "Alon";
-                }
-            }
-        });
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        // Generate Logic
-        document.getElementById('generateBtn').onclick = async () => {
-            const val = document.getElementById('studyInput').value;
-            if(!val) return;
-            const resArea = document.getElementById('outputArea');
-            resArea.classList.remove('hidden');
-            document.getElementById('aiResult').innerHTML = `<p class="italic text-slate-300 animate-pulse">Distilling...</p>`;
+        let currentMode = 'summary';
+        const studyInput = document.getElementById('studyInput');
 
-            try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ promptText: val })
-                });
-                const data = await res.json();
-                document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
-                resArea.scrollIntoView({ behavior: 'smooth' });
-            } catch (e) { document.getElementById('aiResult').innerText = "Error."; }
+        // Mode Switching Fix
+        window.setMode = (mode, el) => {
+            currentMode = mode;
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            studyInput.placeholder = `Paste notes for ${mode}...`;
         };
 
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
+        // Word Limit Fix
+        studyInput.oninput = function() {
+            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const counter = document.getElementById('wordCount');
+            counter.innerText = `${words} / 2000 WORDS`;
+            if (words > 2000) {
+                counter.classList.add('limit');
+                this.value = this.value.split(/\s+/).slice(0, 2000).join(" ");
+            } else { counter.classList.remove('limit'); }
+        };
+
+        // PDF Engine Restored
+        document.getElementById('fileInput').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('uploadStatus').innerText = "Reading File...";
+            
+            if (file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let fullText = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        fullText += textContent.items.map(s => s.str).join(" ") + "\n";
+                    }
+                    studyInput.value = fullText;
+                    document.getElementById('uploadStatus').innerText = "PDF Loaded!";
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (ev) => { studyInput.value = ev.target.result; document.getElementById('uploadStatus').innerText = "Text Loaded!"; };
+                reader.readAsText(file);
+            }
+        };
+
+        // Generate Session Fix
+        document.getElementById('generateBtn').onclick = async () => {
+            if(!studyInput.value) return alert("Please add notes first!");
+            const out = document.getElementById('outputArea');
+            const res = document.getElementById('aiResult');
+            out.classList.remove('hidden');
+            res.innerHTML = "Clarity is distilling your notes...";
+
+            const modePrompt = currentMode === 'quiz' ? "Create a 5-question quiz. Wrap the correct answer in <span class='hidden-ans'>Answer: X</span>." : "Summarize these notes clearly.";
+
+            try {
+                const response = await fetch('/api/generate', { 
+                    method: 'POST', 
+                    body: JSON.stringify({ promptText: `${modePrompt} Content: ${studyInput.value}` })
+                });
+                const data = await response.json();
+                res.innerHTML = marked.parse(data.choices[0].message.content);
+                
+                if (currentMode === 'quiz') document.getElementById('quizControls').classList.remove('hidden');
+                else document.getElementById('quizControls').classList.add('hidden');
+            } catch (err) { res.innerHTML = "Error generating session."; }
+        };
+
+        window.revealAnswers = () => document.querySelectorAll('.hidden-ans').forEach(a => a.style.display = 'block');
+        window.copyResult = () => { navigator.clipboard.writeText(document.getElementById('aiResult').innerText); alert("Copied!"); };
+
+        onAuthStateChanged(auth, async (u) => { if(u) {
+            const docRef = await getDoc(doc(db, "users", u.uid));
+            document.getElementById('user-display').innerText = docRef.exists() ? docRef.data().nickname : "Alon";
+        }});
     </script>
 </body>
 </html>
