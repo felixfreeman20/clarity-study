@@ -29,7 +29,6 @@
         .paste-btn { position: absolute; top: 20px; right: 25px; background: #f1f5f9; color: #000; padding: 6px 14px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); z-index: 10; }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 30px; right: 40px; }
         
-        /* Slider Styling */
         #quizSliderContainer { background: #fff; padding: 20px 30px; border-radius: 20px; border: 1px solid #000; margin-bottom: 20px; display: none; }
         input[type=range] { width: 100%; accent-color: #000; cursor: pointer; }
 
@@ -45,7 +44,15 @@
             <a href="index.html" class="nav-link active"><span>✦</span> Workspace</a>
             <a href="saved.html" class="nav-link"><span>📁</span> Archive</a>
         </nav>
-        <div class="user-footer"><p id="user-display" class="font-bold text-lg mb-1">Alon</p></div>
+        <div class="user-footer">
+            <div id="logged-in-ui" class="hidden">
+                <p id="user-display" class="font-bold text-lg mb-1"></p>
+                <button id="logoutBtn" class="text-xs text-red-500 hover:underline">Sign Out</button>
+            </div>
+            <div id="login-ui">
+                <button id="loginBtn" class="text-sm font-bold text-black hover:underline">Sign in with Google</button>
+            </div>
+        </div>
     </aside>
 
     <main class="workspace-container">
@@ -79,7 +86,8 @@
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Result</span>
                     <div class="flex gap-4">
                         <button onclick="downloadResult()" class="text-xs font-bold text-black hover:underline">Download</button>
-                        <button onclick="copyResult()" class="text-xs font-bold text-indigo-600 hover:underline">Copy</button>
+                        <button onclick="copyResult()" class="text-xs font-bold text-black hover:underline">Copy</button>
+                        <button onclick="saveToArchive()" class="text-xs font-bold text-indigo-600 hover:underline">Archive</button>
                     </div>
                 </div>
                 <div id="aiResult" class="prose max-w-none"></div>
@@ -90,8 +98,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
@@ -117,7 +125,14 @@
             a.href = url; a.download = `Clarity_Session_${currentMode}.txt`; a.click();
         };
 
-        // Standard logic for wordcount, pdf upload, and generation...
+        // Archive Saving Logic
+        window.saveToArchive = async () => {
+            if (!auth.currentUser) return alert("Please sign in to save to your Archive.");
+            const content = document.getElementById('aiResult').innerHTML;
+            await addDoc(collection(db, "sessions"), { uid: auth.currentUser.uid, content: content, mode: currentMode, timestamp: serverTimestamp() });
+            alert("Session archived successfully!");
+        };
+
         const studyInput = document.getElementById('studyInput');
         function updateWordCount() {
             const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -144,10 +159,32 @@
         window.revealAnswers = () => document.querySelectorAll('.hidden-ans').forEach(a => a.style.display = 'block');
         window.copyResult = () => { navigator.clipboard.writeText(document.getElementById('aiResult').innerText); alert("Copied!"); };
 
-        onAuthStateChanged(auth, async (u) => { if(u) {
-            const docRef = await getDoc(doc(db, "users", u.uid));
-            document.getElementById('user-display').innerText = docRef.exists() ? docRef.data().nickname : "Alon";
-        }});
+        // Login Logic & Nickname Memory
+        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => window.location.reload());
+
+        onAuthStateChanged(auth, async (u) => { 
+            if(u) {
+                document.getElementById('login-ui').classList.add('hidden');
+                document.getElementById('logged-in-ui').classList.remove('hidden');
+                
+                const userRef = doc(db, "users", u.uid);
+                const docSnap = await getDoc(userRef);
+                
+                let nickname = "";
+                if (docSnap.exists() && docSnap.data().nickname) {
+                    nickname = docSnap.data().nickname;
+                } else {
+                    // First time login - prompt user
+                    nickname = prompt("Welcome to Clarity! What should we call you?") || u.displayName || "User";
+                    await setDoc(userRef, { nickname: nickname }, { merge: true });
+                }
+                document.getElementById('user-display').innerText = nickname;
+            } else {
+                document.getElementById('login-ui').classList.remove('hidden');
+                document.getElementById('logged-in-ui').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
