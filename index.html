@@ -77,12 +77,6 @@
         .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
         .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 20px; right: 30px; }
 
-        /* AUDIO UI */
-        .sound-pill { cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); background: white; padding: 8px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .sound-pill.active { border-color: black; background: black; color: white; }
-        .visualizer-bar { width: 3px; background: currentColor; animation: musicBars 0.6s infinite ease-in-out; }
-        @keyframes musicBars { 0%, 100% { height: 4px; } 50% { height: 12px; } }
-
         #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 2px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
         
         /* NEXT STEPS DESIGN */
@@ -102,31 +96,12 @@
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
+        <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
         
         <nav class="nav-area px-6 mb-8">
             <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white mb-4 shadow-xl"><span>✦</span> Workspace</a>
             <a href="saved.html" id="archive-link" class="hidden flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>📁</span> Archive</a>
         </nav>
-
-        <div class="px-8 mb-8">
-            <p class="text-[9px] font-black uppercase tracking-widest mb-4 opacity-30">Focus Timer</p>
-            <div class="bg-white border-2 border-black rounded-2xl p-4 text-center">
-                <div id="timerDisplay" class="text-3xl font-black tabular-nums tracking-tighter mb-2">25:00</div>
-                <button id="timerBtn" class="text-[10px] font-bold bg-slate-100 px-4 py-1 rounded-full hover:bg-black hover:text-white transition">START CLOCK</button>
-            </div>
-        </div>
-
-        <div class="px-8 mb-8">
-            <p class="text-[9px] font-black uppercase tracking-widest mb-4 opacity-30">Flow State Audio</p>
-            <div id="lofiPill" class="sound-pill" onclick="toggleAudio('lofi')">
-                <div class="visualizer-bar hidden"></div> ☕ Lofi Study
-            </div>
-            <div id="rainPill" class="sound-pill" onclick="toggleAudio('rain')">
-                <div class="visualizer-bar hidden"></div> 🌧️ Rain
-            </div>
-            <audio id="audioPlayer" loop></audio>
-        </div>
 
         <div class="mt-auto p-8 border-t bg-white/50">
             <div id="logged-in-ui" class="hidden">
@@ -198,53 +173,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
-        // Timer Logic
-        let timerSeconds = 1500;
-        let timerInterval;
-        document.getElementById('timerBtn').onclick = function() {
-            if(timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                this.innerText = "START CLOCK";
-            } else {
-                this.innerText = "STOP";
-                timerInterval = setInterval(() => {
-                    timerSeconds--;
-                    let m = Math.floor(timerSeconds / 60);
-                    let s = timerSeconds % 60;
-                    document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                    if(timerSeconds <= 0) { clearInterval(timerInterval); alert("Focus session complete!"); }
-                }, 1000);
-            }
-        };
-
-        // AUDIO LOGIC (Lofi & Rain)
-        window.toggleAudio = (type) => {
-            const player = document.getElementById('audioPlayer');
-            const lofi = document.getElementById('lofiPill');
-            const rain = document.getElementById('rainPill');
-            
-            // Minimalist, high-quality streams
-            const urls = { 
-                lofi: 'https://stream.zeno.fm/0r0xa792kwzuv', 
-                rain: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg'
-            };
-
-            if(player.src === urls[type] && !player.paused) {
-                player.pause();
-                lofi.classList.remove('active'); rain.classList.remove('active');
-                lofi.querySelector('.visualizer-bar').classList.add('hidden');
-                rain.querySelector('.visualizer-bar').classList.add('hidden');
-            } else {
-                player.src = urls[type];
-                player.play();
-                lofi.classList.toggle('active', type === 'lofi');
-                rain.classList.toggle('active', type === 'rain');
-                lofi.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'lofi');
-                rain.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'rain');
-            }
-        };
 
         let currentMode = 'summary';
         let quizData = [];
