@@ -6,94 +6,82 @@
     <title>Workspace | Clarity</title>
     <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background: #fdfdfd; margin: 0; }
+        .sidebar { width: 340px; height: 100vh; position: fixed; left: 0; background: #fff; border-right: 1px solid #f0f0f0; z-index: 50; padding: 40px 20px; display: flex; flex-direction: column; }
+        .main { margin-left: 340px; padding: 60px; min-height: 100vh; }
+        .nav-item { display: flex; align-items: center; gap: 20px; padding: 22px 28px; border-radius: 28px; font-weight: 800; color: #94a3b8; cursor: pointer; transition: 0.3s; margin-bottom: 12px; }
+        .nav-item.active { background: #000 !important; color: #fff !important; box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
+        .nav-item span { font-size: 24px; }
         
-        /* Sidebar vs Bottom Nav Logic */
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; background: white; border-right: 1px solid #eee; z-index: 40; transition: transform 0.3s; }
-        .main { margin-left: 320px; padding: 60px; min-height: 100vh; }
-        
-        .nav-item { display: flex; align-items: center; gap: 15px; padding: 18px 25px; border-radius: 20px; font-weight: 700; color: #64748b; transition: all 0.2s; cursor: pointer; }
-        .nav-item.active { background: #0f172a; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        
-        /* Mobile Overrides */
         @media (max-width: 1024px) {
-            .sidebar { width: 100%; height: 70px; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid #eee; padding: 0 20px; }
-            .main { margin-left: 0; padding: 20px; padding-bottom: 100px; }
-            .nav-item { flex-direction: column; gap: 4px; padding: 10px; font-size: 10px; flex: 1; text-align: center; }
-            .nav-item span { font-size: 20px; }
+            .sidebar { width: 100%; height: 95px; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid #f0f0f0; padding: 0 15px; justify-content: space-around; }
+            .main { margin-left: 0; padding: 30px; padding-bottom: 140px; }
+            .nav-item { flex-direction: column; gap: 6px; padding: 15px 5px; font-size: 11px; flex: 1; text-align: center; border-radius: 0; }
             .sidebar-logo, .user-info { display: none !important; }
         }
-
-        /* Pricing Wall Overlay */
-        .wall { position: fixed; inset: 0; z-index: 1000; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+        .onboarding { position: fixed; inset: 0; z-index: 1000; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+        .card-pro { background: white; border: 1px solid #f0f0f0; border-radius: 4rem; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-pro:hover { transform: translateY(-10px); box-shadow: 0 40px 80px rgba(0,0,0,0.06); }
     </style>
 </head>
 <body>
-    <div id="onboarding" class="hidden fixed inset-0 z-[600] bg-white flex flex-col items-center justify-center p-8">
-        <h2 class="text-6xl font-black mb-4 tracking-tighter">What's your name?</h2>
-        <p class="text-slate-400 font-bold mb-10">We'll use this to personalize your workspace.</p>
-        <input type="text" id="nick" class="text-4xl font-black border-b-4 border-slate-200 outline-none text-center w-full max-w-md pb-4 mb-10" placeholder="Type here...">
-        <button id="saveNick" class="bg-black text-white px-16 py-6 rounded-full font-black text-xl shadow-2xl">Enter Workspace</button>
+    <div id="onboarding" class="hidden onboarding">
+        <img src="Clarity Logo.png" class="h-24 mb-10">
+        <h2 class="text-7xl font-black mb-6 tracking-tighter">What's your name?</h2>
+        <p class="text-slate-400 font-bold text-2xl mb-12">Let's personalize your study experience.</p>
+        <input type="text" id="nick" class="text-6xl font-black border-b-8 border-indigo-100 outline-none text-center w-full max-w-2xl pb-6 mb-16 focus:border-indigo-500 transition" placeholder="Enter name...">
+        <button id="saveNick" class="bg-black text-white px-24 py-8 rounded-full font-black text-2xl shadow-2xl hover:scale-105 active:scale-95 transition">Enter Workspace —></button>
     </div>
 
-    <div id="pricingWall" class="hidden wall">
-        <h2 class="text-5xl font-black mb-6">Welcome to Clarity Pro.</h2>
-        <p class="text-slate-500 font-bold mb-10">Choose a plan to unlock your AI workspace.</p>
-        <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
-            <div class="flex-1 p-8 border-2 border-slate-100 rounded-[2rem] text-left hover:border-indigo-500 cursor-pointer transition">
-                <h3 class="font-black text-xl">Monthly</h3>
-                <p class="text-4xl font-black">$4.99</p>
-            </div>
-            <div class="flex-1 p-8 bg-black text-white rounded-[2rem] text-left cursor-pointer">
-                <h3 class="font-black text-xl">Lifetime</h3>
-                <p class="text-4xl font-black">$14.99</p>
-            </div>
-        </div>
-        <button onclick="skipWall()" class="mt-8 font-bold text-slate-400 hover:text-black">Continue with Free Plan (Limited)</button>
-    </div>
-
-    <aside class="sidebar flex flex-col">
-        <div class="p-8 sidebar-logo">
-            <img src="Clarity Logo.png" class="h-20 w-auto">
-        </div>
-        <nav class="flex-1 px-4 flex flex-row lg:flex-col lg:gap-2">
-            <div id="nav-hub" onclick="switchView('hub')" class="nav-item active"><span>🏠</span> <p>Dashboard</p></div>
-            <div id="nav-work" onclick="switchView('work')" class="nav-item"><span>✦</span> <p>Workspace</p></div>
-            <div onclick="window.location.href='saved.html'" class="nav-item"><span>📁</span> <p>Archive</p></div>
+    <aside class="sidebar">
+        <div class="sidebar-logo mb-16 px-6"><img src="Clarity Logo.png" class="h-20 w-auto"></div>
+        <nav class="flex-1 flex flex-row lg:flex-col">
+            <div id="nav-hub" onclick="switchView('hub')" class="nav-item active"><span>🏠</span> <p>Study Hub</p></div>
+            <div id="nav-work" onclick="switchView('work')" class="nav-item"><span>✦</span> <p>AI Workspace</p></div>
+            <div class="nav-item"><span>📁</span> <p>My Archive</p></div>
+            <div class="nav-item"><span>⚙️</span> <p>Settings</p></div>
         </nav>
-        <div class="p-8 user-info border-t border-slate-50">
-            <p id="userName" class="font-black text-lg">Student</p>
-            <button id="logout" class="text-xs font-bold text-red-500 hover:underline">Sign Out</button>
+        <div class="user-info p-8 border-t mt-auto">
+            <p id="userName" class="font-black text-2xl mb-1 text-indigo-600">...</p>
+            <button id="logout" class="text-sm font-bold text-red-500 hover:underline">Sign Out of Account</button>
         </div>
     </aside>
 
     <main class="main">
-        <div id="hub-view" class="max-w-5xl mx-auto">
-            <h1 class="text-6xl font-black tracking-tighter mb-10">Hey, <span id="userSpan" class="text-indigo-600">Student</span>.</h1>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div onclick="switchView('work')" class="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-xl transition cursor-pointer">
-                    <div class="text-4xl mb-4">✨</div>
-                    <h3 class="text-2xl font-black">New AI Session</h3>
+        <div id="hub-view" class="max-w-6xl">
+            <h1 class="text-8xl font-black tracking-tighter mb-4">Hey, <span id="userSpan" class="text-indigo-600">Student</span>.</h1>
+            <p class="text-slate-400 font-bold text-2xl mb-16">Ready to crush your goals today?</p>
+            
+            <div class="grid md:grid-cols-2 gap-10">
+                <div onclick="switchView('work')" class="card-pro p-16 cursor-pointer group">
+                    <div class="text-7xl mb-8 group-hover:rotate-12 transition">✨</div>
+                    <h3 class="text-4xl font-black mb-4">AI Creation</h3>
+                    <p class="text-slate-400 font-bold text-xl leading-relaxed">Paste your notes and let Clarity generate flashcards and summaries instantly.</p>
                 </div>
-                <div class="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm">
-                    <div class="text-4xl mb-4">🧠</div>
-                    <h3 class="text-2xl font-black">Flashcard Deck</h3>
+                <div class="card-pro p-16 opacity-40 bg-slate-50 border-dashed">
+                    <div class="text-7xl mb-8">🧠</div>
+                    <h3 class="text-4xl font-black mb-4">Daily Quiz</h3>
+                    <p class="text-slate-400 font-bold text-xl leading-relaxed">Spaced repetition testing to help you remember everything forever.</p>
                 </div>
             </div>
         </div>
 
-        <div id="work-view" class="hidden max-w-4xl mx-auto">
-            <h1 class="text-5xl font-black mb-10">Workspace.</h1>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Summary</div>
-                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Quiz</div>
-                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Flashcards</div>
-                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Deep Dive</div>
+        <div id="work-view" class="hidden max-w-5xl mx-auto">
+            <div class="flex justify-between items-end mb-12">
+                <h1 class="text-7xl font-black tracking-tighter">Workspace.</h1>
+                <p class="text-indigo-600 font-black text-xl">PRO ACTIVE</p>
             </div>
-            <textarea class="w-full h-80 bg-white border border-slate-100 rounded-[2.5rem] p-10 outline-none text-xl shadow-inner" placeholder="Paste your study material here..."></textarea>
-            <button class="bg-black text-white px-10 py-5 rounded-full font-black text-lg mt-8 float-right shadow-2xl">Generate Magic ✨</button>
+            <div class="bg-white rounded-[4rem] p-4 shadow-2xl border border-slate-100">
+                <textarea id="noteInput" class="w-full h-[500px] p-16 outline-none text-2xl font-medium bg-transparent leading-relaxed" placeholder="Paste your lecture notes, textbook chapters, or messy thoughts here..."></textarea>
+                <div class="p-10 border-t border-slate-50 flex justify-between items-center">
+                    <div class="flex gap-4">
+                        <span class="bg-slate-100 px-6 py-3 rounded-full font-bold text-slate-500">Flashcards</span>
+                        <span class="bg-slate-100 px-6 py-3 rounded-full font-bold text-slate-500">Summary</span>
+                    </div>
+                    <button class="bg-black text-white px-16 py-7 rounded-full font-black text-2xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95">Generate ✨</button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -113,25 +101,19 @@
             if(snap.exists()){
                 const d = snap.data();
                 if(!d.isVerified) window.location.href="verify.html";
-                if(d.firstTime) { document.getElementById('pricingWall').classList.remove('hidden'); }
-                if(!d.nickname) { document.getElementById('onboarding').classList.remove('hidden'); }
-                else {
-                    document.getElementById('userName').innerText = d.nickname;
-                    document.getElementById('userSpan').innerText = d.nickname;
+                if(!d.nickname) document.getElementById('onboarding').classList.remove('hidden');
+                else { 
+                    document.getElementById('userName').innerText = d.nickname; 
+                    document.getElementById('userSpan').innerText = d.nickname; 
                 }
             }
         });
 
-        window.skipWall = async () => {
-            await setDoc(doc(db, "users", auth.currentUser.uid), { firstTime: false }, { merge: true });
-            document.getElementById('pricingWall').classList.add('hidden');
-        };
-
         document.getElementById('saveNick').onclick = async () => {
             const n = document.getElementById('nick').value;
-            if(n) {
-                await setDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }, { merge: true });
-                location.reload();
+            if(n) { 
+                await setDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }, { merge: true }); 
+                location.reload(); 
             }
         };
 
