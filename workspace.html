@@ -3,68 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Workspace</title>
+    <title>Workspace | Clarity</title>
+    <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; }
-        .sidebar { width: 300px; height: 100vh; position: fixed; left: 0; top: 0; background: #ffffff; border-right: 1px solid rgba(0,0,0,0.06); z-index: 50; }
-        .main-content { margin-left: 300px; padding: 60px 80px; }
-        .bento-card { background: white; border: 1px solid rgba(0,0,0,0.06); border-radius: 32px; padding: 40px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .bento-card:hover { border-color: rgba(99, 102, 241, 0.4); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.08); transform: translateY(-4px); }
-        .mode-card { background: #f1f5f9; border: 2px solid transparent; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; color: #64748b; }
-        .mode-card.active { background: #0f172a; color: white; border-color: #0f172a; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2); }
-        .onboarding-screen { background: #ffffff; position: fixed; inset: 0; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; overflow-x: hidden; }
+        
+        /* Sidebar vs Bottom Nav Logic */
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; background: white; border-right: 1px solid #eee; z-index: 40; transition: transform 0.3s; }
+        .main { margin-left: 320px; padding: 60px; min-height: 100vh; }
+        
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 18px 25px; border-radius: 20px; font-weight: 700; color: #64748b; transition: all 0.2s; cursor: pointer; }
+        .nav-item.active { background: #0f172a; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        /* Mobile Overrides */
+        @media (max-width: 1024px) {
+            .sidebar { width: 100%; height: 70px; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: 1px solid #eee; padding: 0 20px; }
+            .main { margin-left: 0; padding: 20px; padding-bottom: 100px; }
+            .nav-item { flex-direction: column; gap: 4px; padding: 10px; font-size: 10px; flex: 1; text-align: center; }
+            .nav-item span { font-size: 20px; }
+            .sidebar-logo, .user-info { display: none !important; }
+        }
+
+        /* Pricing Wall Overlay */
+        .wall { position: fixed; inset: 0; z-index: 1000; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
     </style>
 </head>
 <body>
-    <div id="onboarding" class="hidden onboarding-screen">
-        <div class="max-w-xl w-full text-center px-6">
-            <h2 class="text-6xl font-black mb-6 tracking-tighter text-slate-900">Welcome to Clarity.</h2>
-            <p class="text-slate-500 mb-12 font-medium text-xl">What should we call you in the workspace?</p>
-            <input type="text" id="nickInput" class="text-5xl font-bold text-center border-b-4 border-slate-200 focus:border-indigo-600 outline-none pb-4 w-full mb-12 bg-transparent text-slate-900" placeholder="Your name...">
-            <button id="saveNickBtn" class="bg-black text-white px-16 py-6 rounded-full font-black text-xl shadow-2xl hover:scale-105 transition-transform">Start Learning</button>
-        </div>
+    <div id="onboarding" class="hidden fixed inset-0 z-[600] bg-white flex flex-col items-center justify-center p-8">
+        <h2 class="text-6xl font-black mb-4 tracking-tighter">What's your name?</h2>
+        <p class="text-slate-400 font-bold mb-10">We'll use this to personalize your workspace.</p>
+        <input type="text" id="nick" class="text-4xl font-black border-b-4 border-slate-200 outline-none text-center w-full max-w-md pb-4 mb-10" placeholder="Type here...">
+        <button id="saveNick" class="bg-black text-white px-16 py-6 rounded-full font-black text-xl shadow-2xl">Enter Workspace</button>
     </div>
 
-    <aside class="sidebar flex flex-col p-8">
-        <img src="Clarity Logo.png" alt="Clarity" class="h-10 w-auto mb-14 self-start ml-2">
-        <nav class="flex-1 space-y-3">
-            <button onclick="showView('hub')" id="dashBtn" class="w-full text-left px-5 py-4 rounded-2xl bg-slate-900 text-white font-bold shadow-lg transition-all flex items-center gap-3">🏠 Dashboard</button>
-            <button onclick="showView('work')" id="workBtn" class="w-full text-left px-5 py-4 rounded-2xl text-slate-500 hover:bg-slate-100 font-semibold flex items-center gap-3">✦ Workspace</button>
-            <a href="saved.html" class="block px-5 py-4 rounded-2xl text-slate-500 hover:bg-slate-100 font-semibold flex items-center gap-3">📁 Archive</a>
+    <div id="pricingWall" class="hidden wall">
+        <h2 class="text-5xl font-black mb-6">Welcome to Clarity Pro.</h2>
+        <p class="text-slate-500 font-bold mb-10">Choose a plan to unlock your AI workspace.</p>
+        <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
+            <div class="flex-1 p-8 border-2 border-slate-100 rounded-[2rem] text-left hover:border-indigo-500 cursor-pointer transition">
+                <h3 class="font-black text-xl">Monthly</h3>
+                <p class="text-4xl font-black">$4.99</p>
+            </div>
+            <div class="flex-1 p-8 bg-black text-white rounded-[2rem] text-left cursor-pointer">
+                <h3 class="font-black text-xl">Lifetime</h3>
+                <p class="text-4xl font-black">$14.99</p>
+            </div>
+        </div>
+        <button onclick="skipWall()" class="mt-8 font-bold text-slate-400 hover:text-black">Continue with Free Plan (Limited)</button>
+    </div>
+
+    <aside class="sidebar flex flex-col">
+        <div class="p-8 sidebar-logo">
+            <img src="Clarity Logo.png" class="h-20 w-auto">
+        </div>
+        <nav class="flex-1 px-4 flex flex-row lg:flex-col lg:gap-2">
+            <div id="nav-hub" onclick="switchView('hub')" class="nav-item active"><span>🏠</span> <p>Dashboard</p></div>
+            <div id="nav-work" onclick="switchView('work')" class="nav-item"><span>✦</span> <p>Workspace</p></div>
+            <div onclick="window.location.href='saved.html'" class="nav-item"><span>📁</span> <p>Archive</p></div>
         </nav>
-        <div class="pt-8 border-t border-slate-100">
-            <p id="user-display" class="font-bold text-slate-900 mb-1">Student</p>
-            <button id="logoutBtn" class="text-xs text-red-500 font-bold hover:underline">Sign Out</button>
+        <div class="p-8 user-info border-t border-slate-50">
+            <p id="userName" class="font-black text-lg">Student</p>
+            <button id="logout" class="text-xs font-bold text-red-500 hover:underline">Sign Out</button>
         </div>
     </aside>
 
-    <main class="main-content">
+    <main class="main">
         <div id="hub-view" class="max-w-5xl mx-auto">
-            <h2 class="text-5xl font-black tracking-tighter mb-12 text-slate-900">Hey, <span id="user-span" class="text-indigo-600">Student</span> 👋</h2>
-            <div class="grid grid-cols-2 gap-8">
-                <div onclick="showView('work')" class="bento-card cursor-pointer">
-                    <div class="text-4xl mb-6">✦</div>
-                    <h3 class="text-2xl font-black">New Session</h3>
+            <h1 class="text-6xl font-black tracking-tighter mb-10">Hey, <span id="userSpan" class="text-indigo-600">Student</span>.</h1>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div onclick="switchView('work')" class="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-xl transition cursor-pointer">
+                    <div class="text-4xl mb-4">✨</div>
+                    <h3 class="text-2xl font-black">New AI Session</h3>
                 </div>
-                <a href="saved.html" class="bento-card">
-                    <div class="text-4xl mb-6">📁</div>
-                    <h3 class="text-2xl font-black">Archive</h3>
-                </a>
+                <div class="bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm">
+                    <div class="text-4xl mb-4">🧠</div>
+                    <h3 class="text-2xl font-black">Flashcard Deck</h3>
+                </div>
             </div>
         </div>
 
         <div id="work-view" class="hidden max-w-4xl mx-auto">
-            <h1 class="text-5xl font-black tracking-tighter text-slate-900 mb-10">Workspace.</h1>
-            <div class="grid grid-cols-4 gap-4 mb-8">
-                <div class="mode-card active" onclick="setMode('summary', this)">📖 Deep Dive</div>
-                <div class="mode-card" onclick="setMode('speed', this)">⚡ Speed</div>
-                <div class="mode-card" onclick="setMode('quiz', this)">🧠 Quiz</div>
-                <div class="mode-card" onclick="setMode('flash', this)">📇 Flash</div>
+            <h1 class="text-5xl font-black mb-10">Workspace.</h1>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Summary</div>
+                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Quiz</div>
+                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Flashcards</div>
+                <div class="p-4 bg-white border-2 border-slate-200 rounded-2xl font-bold text-center">Deep Dive</div>
             </div>
-            <textarea id="studyInput" class="w-full h-80 bg-white border border-slate-200 rounded-[2rem] p-8 outline-none text-lg text-slate-800" placeholder="Paste notes here..."></textarea>
-            <button class="bg-indigo-600 text-white px-12 py-5 rounded-full font-black text-lg shadow-xl hover:bg-indigo-500 mt-6 float-right">Generate ✨</button>
+            <textarea class="w-full h-80 bg-white border border-slate-100 rounded-[2.5rem] p-10 outline-none text-xl shadow-inner" placeholder="Paste your study material here..."></textarea>
+            <button class="bg-black text-white px-10 py-5 rounded-full font-black text-lg mt-8 float-right shadow-2xl">Generate Magic ✨</button>
         </div>
     </main>
 
@@ -79,33 +108,41 @@
         const db = getFirestore(app);
 
         onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                const s = await getDoc(doc(db, "users", u.uid));
-                if (s.exists()) {
-                    if (!s.data().isVerified) { window.location.href = "verify.html"; return; }
-                    if (s.data().nickname) {
-                        document.getElementById('user-display').innerText = s.data().nickname;
-                        document.getElementById('user-span').innerText = s.data().nickname;
-                    } else { document.getElementById('onboarding').classList.remove('hidden'); }
+            if(!u) window.location.href="index.html";
+            const snap = await getDoc(doc(db, "users", u.uid));
+            if(snap.exists()){
+                const d = snap.data();
+                if(!d.isVerified) window.location.href="verify.html";
+                if(d.firstTime) { document.getElementById('pricingWall').classList.remove('hidden'); }
+                if(!d.nickname) { document.getElementById('onboarding').classList.remove('hidden'); }
+                else {
+                    document.getElementById('userName').innerText = d.nickname;
+                    document.getElementById('userSpan').innerText = d.nickname;
                 }
-            } else { window.location.href = "index.html"; }
+            }
         });
 
-        document.getElementById('saveNickBtn').onclick = async () => {
-            const n = document.getElementById('nickInput').value;
-            if(n && auth.currentUser) {
+        window.skipWall = async () => {
+            await setDoc(doc(db, "users", auth.currentUser.uid), { firstTime: false }, { merge: true });
+            document.getElementById('pricingWall').classList.add('hidden');
+        };
+
+        document.getElementById('saveNick').onclick = async () => {
+            const n = document.getElementById('nick').value;
+            if(n) {
                 await setDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }, { merge: true });
                 location.reload();
             }
         };
 
-        window.showView = (v) => {
-            const isWork = v === 'work';
-            document.getElementById('hub-view').classList.toggle('hidden', isWork);
-            document.getElementById('work-view').classList.toggle('hidden', !isWork);
+        window.switchView = (v) => {
+            document.getElementById('hub-view').classList.toggle('hidden', v !== 'hub');
+            document.getElementById('work-view').classList.toggle('hidden', v !== 'work');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(`nav-${v}`).classList.add('active');
         };
 
-        document.getElementById('logoutBtn').onclick = () => signOut(auth);
+        document.getElementById('logout').onclick = () => signOut(auth);
     </script>
 </body>
 </html>
