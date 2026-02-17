@@ -4,30 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify | Clarity</title>
-    <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .otp-input { width: 3.5rem; height: 4.5rem; border: 2px solid #e2e8f0; border-radius: 1rem; text-align: center; font-size: 1.5rem; font-weight: 900; background: white; transition: all 0.2s; }
-        .otp-input:focus { border-color: #6366f1; outline: none; ring: 4px; ring-color: #6366f110; }
-        @media (max-width: 400px) { .otp-input { width: 2.8rem; height: 3.8rem; } }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; background: #fff; }</style>
 </head>
-<body class="bg-[#f8fafc] min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-md w-full bg-white rounded-[3rem] p-10 md:p-14 shadow-2xl text-center border border-slate-100">
-        <img src="Clarity Logo.png" class="h-20 mx-auto mb-8">
-        <h1 class="text-3xl font-black mb-2 tracking-tighter">Check your Gmail.</h1>
-        <p class="text-slate-500 font-bold mb-10">We sent a 6-digit security code to verify your account.</p>
+<body class="flex items-center justify-center min-h-screen p-6">
+    <div class="w-full max-w-lg text-center bg-white p-12">
+        <h1 class="text-7xl font-black tracking-tighter mb-6">Check Email.</h1>
+        <p class="text-slate-400 font-bold text-2xl mb-12 leading-relaxed">We sent a 6-digit security code to your inbox. Enter it below to unlock your workspace.</p>
         
-        <div class="flex justify-between gap-2 mb-10" id="otp-wrap">
-            <input type="text" maxlength="1" class="otp-input" autofocus>
-            <input type="text" maxlength="1" class="otp-input">
-            <input type="text" maxlength="1" class="otp-input">
-            <input type="text" maxlength="1" class="otp-input">
-            <input type="text" maxlength="1" class="otp-input">
-            <input type="text" maxlength="1" class="otp-input">
-        </div>
-
-        <button id="verifyBtn" class="w-full bg-black text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:scale-[1.02] transition">Verify Account</button>
+        <input type="text" id="codeIn" maxlength="6" class="w-full text-center text-6xl font-black tracking-[1.5rem] bg-slate-50 p-10 rounded-[3rem] outline-none mb-10 border-4 border-transparent focus:border-indigo-100 transition" placeholder="000000">
+        
+        <button id="verifyBtn" class="w-full bg-black text-white py-8 rounded-[3rem] font-black text-2xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95">Verify & Enter —></button>
+        <p class="mt-10 text-slate-400 font-bold">Didn't get it? <button onclick="location.reload()" class="text-indigo-600">Resend</button></p>
     </div>
 
     <script type="module">
@@ -40,21 +29,15 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const inputs = document.querySelectorAll('.otp-input');
-        inputs.forEach((input, i) => {
-            input.oninput = () => { if(input.value && i < 5) inputs[i+1].focus(); };
-            input.onkeydown = (e) => { if(e.key === "Backspace" && !input.value && i > 0) inputs[i-1].focus(); };
-        });
-
         document.getElementById('verifyBtn').onclick = async () => {
-            const code = Array.from(inputs).map(i => i.value).join('');
             const user = auth.currentUser;
+            const entered = document.getElementById('codeIn').value;
             if(!user) return;
             const snap = await getDoc(doc(db, "users", user.uid));
-            if(snap.exists() && snap.data().tempCode === code) {
+            if(snap.exists() && snap.data().tempCode === entered) {
                 await updateDoc(doc(db, "users", user.uid), { isVerified: true });
                 window.location.href = "workspace.html";
-            } else { alert("Wrong code!"); }
+            } else { alert("Incorrect code!"); }
         };
     </script>
 </body>
