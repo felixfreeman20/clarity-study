@@ -4,192 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Archive</title>
-    <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; position: relative; }
-        .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.25; animation: drift 25s infinite alternate ease-in-out; }
-        .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
-        .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
-        @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(150px, 150px) scale(1.2); } }
-
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
-        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; z-index: 10; }
-        
-        .reveal-up { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes revealUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Premium Selection Styles */
-        .pricing-card { border: 2px solid #f1f5f9; cursor: pointer; transition: 0.3s; }
-        .pricing-card.selected { border-color: black; background: #fafafa; }
-        
-        .history-card { background: white; border: 1px solid rgba(0,0,0,0.08); padding: 30px; border-radius: 28px; transition: 0.3s; cursor: pointer; }
-        .history-card:hover { border-color: black; transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        body { font-family: 'Inter', sans-serif; background: #f9fafb; margin: 0; }
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
+        .main-content { margin-left: 320px; padding: 80px; }
     </style>
 </head>
 <body>
-    <div class="aura aura-1"></div>
-    <div class="aura aura-2"></div>
-
-    <div id="premiumModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-lg rounded-[40px] p-10 relative shadow-2xl reveal-up">
-            <button onclick="closePremiumModal()" class="absolute top-6 right-8 text-2xl opacity-30">&times;</button>
-            <div class="text-center mb-8">
-                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase">Early Access</span>
-                <h2 class="text-3xl font-black mt-2">Unlock Clarity Pro.</h2>
-            </div>
-            <div class="space-y-4 mb-10 text-left">
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📝</div>
-                    <div><p class="font-bold text-sm">30-Question Quizzes</p><p class="text-xs text-slate-500">Go beyond the 10-question free limit.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🚀</div>
-                    <div><p class="font-bold text-sm">Turbo Speed</p><p class="text-xs text-slate-500">Priority processing for instant study guides.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📚</div>
-                    <div><p class="font-bold text-sm">Unlimited Knowledge</p><p class="text-xs text-slate-500">Remove the 2000-word limit and upload bulk PDFs.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🧠</div>
-                    <div><p class="font-bold text-sm">Spaced Repetition</p><p class="text-xs text-slate-500">Smart flashcard algorithms for long-term memory.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📤</div>
-                    <div><p class="font-bold text-sm">One-Click Export</p><p class="text-xs text-slate-500">Export your study guides directly to Notion or PDF.</p></div>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div id="priceMonthly" onclick="selectPrice('monthly')" class="pricing-card p-4 rounded-3xl text-center">
-                    <p class="text-[10px] font-bold opacity-40 uppercase">Monthly</p>
-                    <p class="text-xl font-black">$4.99</p>
-                </div>
-                <div id="priceLifetime" onclick="selectPrice('lifetime')" class="pricing-card selected p-4 rounded-3xl text-center relative">
-                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] px-2 py-1 rounded-full uppercase">Best Deal</span>
-                    <p class="text-[10px] font-bold opacity-40 uppercase">Lifetime</p>
-                    <p class="text-xl font-black">$19.99</p>
-                </div>
-            </div>
-            <button class="w-full bg-black text-white py-5 rounded-2xl font-bold mt-6 opacity-50 cursor-not-allowed uppercase tracking-widest text-xs">Coming Soon</button>
-        </div>
-    </div>
-
-    <aside class="sidebar">
-        <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
-        <nav class="nav-area px-6 mb-8 flex-1">
-            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50 mb-4"><span>✦</span> Workspace</a>
-            <a href="saved.html" id="archive-link" class="hidden flex items-center gap-4 p-4 rounded-2xl bg-black text-white shadow-xl"><span>📁</span> Archive</a>
+    <aside class="sidebar flex flex-col p-8">
+        <img src="Clarity Logo.png" alt="Clarity" class="h-12 w-auto mb-12 self-start">
+        <nav class="flex-1 space-y-2">
+            <a href="dashboard.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white hover:shadow-sm transition">🏠 Dashboard</a>
+            <a href="workspace.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white hover:shadow-sm transition">✦ Workspace</a>
+            <a href="saved.html" class="block p-4 rounded-2xl bg-black text-white shadow-lg font-bold">📁 Archive</a>
         </nav>
-        <div class="px-6 mb-4">
-            <button onclick="openPremiumModal()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg hover:scale-[1.02] transition uppercase tracking-widest">✨ Go Pro</button>
-        </div>
-        <div class="p-8 border-t bg-white/50">
-            <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-lg mb-1"></p>
-                <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
-            </div>
-            <div id="login-ui"><button id="loginBtn" class="text-sm font-bold hover:underline">Sign in with Google</button></div>
+        <div class="pt-8 border-t">
+            <p id="user-name" class="font-bold text-sm mb-1">Loading...</p>
         </div>
     </aside>
 
-    <main class="workspace-container">
-        <div class="max-w-[1000px] mx-auto">
-            <header class="mb-12">
-                <h2 class="text-7xl font-bold tracking-tighter mb-4">Archive.</h2>
-                <p class="text-slate-500">Your saved study sessions and insights.</p>
-            </header>
-
-            <div id="loadingState" class="text-center opacity-50 py-20 font-bold tracking-widest uppercase text-xs">
-                Loading Knowledge Base...
-            </div>
-
-            <div id="historyGrid" class="grid grid-cols-2 gap-6 hidden reveal-up">
-                </div>
+    <main class="main-content">
+        <h1 class="text-5xl font-black tracking-tighter mb-8">Your Archive</h1>
+        <div id="archive-list" class="grid gap-4">
+            <p class="text-slate-400">No saved sessions yet. Start one in the workspace!</p>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // UI Logic
-        window.openPremiumModal = () => document.getElementById('premiumModal').classList.remove('hidden');
-        window.closePremiumModal = () => document.getElementById('premiumModal').classList.add('hidden');
-        window.selectPrice = (plan) => {
-            document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(plan === 'monthly' ? 'priceMonthly' : 'priceLifetime').classList.add('selected');
-        };
-
-        // Load History
-        async function loadHistory(uid) {
-            const grid = document.getElementById('historyGrid');
-            const loader = document.getElementById('loadingState');
-            
-            try {
-                // Adjust this query based on how you save data to Firestore
-                const q = query(collection(db, "users", uid, "history"), orderBy("createdAt", "desc"), limit(10));
-                const snap = await getDocs(q);
-                
-                loader.classList.add('hidden');
-                grid.classList.remove('hidden');
-                grid.innerHTML = "";
-
-                if(snap.empty) {
-                    grid.innerHTML = `<div class="col-span-2 p-10 text-center border-2 border-dashed border-slate-200 rounded-3xl"><p class="text-slate-400 font-bold">Your archive is empty. Head to the Workspace to start studying!</p></div>`;
-                    return;
-                }
-
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'Recent';
-                    grid.innerHTML += `
-                        <div class="history-card">
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="bg-slate-100 text-[10px] font-black uppercase px-3 py-1 rounded-md">${data.mode || 'Summary'}</span>
-                                <span class="text-[10px] font-bold text-slate-400">${date}</span>
-                            </div>
-                            <h3 class="text-xl font-bold mb-2 truncate">${data.title || 'Study Session'}</h3>
-                            <p class="text-sm text-slate-500 line-clamp-2">${data.preview || 'Click to view full notes...'}</p>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                loader.innerText = "No saved data found.";
-            }
-        }
-
-        // Auth Logic
         onAuthStateChanged(auth, async (u) => {
-            if(u) {
-                document.getElementById('login-ui').classList.add('hidden'); 
-                document.getElementById('logged-in-ui').classList.remove('hidden'); 
-                document.getElementById('archive-link').classList.remove('hidden');
-                
+            if (u) {
                 const s = await getDoc(doc(db, "users", u.uid));
-                if(s.exists()) document.getElementById('user-display').innerText = s.data().nickname;
-                
-                loadHistory(u.uid);
-            } else {
-                document.getElementById('loadingState').innerText = "Please sign in to view your archive.";
-            }
+                if (s.exists()) { document.getElementById('user-name').innerText = s.data().nickname; }
+            } else { window.location.href = "index.html"; }
         });
-
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-        
-        // FIXED SIGN OUT LOGIC
-        document.getElementById('logoutBtn').onclick = async () => {
-            await signOut(auth);
-            location.href = 'index.html'; // Redirects to workspace on sign out
-        };
     </script>
 </body>
 </html>
