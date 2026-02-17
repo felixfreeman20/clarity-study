@@ -3,121 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Your AI Study Space</title>
+    <title>Clarity | Study Better</title>
     <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #6366f1; }
         body { font-family: 'Inter', sans-serif; background: #fafafa; overflow-x: hidden; }
-        .gradient-text { background: linear-gradient(to right, #6366f1, #a855f7, #ec4899); -webkit-background-clip: text; color: transparent; }
-        
-        /* Premium Background */
-        .aura { position: absolute; border-radius: 50%; filter: blur(120px); z-index: 0; opacity: 0.4; pointer-events: none; }
-        .aura-1 { width: 60vw; height: 60vw; background: #6366f1; top: -10vw; left: -10vw; animation: drift 20s infinite alternate; }
-        .aura-2 { width: 50vw; height: 50vw; background: #d946ef; bottom: -10vw; right: -10vw; animation: drift 25s infinite alternate-reverse; }
-        @keyframes drift { from { transform: translate(0,0); } to { transform: translate(100px, 50px); } }
-
-        /* Pricing Cards */
-        .p-card { background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 2rem; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .p-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.1); }
-        .p-pro { background: #0f172a; color: white; border: none; transform: scale(1.05); }
-
-        /* Responsive Fixes */
-        @media (max-width: 768px) {
-            .hero-title { font-size: 3.5rem !important; line-height: 1; }
-            .nav-link { display: none; }
-            .pricing-grid { grid-template-columns: 1fr; }
-        }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .pricing-card { border-radius: 2.5rem; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: white; border: 1px solid #f0f0f0; }
+        .pricing-card:hover { transform: translateY(-12px); box-shadow: 0 40px 80px rgba(0,0,0,0.08); }
+        .hero-blob { position: absolute; width: 800px; height: 800px; background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, rgba(255,255,255,0) 70%); z-index: -1; top: -200px; left: -200px; }
+        .btn-shadow { box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="relative">
-    <div class="aura aura-1"></div>
-    <div class="aura aura-2"></div>
-
-    <nav class="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-slate-100 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <img src="Clarity Logo.png" class="h-16 w-auto" alt="Logo">
-            <span class="font-black text-2xl tracking-tighter">Clarity.</span>
+    <div class="hero-blob"></div>
+    
+    <nav class="fixed top-0 w-full z-50 glass px-10 py-7 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <img src="Clarity Logo.png" class="h-14 w-auto">
+            <span class="font-black text-3xl tracking-tighter">Clarity.</span>
         </div>
-        <div class="flex gap-6 items-center">
-            <a href="#pricing" class="nav-link font-bold text-slate-500 hover:text-black">Pricing</a>
-            <button onclick="toggleAuth(true)" class="bg-black text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition">Log In</button>
+        <div class="hidden md:flex gap-10 font-bold text-slate-500">
+            <a href="#features" class="hover:text-black">Features</a>
+            <a href="#pricing" class="hover:text-black">Pricing</a>
         </div>
+        <button onclick="toggleAuth(true)" class="bg-black text-white px-12 py-4 rounded-full font-bold btn-shadow hover:scale-105 transition active:scale-95">Log In</button>
     </nav>
 
-    <section class="relative z-10 pt-48 pb-20 px-6 text-center max-w-6xl mx-auto">
-        <h1 class="hero-title text-8xl md:text-[110px] font-black tracking-tighter mb-8 leading-[0.85]">Study with <br><span class="gradient-text">Absolute Clarity.</span></h1>
-        <p class="text-xl md:text-2xl text-slate-500 font-medium mb-12 max-w-2xl mx-auto">The AI-native workspace that converts messy lectures into flashcards and quizzes instantly.</p>
-        <button onclick="toggleAuth(true, true)" class="bg-black text-white px-12 py-6 rounded-full font-black text-xl shadow-2xl hover:bg-slate-800 transition">Get Started for Free —></button>
+    <section class="pt-64 pb-32 px-6 text-center max-w-6xl mx-auto">
+        <div class="inline-block bg-indigo-50 text-indigo-600 px-6 py-2 rounded-full font-black text-sm mb-8">AI-POWERED STUDYING</div>
+        <h1 class="text-7xl md:text-[110px] font-black tracking-tighter leading-[0.85] mb-12">Master your studies with <span class="text-indigo-600">Clarity.</span></h1>
+        <p class="text-2xl text-slate-500 font-medium mb-16 max-w-2xl mx-auto leading-relaxed">Stop wasting time on mid-tier notes. Get instant summaries, high-quality flashcards, and focus tools in one place.</p>
+        <button onclick="toggleAuth(true, true)" class="bg-black text-white px-16 py-8 rounded-full font-black text-2xl shadow-2xl hover:bg-indigo-600 transition-all duration-300 active:scale-95">Get Started Free —></button>
     </section>
 
-    <section id="pricing" class="relative z-10 py-32 px-6 max-w-7xl mx-auto">
+    <section id="pricing" class="py-32 px-6 max-w-7xl mx-auto">
         <div class="text-center mb-20">
-            <h2 class="text-5xl font-black mb-4">Choose your plan.</h2>
-            <p class="text-slate-500 font-bold">Cancel monthly anytime. Lifetime is forever.</p>
+            <h2 class="text-5xl font-black tracking-tight mb-4">Simple Pricing.</h2>
+            <p class="text-slate-400 font-bold text-xl">No hidden fees. Just pure productivity.</p>
         </div>
-        <div class="pricing-grid grid md:grid-cols-3 gap-8">
-            <div class="p-card p-10 flex flex-col">
-                <h3 class="text-2xl font-black mb-2">Free</h3>
-                <div class="text-5xl font-black mb-8">$0</div>
-                <ul class="space-y-4 mb-10 flex-1 font-semibold text-slate-500">
-                    <li>✓ 5 AI Summaries / mo</li>
-                    <li>✓ 10 Quiz Questions</li>
-                    <li>✓ Standard Support</li>
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="pricing-card p-12 flex flex-col">
+                <h3 class="text-2xl font-black mb-2 text-slate-400">Free</h3>
+                <div class="text-7xl font-black mb-12">$0</div>
+                <ul class="space-y-5 mb-12 flex-1 font-bold text-slate-500">
+                    <li class="flex items-center gap-3"><span>✓</span> 5 AI Projects</li>
+                    <li class="flex items-center gap-3"><span>✓</span> Standard Support</li>
                 </ul>
-                <button onclick="toggleAuth(true, true)" class="w-full py-4 rounded-xl bg-slate-100 font-black hover:bg-slate-200 transition">Choose Free</button>
+                <button onclick="toggleAuth(true, true)" class="w-full py-6 rounded-3xl bg-slate-100 font-black hover:bg-slate-200 transition">Current Plan</button>
             </div>
-            <div class="p-card p-10 flex flex-col border-indigo-200">
-                <h3 class="text-2xl font-black mb-2 text-indigo-600">Monthly</h3>
-                <div class="text-5xl font-black mb-8">$4.99<span class="text-sm font-bold text-slate-400">/mo</span></div>
-                <ul class="space-y-4 mb-10 flex-1 font-semibold text-slate-600">
-                    <li>✓ Unlimited AI Summaries</li>
-                    <li>✓ Unlimited Quizzes</li>
-                    <li>✓ Priority Generation</li>
+            <div class="pricing-card p-12 flex flex-col border-4 border-indigo-600 relative scale-105 shadow-2xl bg-white">
+                <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-8 py-2 rounded-full text-sm font-black tracking-widest uppercase">Popular</div>
+                <h3 class="text-2xl font-black mb-2">Monthly</h3>
+                <div class="text-7xl font-black mb-12">$4.99<span class="text-xl text-slate-300">/mo</span></div>
+                <ul class="space-y-5 mb-12 flex-1 font-bold text-slate-600">
+                    <li class="flex items-center gap-3"><span class="text-indigo-600">✓</span> Unlimited AI Gen</li>
+                    <li class="flex items-center gap-3"><span class="text-indigo-600">✓</span> Priority Models</li>
                 </ul>
-                <button onclick="toggleAuth(true, true)" class="w-full py-4 rounded-xl bg-indigo-600 text-white font-black shadow-lg">Start Subscription</button>
+                <button onclick="toggleAuth(true, true)" class="w-full py-6 rounded-3xl bg-indigo-600 text-white font-black hover:brightness-110 transition">Go Pro</button>
             </div>
-            <div class="p-card p-pro p-10 flex flex-col">
-                <div class="bg-indigo-500 text-white text-[10px] uppercase font-black px-3 py-1 rounded-full w-fit mb-4">Best Value</div>
-                <h3 class="text-2xl font-black mb-2">Lifetime</h3>
-                <div class="text-5xl font-black mb-8">$14.99</div>
-                <ul class="space-y-4 mb-10 flex-1 font-semibold text-slate-300">
-                    <li>✓ Pay Once. Own Forever.</li>
-                    <li>✓ All Future AI Models</li>
-                    <li>✓ Premium Badge</li>
+            <div class="pricing-card p-12 flex flex-col bg-black text-white shadow-2xl">
+                <h3 class="text-2xl font-black mb-2 text-slate-400">Lifetime</h3>
+                <div class="text-7xl font-black mb-12">$14.99</div>
+                <ul class="space-y-5 mb-12 flex-1 font-bold text-slate-300">
+                    <li class="flex items-center gap-3"><span>✓</span> One-time Payment</li>
+                    <li class="flex items-center gap-3"><span>✓</span> Early Access</li>
                 </ul>
-                <button onclick="toggleAuth(true, true)" class="w-full py-4 rounded-xl bg-white text-black font-black">Buy Lifetime</button>
+                <button onclick="toggleAuth(true, true)" class="w-full py-6 rounded-3xl bg-white text-black font-black hover:bg-slate-100 transition">Get Started</button>
             </div>
         </div>
     </section>
 
-    <div id="authModal" class="hidden fixed inset-0 z-[100] bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-[3rem] p-10 md:p-14 shadow-2xl relative">
-            <button onclick="toggleAuth(false)" class="absolute top-8 right-8 text-3xl opacity-30">&times;</button>
-            <div class="text-center mb-10">
-                <img src="Clarity Logo.png" class="h-20 mx-auto mb-6">
-                <h2 id="authTitle" class="text-4xl font-black tracking-tighter">Join Clarity.</h2>
+    <div id="authModal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-2xl flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-lg rounded-[4rem] p-16 shadow-2xl relative">
+            <div class="text-center mb-12">
+                <img src="Clarity Logo.png" class="h-24 mx-auto mb-6">
+                <h2 id="authTitle" class="text-5xl font-black tracking-tighter">Welcome.</h2>
             </div>
-            <div class="space-y-4">
-                <button id="googleBtn" class="w-full flex items-center justify-center gap-4 bg-white border-2 border-slate-100 py-4 rounded-2xl font-bold hover:bg-slate-50 transition">
-                    <img src="GLogo.png" class="h-6"> Continue with Google
-                </button>
-                <div class="flex items-center gap-4 py-2 opacity-20"><hr class="flex-1"><span class="text-xs font-black">OR</span><hr class="flex-1"></div>
-                <input type="email" id="email" placeholder="Email" class="w-full bg-slate-100 p-5 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 transition font-bold">
-                <input type="password" id="pass" placeholder="Password" class="w-full bg-slate-100 p-5 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 transition font-bold">
-                <button id="mainAction" class="w-full bg-black text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition">Continue</button>
-                <p class="text-center font-bold text-slate-400 mt-6">
-                    <button onclick="isSignUp = !isSignUp; updateUI()" id="toggleBtn" class="text-indigo-600">Create an account</button>
+            <div class="space-y-5">
+                <input type="email" id="email" placeholder="Email Address" class="w-full bg-slate-100 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-indigo-100 transition font-bold text-lg">
+                <input type="password" id="pass" placeholder="Password" class="w-full bg-slate-100 p-7 rounded-[2rem] outline-none focus:ring-4 focus:ring-indigo-100 transition font-bold text-lg">
+                <button id="mainAction" class="w-full bg-black text-white py-7 rounded-[2rem] font-black text-2xl shadow-xl hover:brightness-125 transition active:scale-95 mt-4">Continue</button>
+                <p class="text-center font-bold text-slate-400 mt-8">
+                    <button onclick="isSignUp = !isSignUp; updateUI()" id="toggleBtn" class="text-indigo-600 underline">Create an account</button>
                 </p>
             </div>
+            <button onclick="toggleAuth(false)" class="absolute top-12 right-12 text-slate-300 hover:text-black text-4xl">&times;</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
@@ -125,21 +103,12 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        emailjs.init("YOUR_PUBLIC_KEY"); // IMPORTANT: ENTER YOUR KEY
-
         let isSignUp = false;
-        window.toggleAuth = (show, signUp = false) => {
-            isSignUp = signUp;
-            document.getElementById('authModal').classList.toggle('hidden', !show);
-            updateUI();
-        };
-
+        window.toggleAuth = (s, up = false) => { isSignUp = up; document.getElementById('authModal').classList.toggle('hidden', !s); updateUI(); };
         const updateUI = () => {
-            document.getElementById('authTitle').innerText = isSignUp ? "Create Account" : "Welcome Back";
-            document.getElementById('toggleBtn').innerText = isSignUp ? "Login instead" : "Create an account";
+            document.getElementById('authTitle').innerText = isSignUp ? "Join Clarity." : "Welcome Back.";
+            document.getElementById('toggleBtn').innerText = isSignUp ? "Already have an account? Login" : "New here? Create account";
         };
-
-        document.getElementById('googleBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).then(() => window.location.href="workspace.html");
 
         document.getElementById('mainAction').onclick = async () => {
             const e = document.getElementById('email').value, p = document.getElementById('pass').value;
@@ -148,7 +117,7 @@
                     const res = await createUserWithEmailAndPassword(auth, e, p);
                     const code = Math.floor(100000 + Math.random() * 900000).toString();
                     await setDoc(doc(db, "users", res.user.uid), { tempCode: code, isVerified: false, email: e, firstTime: true });
-                    await emailjs.send("SERVICE_ID", "TEMPLATE_ID", { to_email: e, code: code });
+                    await fetch('/api/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: e, code: code }) });
                     window.location.href = "verify.html";
                 } else {
                     await signInWithEmailAndPassword(auth, e, p);
