@@ -5,68 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f9fafb; margin: 0; }
-        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .main-content { margin-left: 320px; padding: 60px; }
-        .mode-card { background: white; border: 1px solid #000; border-radius: 24px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0px #000; }
-        .mode-card.active { background: #000; color: white; box-shadow: none; transform: translateY(4px); }
-        .onboarding-screen { background: #fff; position: fixed; inset: 0; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; }
+        
+        /* Premium Sidebar */
+        .sidebar { width: 300px; height: 100vh; position: fixed; left: 0; top: 0; background: #ffffff; border-right: 1px solid rgba(0,0,0,0.06); z-index: 50; }
+        .main-content { margin-left: 300px; padding: 60px 80px; }
+        
+        /* Interactive Cards */
+        .bento-card { background: white; border: 1px solid rgba(0,0,0,0.06); border-radius: 32px; padding: 40px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .bento-card:hover { border-color: rgba(99, 102, 241, 0.4); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.08); transform: translateY(-4px); }
+        
+        .mode-card { background: #f1f5f9; border: 2px solid transparent; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s; color: #64748b; }
+        .mode-card:hover { background: #e2e8f0; color: #0f172a; }
+        .mode-card.active { background: #0f172a; color: white; border-color: #0f172a; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2); }
+        
+        .onboarding-screen { background: #ffffff; position: fixed; inset: 0; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        textarea { resize: none; }
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div id="onboarding" class="hidden onboarding-screen">
-        <h2 class="text-6xl font-black mb-4 tracking-tighter">Welcome to Clarity.</h2>
-        <p class="text-slate-400 mb-12 font-medium">What should we call you in the workspace?</p>
-        <input type="text" id="nickInput" class="text-5xl font-bold text-center border-b-4 border-black outline-none pb-4 w-full max-w-lg mb-12" placeholder="Your name...">
-        <button id="saveNickBtn" class="bg-black text-white px-16 py-6 rounded-full font-black text-xl shadow-2xl hover:scale-105 transition">Start Learning</button>
+        <div class="max-w-xl w-full text-center px-6">
+            <h2 class="text-6xl font-black mb-6 tracking-tighter text-slate-900">Welcome to Clarity.</h2>
+            <p class="text-slate-500 mb-12 font-medium text-xl">What should we call you in the workspace?</p>
+            <input type="text" id="nickInput" class="text-5xl font-bold text-center border-b-4 border-slate-200 focus:border-indigo-600 outline-none pb-4 w-full mb-12 transition-colors bg-transparent text-slate-900" placeholder="Your name...">
+            <button id="saveNickBtn" class="bg-black text-white px-16 py-6 rounded-full font-black text-xl shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:scale-105 transition-transform">Start Learning</button>
+        </div>
     </div>
 
     <aside class="sidebar flex flex-col p-8">
-        <img src="Clarity Logo.png" alt="Clarity" class="h-14 w-auto mb-12 self-start">
-        <nav class="flex-1 space-y-2">
-            <button onclick="showView('hub')" id="dashBtn" class="w-full text-left p-4 rounded-2xl bg-white transition font-bold">🏠 Dashboard</button>
-            <button onclick="showView('work')" id="workBtn" class="w-full text-left p-4 rounded-2xl text-slate-500 hover:bg-white transition font-medium">✦ Workspace</button>
-            <a href="saved.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white transition font-medium">📁 Archive</a>
+        <img src="Clarity Logo.png" alt="Clarity" class="h-10 w-auto mb-14 self-start ml-2">
+        <nav class="flex-1 space-y-3">
+            <button onclick="showView('hub')" id="dashBtn" class="w-full text-left px-5 py-4 rounded-2xl bg-slate-900 text-white font-bold shadow-lg transition-all flex items-center gap-3"><span class="text-lg opacity-80">🏠</span> Dashboard</button>
+            <button onclick="showView('work')" id="workBtn" class="w-full text-left px-5 py-4 rounded-2xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all font-semibold flex items-center gap-3"><span class="text-lg opacity-80">✦</span> Workspace</button>
+            <a href="saved.html" class="block px-5 py-4 rounded-2xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all font-semibold flex items-center gap-3"><span class="text-lg opacity-80">📁</span> Archive</a>
         </nav>
-        <div class="pt-8 border-t">
-            <p id="user-display" class="font-bold text-sm mb-1 uppercase tracking-tighter">Student</p>
-            <button id="logoutBtn" class="text-[10px] text-red-500 font-black uppercase tracking-widest">Sign Out</button>
+        <div class="pt-8 border-t border-slate-100 px-2">
+            <p id="user-display" class="font-bold text-slate-900 mb-1 tracking-tight">Student</p>
+            <button id="logoutBtn" class="text-xs text-red-500 font-bold tracking-wide hover:underline">Sign Out</button>
         </div>
     </aside>
 
     <main class="main-content">
-        <div id="hub-view">
-            <h2 class="text-6xl font-black tracking-tighter mb-12">Hey, <span id="user-span">Student</span> 👋</h2>
+        <div id="hub-view" class="max-w-5xl mx-auto">
+            <h2 class="text-5xl font-black tracking-tighter mb-12 text-slate-900">Hey, <span id="user-span" class="text-indigo-600">Student</span> 👋</h2>
             <div class="grid grid-cols-2 gap-8">
-                <div onclick="showView('work')" class="bg-white p-12 rounded-[40px] border border-black/5 hover:border-black transition cursor-pointer">
-                    <div class="text-5xl mb-6">✦</div>
-                    <h3 class="text-2xl font-black">Open Workspace</h3>
-                    <p class="text-slate-400 font-medium">Start a new study guide or quiz.</p>
+                <div onclick="showView('work')" class="bento-card cursor-pointer group">
+                    <div class="text-4xl mb-6 bg-slate-100 w-16 h-16 flex items-center justify-center rounded-2xl group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">✦</div>
+                    <h3 class="text-2xl font-black text-slate-900 mb-2">New Session</h3>
+                    <p class="text-slate-500 font-medium">Start a new study guide, flashcards, or AI quiz.</p>
                 </div>
-                <a href="saved.html" class="bg-white p-12 rounded-[40px] border border-black/5 hover:border-black transition cursor-pointer">
-                    <div class="text-5xl mb-6">📁</div>
-                    <h3 class="text-2xl font-black">View Archive</h3>
-                    <p class="text-slate-400 font-medium">Review your previous work.</p>
+                <a href="saved.html" class="bento-card block group">
+                    <div class="text-4xl mb-6 bg-slate-100 w-16 h-16 flex items-center justify-center rounded-2xl group-hover:bg-purple-100 group-hover:text-purple-600 transition-colors">📁</div>
+                    <h3 class="text-2xl font-black text-slate-900 mb-2">Archive</h3>
+                    <p class="text-slate-500 font-medium">Review and study from your previous generated material.</p>
                 </a>
             </div>
         </div>
 
-        <div id="work-view" class="hidden max-w-3xl mx-auto">
-            <header class="text-center mb-12"><h1 class="text-6xl font-black tracking-tighter">Workspace.</h1></header>
+        <div id="work-view" class="hidden max-w-4xl mx-auto">
+            <header class="mb-10"><h1 class="text-5xl font-black tracking-tighter text-slate-900">Workspace.</h1></header>
+            
             <div class="grid grid-cols-4 gap-4 mb-8">
-                <div class="mode-card active" onclick="setMode('summary', this)">📖<p class="text-[10px] font-bold mt-2 uppercase">Deep Dive</p></div>
-                <div class="mode-card" onclick="setMode('speed', this)">⚡<p class="text-[10px] font-bold mt-2 uppercase">Speed</p></div>
-                <div class="mode-card" onclick="setMode('quiz', this)">🧠<p class="text-[10px] font-bold mt-2 uppercase">Quiz</p></div>
-                <div class="mode-card" onclick="setMode('flash', this)">📇<p class="text-[10px] font-bold mt-2 uppercase">Flashcards</p></div>
+                <div class="mode-card active" onclick="setMode('summary', this)"><div class="text-2xl mb-1">📖</div><p class="text-xs font-bold uppercase tracking-wide">Deep Dive</p></div>
+                <div class="mode-card" onclick="setMode('speed', this)"><div class="text-2xl mb-1">⚡</div><p class="text-xs font-bold uppercase tracking-wide">Speed</p></div>
+                <div class="mode-card" onclick="setMode('quiz', this)"><div class="text-2xl mb-1">🧠</div><p class="text-xs font-bold uppercase tracking-wide">Quiz</p></div>
+                <div class="mode-card" onclick="setMode('flash', this)"><div class="text-2xl mb-1">📇</div><p class="text-xs font-bold uppercase tracking-wide">Flashcards</p></div>
             </div>
-            <div id="quizSliderContainer" class="hidden mb-6 bg-white p-8 rounded-[32px] border-2 border-black">
-                <div class="flex justify-between mb-2"><span class="text-xs font-black uppercase">Questions</span> <span id="qVal" class="text-xs font-black">1</span></div>
-                <input type="range" id="qSlider" min="1" max="35" value="1" class="w-full accent-black" oninput="updateSlider(this.value)">
+
+            <div id="quizSliderContainer" class="hidden mb-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between mb-4 items-center">
+                    <span class="text-sm font-bold uppercase tracking-wide text-slate-500">Number of Questions</span> 
+                    <span id="qVal" class="text-lg font-black bg-slate-100 px-4 py-1 rounded-lg">1</span>
+                </div>
+                <input type="range" id="qSlider" min="1" max="35" value="1" class="w-full accent-indigo-600" oninput="updateSlider(this.value)">
             </div>
-            <textarea id="studyInput" class="w-full h-64 bg-white border border-black/10 rounded-[32px] p-8 outline-none focus:border-black transition text-lg" placeholder="Paste notes here..."></textarea>
-            <button class="w-full bg-black text-white py-6 rounded-[32px] font-black mt-6 text-xl shadow-xl active:scale-95 transition">Start AI Session</button>
+
+            <div class="relative shadow-sm rounded-[2rem] bg-white border border-slate-200 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all p-2">
+                <textarea id="studyInput" class="w-full h-80 bg-transparent p-6 outline-none text-lg text-slate-800 placeholder-slate-400" placeholder="Paste your messy notes, lectures, or PDF text here..."></textarea>
+            </div>
+            
+            <div class="flex justify-end mt-6">
+                <button class="bg-indigo-600 text-white px-12 py-5 rounded-full font-black text-lg shadow-[0_8px_20px_rgba(99,102,241,0.3)] hover:bg-indigo-500 hover:-translate-y-1 active:scale-95 transition-all">Generate AI Session ✨</button>
+            </div>
         </div>
     </main>
 
@@ -89,6 +115,13 @@
                     isPremium = s.data().isPremium || false;
                     document.getElementById('user-display').innerText = s.data().nickname;
                     document.getElementById('user-span').innerText = s.data().nickname;
+                    
+                    // Route Handling based on hash (Fixes Archive -> Workspace link)
+                    if (window.location.hash === '#work') {
+                        showView('work');
+                    } else {
+                        showView('hub');
+                    }
                 } else {
                     document.getElementById('onboarding').classList.remove('hidden');
                 }
@@ -108,11 +141,17 @@
             document.getElementById('hub-view').classList.toggle('hidden', isWork);
             document.getElementById('work-view').classList.toggle('hidden', !isWork);
             
-            // Sidebar Active State Toggle
+            // Sidebar Active States
             const dBtn = document.getElementById('dashBtn');
             const wBtn = document.getElementById('workBtn');
-            dBtn.className = isWork ? "w-full text-left p-4 rounded-2xl text-slate-500 hover:bg-white transition font-medium" : "w-full text-left p-4 rounded-2xl bg-black text-white font-bold shadow-lg";
-            wBtn.className = isWork ? "w-full text-left p-4 rounded-2xl bg-black text-white font-bold shadow-lg" : "w-full text-left p-4 rounded-2xl text-slate-500 hover:bg-white transition font-medium";
+            const activeClass = "w-full text-left px-5 py-4 rounded-2xl bg-slate-900 text-white font-bold shadow-lg transition-all flex items-center gap-3";
+            const inactiveClass = "w-full text-left px-5 py-4 rounded-2xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all font-semibold flex items-center gap-3";
+            
+            dBtn.className = isWork ? inactiveClass : activeClass;
+            wBtn.className = isWork ? activeClass : inactiveClass;
+            
+            // Update URL hash cleanly without jumping
+            history.replaceState(null, null, isWork ? '#work' : '#hub');
         };
 
         window.setMode = (m, el) => {
@@ -127,7 +166,7 @@
             const limit = isPremium ? 35 : 15;
             if (v > limit) {
                 qSlider.value = limit;
-                qVal.innerHTML = `${limit} <span class="text-indigo-600">(Limit)</span>`;
+                qVal.innerHTML = `<span class="text-indigo-600">${limit}</span> <span class="text-xs font-semibold text-slate-400 ml-1">MAX</span>`;
             } else { qVal.innerText = v; }
         };
 
