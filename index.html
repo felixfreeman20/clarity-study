@@ -72,6 +72,14 @@
                     <div class="bg-slate-100 p-2 rounded-lg text-lg">📚</div>
                     <div><p class="font-bold text-sm">Unlimited Knowledge</p><p class="text-xs text-slate-500">Remove the 2000-word limit and upload bulk PDFs.</p></div>
                 </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🧠</div>
+                    <div><p class="font-bold text-sm">Spaced Repetition</p><p class="text-xs text-slate-500">Smart flashcard algorithms for long-term memory.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📤</div>
+                    <div><p class="font-bold text-sm">One-Click Export</p><p class="text-xs text-slate-500">Export your study guides directly to Notion or PDF.</p></div>
+                </div>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
@@ -236,6 +244,12 @@
         document.getElementById('saveNickBtn').onclick = async () => {
             const n = document.getElementById('nickInput').value;
             if(n) { await setDoc(doc(db, "users", auth.currentUser.uid), {nickname: n}); location.reload(); }
+        };
+
+        // FIXED SIGN OUT LOGIC
+        document.getElementById('logoutBtn').onclick = async () => {
+            await signOut(auth);
+            location.reload();
         };
     </script>
 </body>
