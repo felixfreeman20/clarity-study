@@ -3,50 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Upgrade</title>
+    <title>Clarity | Choose Plan</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #fff; }
+        .aura { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.15; }
+        .aura-1 { background: #6366f1; top: -10%; right: -10%; }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="aura aura-1"></div>
+
     <div id="pricing-view" class="max-w-4xl w-full text-center">
         <img src="Clarity Logo.png" alt="Clarity" class="h-12 mx-auto mb-10">
-        <h1 class="text-5xl font-black mb-16 tracking-tight">Level Up Your Learning.</h1>
+        <h1 class="text-5xl font-black mb-16 tracking-tight">Upgrade Your Study Game.</h1>
         
-        <div class="grid md:grid-cols-2 gap-8 mb-12 text-left">
-            <div class="bg-white p-10 rounded-[40px] border-2 border-slate-100 shadow-sm">
-                <h3 class="font-bold opacity-40 mb-2">MONTHLY</h3>
+        <div class="grid md:grid-cols-2 gap-8 mb-16 text-left">
+            <div class="bg-slate-50 p-10 rounded-[40px] border border-slate-200">
+                <h3 class="font-bold opacity-40 mb-2 uppercase text-xs">Monthly</h3>
                 <div class="text-5xl font-black mb-6">$4.99</div>
-                <ul class="space-y-3 mb-8 opacity-70">
+                <ul class="space-y-4 mb-8 text-sm font-medium text-slate-600">
                     <li>✓ 30 Questions per Quiz</li>
                     <li>✓ Unlimited Cloud Storage</li>
                     <li>✓ Priority AI Processing</li>
                 </ul>
-                <button class="w-full bg-black text-white py-4 rounded-2xl font-bold">Start Monthly</button>
+                <button class="w-full bg-black text-white py-4 rounded-2xl font-black hover:bg-slate-800 transition">Go Pro Monthly</button>
             </div>
-            <div class="bg-blue-600 p-10 rounded-[40px] text-white shadow-xl relative scale-105">
-                <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-blue-600 px-4 py-1 rounded-full text-xs font-black">POPULAR</span>
-                <h3 class="font-bold opacity-60 mb-2">LIFETIME</h3>
+            <div class="bg-indigo-600 p-10 rounded-[40px] text-white shadow-2xl scale-105">
+                <h3 class="font-bold opacity-60 mb-2 uppercase text-xs">Lifetime</h3>
                 <div class="text-5xl font-black mb-6">$19.99</div>
-                <ul class="space-y-3 mb-8 opacity-90">
-                    <li>✓ Own Clarity Forever</li>
-                    <li>✓ All Future AI Features</li>
-                    <li>✓ Zero Monthly Fees</li>
+                <ul class="space-y-4 mb-8 text-sm font-medium opacity-90">
+                    <li>✓ One-time Payment</li>
+                    <li>✓ All Future Features</li>
+                    <li>✓ Priority Support</li>
                 </ul>
-                <button class="w-full bg-white text-blue-600 py-4 rounded-2xl font-bold">Get Lifetime</button>
+                <button class="w-full bg-white text-indigo-600 py-4 rounded-2xl font-black hover:bg-slate-100 transition">Get Lifetime</button>
             </div>
         </div>
 
-        <button onclick="showOnboarding()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-10 py-4 rounded-full font-black transition-all">
-            SKIP FOR NOW — USE FREE VERSION
+        <button onclick="showOnboarding()" class="text-slate-400 font-black hover:text-black transition text-sm uppercase tracking-widest border-b-2 border-transparent hover:border-black">
+            Skip to Free Version →
         </button>
     </div>
 
     <div id="onboarding-modal" class="hidden fixed inset-0 bg-white flex flex-col items-center justify-center z-[100] p-10">
-        <h2 class="text-4xl font-black mb-2">Welcome to Clarity.</h2>
-        <p class="text-slate-400 mb-10">What should we call you in the workspace?</p>
-        <input type="text" id="nickInput" class="text-4xl font-bold text-center border-b-4 border-black outline-none pb-2 w-full max-w-md mb-12" placeholder="Your Name">
-        <button id="saveNickBtn" class="bg-black text-white px-12 py-5 rounded-3xl font-black text-xl hover:scale-105 transition">Enter Workspace</button>
+        <h2 class="text-5xl font-black mb-4 tracking-tighter">Nice to meet you.</h2>
+        <p class="text-slate-400 font-medium mb-12">What should we call you in the workspace?</p>
+        <input type="text" id="nickInput" class="text-4xl font-bold text-center border-b-4 border-black outline-none pb-4 w-full max-w-md mb-12" placeholder="Your Name">
+        <button id="saveNickBtn" class="bg-black text-white px-16 py-5 rounded-full font-black text-xl hover:scale-105 transition shadow-2xl">Start Studying</button>
     </div>
 
     <script type="module">
@@ -59,8 +65,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let user = null;
-        onAuthStateChanged(auth, u => { if(u) user = u; else window.location.href="index.html"; });
+        let currentUser = null;
+        onAuthStateChanged(auth, u => { if(u) currentUser = u; else window.location.href="index.html"; });
 
         window.showOnboarding = () => {
             document.getElementById('pricing-view').classList.add('hidden');
@@ -69,8 +75,8 @@
 
         document.getElementById('saveNickBtn').onclick = async () => {
             const n = document.getElementById('nickInput').value;
-            if(n && user) {
-                await setDoc(doc(db, "users", user.uid), { nickname: n, isPremium: false });
+            if(n && currentUser) {
+                await setDoc(doc(db, "users", currentUser.uid), { nickname: n, isPremium: false }, { merge: true });
                 window.location.href = "index.html";
             }
         };
