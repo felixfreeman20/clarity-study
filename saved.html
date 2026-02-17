@@ -9,45 +9,22 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #f9fafb; margin: 0; }
         .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.05); z-index: 50; }
-        .main-content { margin-left: 320px; padding: 80px; }
+        .main-content { margin-left: 320px; padding: 60px; }
     </style>
 </head>
 <body>
     <aside class="sidebar flex flex-col p-8">
-        <img src="Clarity Logo.png" alt="Clarity" class="h-12 w-auto mb-12 self-start">
+        <img src="Clarity Logo.png" alt="Clarity" class="h-14 w-auto mb-12 self-start">
         <nav class="flex-1 space-y-2">
-            <a href="dashboard.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white hover:shadow-sm transition">🏠 Dashboard</a>
-            <a href="workspace.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white hover:shadow-sm transition">✦ Workspace</a>
-            <a href="saved.html" class="block p-4 rounded-2xl bg-black text-white shadow-lg font-bold">📁 Archive</a>
+            <a href="workspace.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white transition font-medium">🏠 Dashboard</a>
+            <a href="workspace.html" class="block p-4 rounded-2xl text-slate-500 hover:bg-white transition font-medium">✦ Workspace</a>
+            <a href="saved.html" class="block p-4 rounded-2xl bg-black text-white font-bold shadow-lg">📁 Archive</a>
         </nav>
-        <div class="pt-8 border-t">
-            <p id="user-name" class="font-bold text-sm mb-1">Loading...</p>
-        </div>
     </aside>
 
     <main class="main-content">
-        <h1 class="text-5xl font-black tracking-tighter mb-8">Your Archive</h1>
-        <div id="archive-list" class="grid gap-4">
-            <p class="text-slate-400">No saved sessions yet. Start one in the workspace!</p>
-        </div>
+        <h1 class="text-5xl font-black tracking-tighter mb-8">Archive.</h1>
+        <p class="text-slate-400 font-medium text-xl">Your saved study sessions will appear here.</p>
     </main>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                const s = await getDoc(doc(db, "users", u.uid));
-                if (s.exists()) { document.getElementById('user-name').innerText = s.data().nickname; }
-            } else { window.location.href = "index.html"; }
-        });
-    </script>
 </body>
 </html>
