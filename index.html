@@ -3,40 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Workspace</title>
+    <title>Clarity | Study Smarter</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; position: relative; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; overflow-x: hidden; }
         .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.25; animation: drift 25s infinite alternate ease-in-out; }
         .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
-        .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
+        .aura-2 { background: #a855f7; bottom: -20%; right: -10%; }
         @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(150px, 150px) scale(1.2); } }
 
+        /* Sidebar & Workspace UI */
         .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
-        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; z-index: 10; }
-        
+        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; }
         .mode-card { background: #fff; border: 1px solid #000; padding: 28px 10px; border-radius: 24px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0px #000; }
-        .mode-card:active { transform: translateY(2px); box-shadow: none; }
         .mode-card.active { background: #000 !important; color: #fff !important; box-shadow: none; }
-        
-        .flashcard { background: white; border: 2px solid black; border-radius: 40px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; cursor: pointer; perspective: 1000px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; margin-top: 20px; }
-        .flashcard.flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; border-radius: 38px; }
-        .card-back { transform: rotateY(180deg); background: #f8fafc; color: #6366f1; }
+        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 30px; outline: none; }
 
-        .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
-        .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
+        /* Landing Page Styles */
+        .hero-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 20px; }
+        .btn-white { background: white; color: #1e3a8a; padding: 16px 32px; border-radius: 100px; font-weight: 800; transition: 0.3s; }
+        .btn-white:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         
-        .reveal-up { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes revealUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 2px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
-        
-        /* Premium Selection Styles */
+        /* Auth Modal */
+        #authModal { background: rgba(0,0,0,0.8); backdrop-blur: 10px; }
         .pricing-card { border: 2px solid #f1f5f9; cursor: pointer; transition: 0.3s; }
         .pricing-card.selected { border-color: black; background: #fafafa; }
     </style>
@@ -45,105 +38,97 @@
     <div class="aura aura-1"></div>
     <div class="aura aura-2"></div>
 
-    <div id="onboarding-ui">
-        <p class="text-[10px] font-bold uppercase tracking-widest mb-2">New Profile</p>
+    <div id="landing-page" class="hidden">
+        <section class="hero-bg">
+            <div class="max-w-4xl mx-auto px-6">
+                <img src="Clarity Logo.png" alt="Clarity" class="h-16 mx-auto mb-8 brightness-0 invert">
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6">Study with Clarity.</h1>
+                <p class="text-xl md:text-2xl opacity-80 mb-10 font-medium">The AI-powered workspace that turns your notes into deep insights, quizzes, and flashcards instantly.</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="toggleAuthModal(true)" class="btn-white">Get Started — It's Free</button>
+                    <button onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" class="border-2 border-white/30 px-8 py-4 rounded-full font-bold hover:bg-white/10 transition">How it works</button>
+                </div>
+            </div>
+        </section>
+        <section id="features" class="py-24 bg-white text-black text-center">
+             <h2 class="text-4xl font-black mb-16">Everything you need to ace it.</h2>
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto px-10">
+                 <div><div class="text-4xl mb-4">🧠</div><h3 class="font-bold text-xl mb-2">Smart Quizzes</h3><p class="text-slate-500">AI generates custom exams from your PDFs.</p></div>
+                 <div><div class="text-4xl mb-4">📖</div><h3 class="font-bold text-xl mb-2">Deep Dives</h3><p class="text-slate-500">Break down complex topics into simple bullet points.</p></div>
+                 <div><div class="text-4xl mb-4">⚡</div><h3 class="font-bold text-xl mb-2">Instant Flashcards</h3><p class="text-slate-500">Auto-create cards for active recall training.</p></div>
+             </div>
+        </section>
+    </div>
+
+    <div id="authModal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div class="bg-white text-black w-full max-w-md rounded-[40px] p-10 relative">
+            <button onclick="toggleAuthModal(false)" class="absolute top-6 right-8 text-2xl opacity-30">&times;</button>
+            <h2 id="authTitle" class="text-3xl font-black mb-2 text-center">Join Clarity.</h2>
+            <p class="text-center text-slate-500 mb-8 text-sm">Sign in to sync your archive.</p>
+            
+            <div class="space-y-4">
+                <button id="googleLoginBtn" class="w-full flex items-center justify-center gap-3 border-2 border-slate-100 py-4 rounded-2xl font-bold hover:bg-slate-50 transition">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" class="w-5"> Continue with Google
+                </button>
+                <div class="flex items-center gap-4 my-6 opacity-20"><hr class="flex-1"> OR <hr class="flex-1"></div>
+                <input type="email" id="emailInput" placeholder="Email address" class="w-full bg-slate-50 p-4 rounded-xl outline-none border border-transparent focus:border-black transition">
+                <input type="password" id="passInput" placeholder="Password" class="w-full bg-slate-50 p-4 rounded-xl outline-none border border-transparent focus:border-black transition">
+                <button id="emailActionBtn" class="w-full bg-black text-white py-4 rounded-2xl font-bold">Sign In</button>
+                <p class="text-center text-xs mt-4">Don't have an account? <button onclick="toggleAuthMode()" id="authToggleLink" class="font-bold underline">Create one</button></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="workspace-ui" class="hidden">
+        <aside class="sidebar">
+            <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
+            <nav class="nav-area px-6 mb-8 flex-1">
+                <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white mb-4 shadow-xl"><span>✦</span> Workspace</a>
+                <a href="saved.html" id="archive-link" class="flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>📁</span> Archive</a>
+            </nav>
+            <div id="pro-container" class="px-6 mb-4 hidden">
+                <button onclick="openPremiumModal()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg hover:scale-[1.02] transition uppercase tracking-widest">✨ Go Pro</button>
+            </div>
+            <div class="p-8 border-t bg-white/50">
+                <p id="user-display" class="font-bold text-lg mb-1"></p>
+                <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
+            </div>
+        </aside>
+
+        <main class="workspace-container">
+            <div class="max-w-[800px] mx-auto">
+                <header class="mb-10 text-center"><h2 class="text-7xl font-bold tracking-tighter">Clarity.</h2></header>
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <div class="mode-card active" onclick="setMode('summary', this)">📖<p class="text-[10px] font-bold mt-1 uppercase">Deep Dive</p></div>
+                    <div class="mode-card" onclick="setMode('speed', this)">⚡<p class="text-[10px] font-bold mt-1 uppercase">Speed</p></div>
+                    <div class="mode-card" onclick="setMode('quiz', this)">🧠<p class="text-[10px] font-bold mt-1 uppercase">Quiz</p></div>
+                    <div class="mode-card" onclick="setMode('flash', this)">📇<p class="text-[10px] font-bold mt-1 uppercase">Flashcards</p></div>
+                </div>
+                <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border-2 border-black">
+                    <div class="flex justify-between mb-2"><span class="text-xs font-bold uppercase">Questions</span> <span id="qVal" class="text-xs font-bold">5</span></div>
+                    <input type="range" id="qSlider" min="3" max="30" value="5" class="w-full accent-black" oninput="updateSlider(this.value)">
+                </div>
+                <div class="relative"><textarea id="studyInput" class="glass-input" placeholder="Paste notes or upload a PDF..."></textarea></div>
+                <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg">Start Session</button>
+                <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border-2 border-black">
+                    <div id="aiResult" class="prose max-w-none"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="onboarding-ui" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-10 rounded-[40px] border-2 border-black shadow-2xl z-[300]">
         <h3 class="text-xl font-bold mb-4">What should we call you?</h3>
-        <input type="text" id="nickInput" class="w-full border-b-2 border-black outline-none mb-6 p-2 text-lg" placeholder="Your name...">
+        <input type="text" id="nickInput" class="w-full border-b-2 border-black outline-none mb-6 p-2 text-lg" placeholder="Name">
         <button id="saveNickBtn" class="bg-black text-white font-bold py-4 px-4 rounded-2xl w-full">Complete Setup</button>
     </div>
 
     <div id="premiumModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div class="bg-white w-full max-w-lg rounded-[40px] p-10 relative shadow-2xl reveal-up">
-            <button onclick="closePremiumModal()" class="absolute top-6 right-8 text-2xl opacity-30">&times;</button>
-            <div class="text-center mb-8">
-                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase">Early Access</span>
-                <h2 class="text-3xl font-black mt-2">Unlock Clarity Pro.</h2>
-            </div>
-            <div class="space-y-4 mb-10 text-left">
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📝</div>
-                    <div><p class="font-bold text-sm">30-Question Quizzes</p><p class="text-xs text-slate-500">Go beyond the 10-question free limit.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🚀</div>
-                    <div><p class="font-bold text-sm">Turbo Speed</p><p class="text-xs text-slate-500">Priority processing for instant study guides.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📚</div>
-                    <div><p class="font-bold text-sm">Unlimited Knowledge</p><p class="text-xs text-slate-500">Remove the 2000-word limit and upload bulk PDFs.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🧠</div>
-                    <div><p class="font-bold text-sm">Spaced Repetition</p><p class="text-xs text-slate-500">Smart flashcard algorithms for long-term memory.</p></div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📤</div>
-                    <div><p class="font-bold text-sm">One-Click Export</p><p class="text-xs text-slate-500">Export your study guides directly to Notion or PDF.</p></div>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div id="priceMonthly" onclick="selectPrice('monthly')" class="pricing-card p-4 rounded-3xl text-center">
-                    <p class="text-[10px] font-bold opacity-40 uppercase">Monthly</p>
-                    <p class="text-xl font-black">$4.99</p>
-                </div>
-                <div id="priceLifetime" onclick="selectPrice('lifetime')" class="pricing-card selected p-4 rounded-3xl text-center relative">
-                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] px-2 py-1 rounded-full uppercase">Best Deal</span>
-                    <p class="text-[10px] font-bold opacity-40 uppercase">Lifetime</p>
-                    <p class="text-xl font-black">$19.99</p>
-                </div>
-            </div>
-            <button class="w-full bg-black text-white py-5 rounded-2xl font-bold mt-6 opacity-50 cursor-not-allowed uppercase tracking-widest text-xs">Coming Soon</button>
         </div>
-    </div>
-
-    <aside class="sidebar">
-        <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
-        <nav class="nav-area px-6 mb-8 flex-1">
-            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white mb-4 shadow-xl"><span>✦</span> Workspace</a>
-            <a href="saved.html" id="archive-link" class="hidden flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>📁</span> Archive</a>
-        </nav>
-        <div class="px-6 mb-4">
-            <button onclick="openPremiumModal()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg hover:scale-[1.02] transition uppercase tracking-widest">✨ Go Pro</button>
-        </div>
-        <div class="p-8 border-t bg-white/50">
-            <div id="logged-in-ui" class="hidden">
-                <p id="user-display" class="font-bold text-lg mb-1"></p>
-                <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
-            </div>
-            <div id="login-ui"><button id="loginBtn" class="text-sm font-bold hover:underline">Sign in with Google</button></div>
-        </div>
-    </aside>
-
-    <main class="workspace-container">
-        <div class="max-w-[800px] mx-auto">
-            <header class="mb-10 text-center"><h2 class="text-7xl font-bold tracking-tighter">Clarity.</h2></header>
-
-            <div class="grid grid-cols-4 gap-4 mb-8">
-                <div class="mode-card active" onclick="setMode('summary', this)">📖<p class="text-[10px] font-bold mt-1 uppercase">Deep Dive</p></div>
-                <div class="mode-card" onclick="setMode('speed', this)">⚡<p class="text-[10px] font-bold mt-1 uppercase">Speed</p></div>
-                <div class="mode-card" onclick="setMode('quiz', this)">🧠<p class="text-[10px] font-bold mt-1 uppercase">Quiz</p></div>
-                <div class="mode-card" onclick="setMode('flash', this)">📇<p class="text-[10px] font-bold mt-1 uppercase">Flashcards</p></div>
-            </div>
-
-            <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border-2 border-black reveal-up">
-                <div class="flex justify-between mb-2"><span class="text-xs font-bold uppercase">Questions</span> <span id="qVal" class="text-xs font-bold">5</span></div>
-                <input type="range" id="qSlider" min="3" max="30" value="5" class="w-full accent-black" oninput="updateSlider(this.value)">
-                <p id="limitText" class="text-[9px] font-black text-indigo-500 mt-2 uppercase tracking-widest hidden">✨ Pro Required for 10+</p>
-            </div>
-
-            <label id="dropzone" class="upload-compact"><span id="uploadStatus" class="font-bold text-slate-400">Drop PDF or browse</span><input type="file" id="fileInput" class="hidden" accept=".pdf,.txt"></label>
-            <div class="relative"><textarea id="studyInput" class="glass-input" placeholder="What are we learning today?"></textarea><div id="wordCount" class="text-[10px] font-bold text-slate-400 absolute bottom-6 right-8 uppercase">0 / 2000 WORDS</div></div>
-            <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition-all active:scale-[0.98]">Start Session</button>
-
-            <div id="interactiveArea" class="hidden mt-10"><div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden"><span class="text-xs font-bold uppercase opacity-40">Progress</span><span id="scoreTracker" class="text-lg font-black">1 / 5</span></div><div id="contentDisplay"></div></div>
-            <div id="outputArea" class="mt-10 p-10 bg-white rounded-[40px] hidden border-2 border-black shadow-sm"><div id="aiResult" class="prose max-w-none"></div><div id="nextSteps" class="mt-10 pt-8 border-t-2 border-slate-100 hidden"><div id="nextStepsButtons" class="flex flex-wrap gap-3"></div></div></div>
-        </div>
-    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
@@ -151,106 +136,61 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentMode = 'summary'; let quizData = []; let currentIdx = 0; let score = 0; let userAnswers = []; let isPremium = false;
+        let isSignUpMode = false;
 
-        window.updateSlider = (val) => {
-            const slider = document.getElementById('qSlider');
-            const limitText = document.getElementById('limitText');
-            if (!isPremium && val > 10) {
-                slider.value = 10;
-                document.getElementById('qVal').innerText = "10 (Free Limit)";
-                limitText.classList.remove('hidden');
+        window.toggleAuthModal = (show) => document.getElementById('authModal').classList.toggle('hidden', !show);
+        window.toggleAuthMode = () => {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('authTitle').innerText = isSignUpMode ? "Create Account" : "Join Clarity.";
+            document.getElementById('emailActionBtn').innerText = isSignUpMode ? "Sign Up" : "Sign In";
+            document.getElementById('authToggleLink').innerText = isSignUpMode ? "Log in instead" : "Create one";
+        };
+
+        // Email/Password Login
+        document.getElementById('emailActionBtn').onclick = async () => {
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passInput').value;
+            try {
+                if(isSignUpMode) await createUserWithEmailAndPassword(auth, email, pass);
+                else await signInWithEmailAndPassword(auth, email, pass);
+                toggleAuthModal(false);
+            } catch(e) { alert(e.message); }
+        };
+
+        document.getElementById('googleLoginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.reload());
+
+        onAuthStateChanged(auth, async (u) => {
+            if (u) {
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('workspace-ui').classList.remove('hidden');
+                document.getElementById('pro-container').classList.remove('hidden');
+                const s = await getDoc(doc(db, "users", u.uid));
+                if(s.exists()) document.getElementById('user-display').innerText = s.data().nickname;
+                else document.getElementById('onboarding-ui').classList.remove('hidden');
             } else {
-                document.getElementById('qVal').innerText = val;
-                limitText.classList.add('hidden');
+                document.getElementById('landing-page').classList.remove('hidden');
+                document.getElementById('workspace-ui').classList.add('hidden');
+                document.getElementById('pro-container').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('saveNickBtn').onclick = async () => {
+            const n = document.getElementById('nickInput').value;
+            if(n) { 
+                await setDoc(doc(db, "users", auth.currentUser.uid), {nickname: n}); 
+                document.getElementById('onboarding-ui').classList.add('hidden');
+                location.reload(); 
             }
         };
 
-        window.selectPrice = (plan) => {
-            document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(plan === 'monthly' ? 'priceMonthly' : 'priceLifetime').classList.add('selected');
-        };
-
+        // Utility: Mode and Slider
         window.setMode = (m, el) => {
-            currentMode = m;
             document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('quizSliderContainer').classList.toggle('hidden', m !== 'quiz');
         };
-
-        window.openPremiumModal = () => document.getElementById('premiumModal').classList.remove('hidden');
-        window.closePremiumModal = () => document.getElementById('premiumModal').classList.add('hidden');
-
-        document.getElementById('studyInput').oninput = (e) => {
-            const words = e.target.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            document.getElementById('wordCount').innerText = `${words} / 2000 WORDS`;
-        };
-
-        document.getElementById('generateBtn').onclick = async () => {
-            const input = document.getElementById('studyInput').value;
-            if(!input) return;
-            if(currentMode === 'quiz' || currentMode === 'flash') await startInteractive(input);
-            else await runStandard(input);
-        };
-
-        async function startInteractive(input) {
-            const area = document.getElementById('interactiveArea'); area.classList.remove('hidden');
-            document.getElementById('contentDisplay').innerHTML = "Generating...";
-            const count = document.getElementById('qSlider').value;
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `JSON ONLY. Create ${count} ${currentMode} items. Format: [{"q":"","options":[],"correct":""}] Based on: ${input}` })});
-            const data = await res.json();
-            quizData = JSON.parse(data.choices[0].message.content.match(/\[[\s\S]*\]/)[0]);
-            currentIdx = 0; score = 0;
-            currentMode === 'quiz' ? renderQuiz() : renderFlashcard();
-        }
-
-        function renderQuiz() {
-            const q = quizData[currentIdx];
-            document.getElementById('scoreBox').classList.remove('hidden');
-            document.getElementById('scoreTracker').innerText = `${currentIdx + 1} / ${quizData.length}`;
-            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black reveal-up"><h3 class="text-2xl font-bold mb-6">${q.q}</h3>`;
-            q.options.forEach(o => html += `<button onclick="handleAns('${o.replace(/'/g, "\\'")}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50">${o}</button>`);
-            document.getElementById('contentDisplay').innerHTML = html + `</div>`;
-        }
-
-        window.handleAns = (ans) => {
-            if(ans.toLowerCase() === quizData[currentIdx].correct.toLowerCase()) score++;
-            if(currentIdx < quizData.length - 1) { currentIdx++; renderQuiz(); } else finishQuiz();
-        };
-
-        async function finishQuiz() {
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Summarize performance: ${score}/${quizData.length}. 2 short sentences.` })});
-            const data = await res.json();
-            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black reveal-up"><h2 class="text-3xl font-black">${score} / ${quizData.length}</h2><div>${marked.parse(data.choices[0].message.content)}</div><button onclick="location.reload()" class="mt-6 font-bold underline">End Session</button></div>`;
-        }
-
-        async function runStandard(input) {
-            document.getElementById('outputArea').classList.remove('hidden');
-            document.getElementById('aiResult').innerHTML = "Generating...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Summary of: ${input}` })});
-            const data = await res.json();
-            document.getElementById('aiResult').innerHTML = marked.parse(data.choices[0].message.content);
-        }
-
-        onAuthStateChanged(auth, async (u) => {
-            if(u) {
-                document.getElementById('login-ui').classList.add('hidden'); document.getElementById('logged-in-ui').classList.remove('hidden'); document.getElementById('archive-link').classList.remove('hidden');
-                const s = await getDoc(doc(db, "users", u.uid));
-                if(s.exists()) document.getElementById('user-display').innerText = s.data().nickname;
-                else document.getElementById('onboarding-ui').style.display = 'block';
-            }
-        });
-        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-        document.getElementById('saveNickBtn').onclick = async () => {
-            const n = document.getElementById('nickInput').value;
-            if(n) { await setDoc(doc(db, "users", auth.currentUser.uid), {nickname: n}); location.reload(); }
-        };
-
-        // FIXED SIGN OUT LOGIC
-        document.getElementById('logoutBtn').onclick = async () => {
-            await signOut(auth);
-            location.reload();
-        };
+        window.updateSlider = (val) => { document.getElementById('qVal').innerText = val > 10 ? val + " (Pro Required)" : val; };
     </script>
 </body>
 </html>
