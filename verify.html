@@ -3,41 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Identity | Clarity</title>
+    <title>Global Verification | Clarity</title>
+    <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; background: #fff; }</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; overflow: hidden; }
+        .heavy-input {
+            background: #f8fafc;
+            border: 4px solid transparent;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .heavy-input:focus {
+            background: #ffffff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 20px rgba(99,102,241,0.05);
+            transform: scale(1.02);
+        }
+        .aura-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-8">
-    <div class="w-full max-w-2xl text-center p-12">
-        <h1 class="text-9xl font-black tracking-tighter mb-8 italic">Secure.</h1>
-        <p class="text-slate-400 font-bold text-3xl mb-16 leading-relaxed">We sent a 6-digit code to your inbox. <br>Paste it here to verify your brilliance.</p>
-        
-        <input type="text" id="codeField" maxlength="6" class="w-full text-center text-8xl font-black tracking-[2rem] bg-slate-50 p-16 rounded-[4rem] outline-none mb-14 border-8 border-transparent focus:border-indigo-100 transition-all shadow-inner" placeholder="000000">
-        
-        <button id="vAction" class="w-full bg-black text-white py-10 rounded-[4rem] font-black text-4xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95">Verify & Enter —></button>
-        <p class="mt-12 text-slate-300 font-bold text-xl">Not seeing it? Check spam or <button onclick="location.reload()" class="text-indigo-600 underline">resend</button></p>
+
+    <div class="w-full max-w-3xl text-center">
+        <div class="mb-16">
+            <img src="Clarity Logo.png" class="h-24 mx-auto mb-10">
+            <h1 class="text-8xl md:text-9xl font-black tracking-tighter mb-8 italic">Verify.</h1>
+            <p id="statusMsg" class="text-slate-400 font-bold text-2xl md:text-3xl max-w-2xl mx-auto leading-relaxed">
+                Check your inbox. We sent a code to unlock your global account.
+            </p>
+        </div>
+
+        <div class="relative max-w-2xl mx-auto">
+            <input type="text" id="codeField" maxlength="6" 
+                class="w-full text-center text-8xl font-black tracking-[2rem] heavy-input p-16 rounded-[4rem] outline-none mb-12" 
+                placeholder="000000">
+            
+            <button id="vAction" 
+                class="w-full bg-black text-white py-10 rounded-[4rem] font-black text-4xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95">
+                Verify Identity —>
+            </button>
+        </div>
+
+        <div class="mt-16">
+            <button onclick="resendCode()" class="text-indigo-600 font-black text-2xl underline decoration-4 underline-offset-8">
+                Resend Global Code
+            </button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", 
+            authDomain: "clarity-study-cd835.firebaseapp.com", 
+            projectId: "clarity-study-cd835", 
+            storageBucket: "clarity-study-cd835.firebasestorage.app", 
+            messagingSenderId: "92484724607", 
+            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" 
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- GLOBAL REAL-TIME OBSERVER ---
+        // This listens to the database. If you verify on another device, 
+        // this page will automatically "poof" and go to the workspace.
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            const userRef = doc(db, "users", user.uid);
+            onSnapshot(userRef, (docSnap) => {
+                if (docSnap.exists() && docSnap.data().isVerified === true) {
+                    document.getElementById('statusMsg').innerText = "Verified! Redirecting...";
+                    document.getElementById('statusMsg').classList.add('text-indigo-600', 'aura-pulse');
+                    setTimeout(() => {
+                        window.location.href = "workspace.html";
+                    }, 1500);
+                }
+            });
+        });
+
+        // MANUAL VERIFY
         document.getElementById('vAction').onclick = async () => {
             const u = auth.currentUser;
-            const entered = document.getElementById('codeField').value;
-            if(!u) return;
+            const entered = document.getElementById('codeField').value.trim();
+            if(!u || entered.length < 6) return;
+
             const snap = await getDoc(doc(db, "users", u.uid));
             if(snap.exists() && snap.data().tempCode === entered) {
                 await updateDoc(doc(db, "users", u.uid), { isVerified: true });
-                window.location.href = "workspace.html";
-            } else { alert("Verification failed. Check your code."); }
+                // onSnapshot above will handle the redirect
+            } else { 
+                alert("Invalid Code.");
+            }
+        };
+
+        // RESEND CODE
+        window.resendCode = async () => {
+            const u = auth.currentUser;
+            if(!u) return;
+            const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+            await updateDoc(doc(db, "users", u.uid), { tempCode: newCode });
+            
+            await fetch('/api/send', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ email: u.email, code: newCode }) 
+            });
+            alert("Code resent to " + u.email);
         };
     </script>
 </body>
