@@ -4,216 +4,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Archive</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; }
-        
-        /* AURA BACKGROUNDS */
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; position: relative; }
         .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.25; animation: drift 25s infinite alternate ease-in-out; }
         .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
         .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
-        @keyframes drift { from { transform: translate(0,0); } to { transform: translate(100px, 100px); } }
+        @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(150px, 150px) scale(1.2); } }
 
-        /* SIDEBAR MATCHED TO WORKSPACE */
-        .sidebar { 
-            width: 320px; 
-            height: 100vh; 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            background: rgba(255, 255, 255, 0.7); 
-            backdrop-filter: blur(30px); 
-            border-right: 1px solid rgba(0,0,0,0.05); 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 50; 
-        }
-
-        .main-content { flex: 1; margin-left: 320px; padding: 60px 100px; }
-
-        /* KNOWLEDGE GALLERY */
-        .knowledge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 40px; }
-        .knowledge-card { 
-            background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 30px; padding: 30px; 
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; height: 320px;
-        }
-        .knowledge-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(99, 102, 241, 0.1); border-color: #6366f1; }
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
+        .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; z-index: 10; }
         
-        .mode-badge { position: absolute; top: 20px; right: 20px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; background: #f1f5f9; }
-
-        /* GLASS SEARCH */
-        .search-container { position: relative; max-width: 600px; margin-bottom: 40px; }
-        .glass-search { width: 100%; padding: 18px 25px 18px 55px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); outline: none; font-weight: 500; transition: 0.3s; }
-        .glass-search:focus { border-color: black; }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); opacity: 0.3; }
-
-        /* SEMANTIC BANNER */
-        .semantic-banner { background: #000; color: white; border-radius: 24px; padding: 25px; margin-bottom: 40px; display: none; align-items: center; justify-content: space-between; }
-        .link-chip { background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; margin-right: 8px; }
-
-        /* AUDIO UI (Consistent with Workspace) */
-        .sound-pill { cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); background: white; padding: 8px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .sound-pill.active { border-color: black; background: black; color: white; }
-        .visualizer-bar { width: 3px; background: currentColor; animation: musicBars 0.6s infinite ease-in-out; }
-        @keyframes musicBars { 0%, 100% { height: 4px; } 50% { height: 12px; } }
-
         .reveal-up { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes revealUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Premium Selection Styles */
+        .pricing-card { border: 2px solid #f1f5f9; cursor: pointer; transition: 0.3s; }
+        .pricing-card.selected { border-color: black; background: #fafafa; }
+        
+        .history-card { background: white; border: 1px solid rgba(0,0,0,0.08); padding: 30px; border-radius: 28px; transition: 0.3s; cursor: pointer; }
+        .history-card:hover { border-color: black; transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
     <div class="aura aura-1"></div>
     <div class="aura aura-2"></div>
 
+    <div id="premiumModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-lg rounded-[40px] p-10 relative shadow-2xl reveal-up">
+            <button onclick="closePremiumModal()" class="absolute top-6 right-8 text-2xl opacity-30">&times;</button>
+            <div class="text-center mb-8">
+                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase">Early Access</span>
+                <h2 class="text-3xl font-black mt-2">Unlock Clarity Pro.</h2>
+            </div>
+            <div class="space-y-4 mb-10 text-left">
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📝</div>
+                    <div><p class="font-bold text-sm">30-Question Quizzes</p><p class="text-xs text-slate-500">Go beyond the 10-question free limit.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🚀</div>
+                    <div><p class="font-bold text-sm">Turbo Speed</p><p class="text-xs text-slate-500">Priority processing for instant study guides.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📚</div>
+                    <div><p class="font-bold text-sm">Unlimited Knowledge</p><p class="text-xs text-slate-500">Remove the 2000-word limit and upload bulk PDFs.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🧠</div>
+                    <div><p class="font-bold text-sm">Spaced Repetition</p><p class="text-xs text-slate-500">Smart flashcard algorithms for long-term memory.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📤</div>
+                    <div><p class="font-bold text-sm">One-Click Export</p><p class="text-xs text-slate-500">Export your study guides directly to Notion or PDF.</p></div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div id="priceMonthly" onclick="selectPrice('monthly')" class="pricing-card p-4 rounded-3xl text-center">
+                    <p class="text-[10px] font-bold opacity-40 uppercase">Monthly</p>
+                    <p class="text-xl font-black">$4.99</p>
+                </div>
+                <div id="priceLifetime" onclick="selectPrice('lifetime')" class="pricing-card selected p-4 rounded-3xl text-center relative">
+                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] px-2 py-1 rounded-full uppercase">Best Deal</span>
+                    <p class="text-[10px] font-bold opacity-40 uppercase">Lifetime</p>
+                    <p class="text-xl font-black">$19.99</p>
+                </div>
+            </div>
+            <button class="w-full bg-black text-white py-5 rounded-2xl font-bold mt-6 opacity-50 cursor-not-allowed uppercase tracking-widest text-xs">Coming Soon</button>
+        </div>
+    </div>
+
     <aside class="sidebar">
         <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
-        
-        <nav class="nav-area px-6 mb-8">
-            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>✦</span> Workspace</a>
-            <a href="saved.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white shadow-xl"><span>📁</span> Archive</a>
+        <nav class="nav-area px-6 mb-8 flex-1">
+            <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50 mb-4"><span>✦</span> Workspace</a>
+            <a href="saved.html" id="archive-link" class="hidden flex items-center gap-4 p-4 rounded-2xl bg-black text-white shadow-xl"><span>📁</span> Archive</a>
         </nav>
-
-        <div class="px-8 mb-8">
-            <p class="text-[9px] font-black uppercase tracking-widest mb-4 opacity-30">Flow State Audio</p>
-            <div id="lofiPill" class="sound-pill" onclick="toggleAudio('lofi')">
-                <div class="visualizer-bar hidden"></div> ☕ Lofi Study
-            </div>
-            <div id="rainPill" class="sound-pill" onclick="toggleAudio('rain')">
-                <div class="visualizer-bar hidden"></div> 🌧️ Rain
-            </div>
-            <audio id="audioPlayer" loop></audio>
+        <div class="px-6 mb-4">
+            <button onclick="openPremiumModal()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg hover:scale-[1.02] transition uppercase tracking-widest">✨ Go Pro</button>
         </div>
-
-        <div class="mt-auto p-8 border-t bg-white/50">
+        <div class="p-8 border-t bg-white/50">
             <div id="logged-in-ui" class="hidden">
                 <p id="user-display" class="font-bold text-lg mb-1"></p>
                 <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
             </div>
+            <div id="login-ui"><button id="loginBtn" class="text-sm font-bold hover:underline">Sign in with Google</button></div>
         </div>
     </aside>
 
-    <main class="main-content">
-        <header class="mb-12">
-            <h1 class="text-5xl font-extrabold tracking-tighter mb-4">Library.</h1>
-            <p class="text-slate-400 font-medium">Your collective intelligence, organized by AI.</p>
-        </header>
+    <main class="workspace-container">
+        <div class="max-w-[1000px] mx-auto">
+            <header class="mb-12">
+                <h2 class="text-7xl font-bold tracking-tighter mb-4">Archive.</h2>
+                <p class="text-slate-500">Your saved study sessions and insights.</p>
+            </header>
 
-        <div id="semanticLinkArea" class="semantic-banner reveal-up">
-            <div>
-                <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-1">AI Insight</p>
-                <h3 id="semanticText" class="text-lg font-bold"></h3>
+            <div id="loadingState" class="text-center opacity-50 py-20 font-bold tracking-widest uppercase text-xs">
+                Loading Knowledge Base...
             </div>
-            <button class="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm">Challenge Me</button>
-        </div>
 
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="librarySearch" class="glass-search" placeholder="Search topics, keywords, or modes...">
-        </div>
-
-        <div id="gridContainer" class="knowledge-grid"></div>
-        <div id="emptyState" class="hidden py-20 text-center opacity-30">
-            <p class="text-xl font-bold">The library is quiet...</p>
+            <div id="historyGrid" class="grid grid-cols-2 gap-6 hidden reveal-up">
+                </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let allLogs = [];
-
-        // AUDIO TOGGLE (Identical to Workspace)
-        window.toggleAudio = (type) => {
-            const player = document.getElementById('audioPlayer');
-            const lofi = document.getElementById('lofiPill');
-            const rain = document.getElementById('rainPill');
-            const urls = { 
-                lofi: 'https://stream.zeno.fm/0r0xa792kwzuv', 
-                rain: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg'
-            };
-
-            if(player.src === urls[type] && !player.paused) {
-                player.pause();
-                lofi.classList.remove('active'); rain.classList.remove('active');
-                lofi.querySelector('.visualizer-bar').classList.add('hidden');
-                rain.querySelector('.visualizer-bar').classList.add('hidden');
-            } else {
-                player.src = urls[type];
-                player.play();
-                lofi.classList.toggle('active', type === 'lofi');
-                rain.classList.toggle('active', type === 'rain');
-                lofi.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'lofi');
-                rain.querySelector('.visualizer-bar').classList.toggle('hidden', type !== 'rain');
-            }
+        // UI Logic
+        window.openPremiumModal = () => document.getElementById('premiumModal').classList.remove('hidden');
+        window.closePremiumModal = () => document.getElementById('premiumModal').classList.add('hidden');
+        window.selectPrice = (plan) => {
+            document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(plan === 'monthly' ? 'priceMonthly' : 'priceLifetime').classList.add('selected');
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                document.getElementById('user-display').innerText = user.displayName || "User";
-                const q = query(collection(db, "study_logs"), where("userId", "==", user.uid), orderBy("timestamp", "desc"));
-                const querySnapshot = await getDocs(q);
+        // Load History
+        async function loadHistory(uid) {
+            const grid = document.getElementById('historyGrid');
+            const loader = document.getElementById('loadingState');
+            
+            try {
+                // Adjust this query based on how you save data to Firestore
+                const q = query(collection(db, "users", uid, "history"), orderBy("createdAt", "desc"), limit(10));
+                const snap = await getDocs(q);
                 
-                if(querySnapshot.empty) {
-                    document.getElementById('emptyState').classList.remove('hidden');
-                } else {
-                    querySnapshot.forEach((doc) => allLogs.push({ id: doc.id, ...doc.data() }));
-                    renderLibrary(allLogs);
-                    checkSemanticLinks(allLogs);
+                loader.classList.add('hidden');
+                grid.classList.remove('hidden');
+                grid.innerHTML = "";
+
+                if(snap.empty) {
+                    grid.innerHTML = `<div class="col-span-2 p-10 text-center border-2 border-dashed border-slate-200 rounded-3xl"><p class="text-slate-400 font-bold">Your archive is empty. Head to the Workspace to start studying!</p></div>`;
+                    return;
                 }
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString() : 'Recent';
+                    grid.innerHTML += `
+                        <div class="history-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="bg-slate-100 text-[10px] font-black uppercase px-3 py-1 rounded-md">${data.mode || 'Summary'}</span>
+                                <span class="text-[10px] font-bold text-slate-400">${date}</span>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2 truncate">${data.title || 'Study Session'}</h3>
+                            <p class="text-sm text-slate-500 line-clamp-2">${data.preview || 'Click to view full notes...'}</p>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                loader.innerText = "No saved data found.";
+            }
+        }
+
+        // Auth Logic
+        onAuthStateChanged(auth, async (u) => {
+            if(u) {
+                document.getElementById('login-ui').classList.add('hidden'); 
+                document.getElementById('logged-in-ui').classList.remove('hidden'); 
+                document.getElementById('archive-link').classList.remove('hidden');
+                
+                const s = await getDoc(doc(db, "users", u.uid));
+                if(s.exists()) document.getElementById('user-display').innerText = s.data().nickname;
+                
+                loadHistory(u.uid);
             } else {
-                window.location.href = "index.html";
+                document.getElementById('loadingState').innerText = "Please sign in to view your archive.";
             }
         });
 
-        function renderLibrary(logs) {
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = "";
-            logs.forEach(log => {
-                const date = log.timestamp?.toDate().toLocaleDateString() || "Recent";
-                const card = document.createElement('div');
-                card.className = "knowledge-card reveal-up";
-                card.innerHTML = `
-                    <div class="mode-badge">${log.mode}</div>
-                    <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-4">${date}</p>
-                    <h3 class="text-xl font-bold mb-3 line-clamp-2">${log.topic || "Session"}</h3>
-                    <div class="text-sm text-slate-500 leading-relaxed mb-6 overflow-hidden">${log.content.substring(0, 150)}...</div>
-                    <div class="mt-auto flex gap-2">
-                        ${log.tags ? log.tags.map(t => `<span class="link-chip">#${t}</span>`).join('') : ''}
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        document.getElementById('librarySearch').oninput = (e) => {
-            const val = e.target.value.toLowerCase();
-            const filtered = allLogs.filter(log => 
-                log.topic?.toLowerCase().includes(val) || 
-                log.content?.toLowerCase().includes(val)
-            );
-            renderLibrary(filtered);
+        document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+        
+        // FIXED SIGN OUT LOGIC
+        document.getElementById('logoutBtn').onclick = async () => {
+            await signOut(auth);
+            location.href = 'index.html'; // Redirects to workspace on sign out
         };
-
-        function checkSemanticLinks(logs) {
-            const topics = logs.map(l => l.topic?.toLowerCase()).filter(Boolean);
-            const freq = {};
-            topics.forEach(t => { freq[t] = (freq[t] || 0) + 1; });
-            const common = Object.keys(freq).find(key => freq[key] >= 3);
-            if(common) {
-                document.getElementById('semanticLinkArea').style.display = 'flex';
-                document.getElementById('semanticText').innerText = `You've revisited "${common}" 3 times. Ready for a Master Quiz?`;
-            }
-        }
     </script>
 </body>
 </html>
