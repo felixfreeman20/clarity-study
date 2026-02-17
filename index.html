@@ -1,69 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity | Workspace</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #f8fafc; 
-            margin: 0; 
-            display: flex; 
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* FEATURE: AURA BACKGROUNDS */
-        .aura {
-            position: fixed;
-            width: 800px;
-            height: 800px;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: -1;
-            opacity: 0.25;
-            animation: drift 25s infinite alternate ease-in-out;
-        }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; overflow-x: hidden; position: relative; }
+        .aura { position: fixed; width: 800px; height: 800px; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.25; animation: drift 25s infinite alternate ease-in-out; }
         .aura-1 { background: #6366f1; top: -20%; left: -10%; } 
         .aura-2 { background: #a855f7; bottom: -20%; right: -10%; animation-delay: -7s; }
-        
-        @keyframes drift {
-            0% { transform: translate(0,0) scale(1); }
-            100% { transform: translate(150px, 150px) scale(1.2); }
-        }
+        @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(150px, 150px) scale(1.2); } }
 
-        /* FEATURE: REVEAL ANIMATIONS */
-        .reveal-up {
-            animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes revealUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .sidebar { 
-            width: 320px; 
-            height: 100vh; 
-            position: fixed; 
-            left: 0; 
-            top: 0; 
-            background: rgba(255, 255, 255, 0.7); 
-            backdrop-filter: blur(30px); 
-            border-right: 1px solid rgba(0,0,0,0.05); 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 50; 
-        }
-        
+        .sidebar { width: 320px; height: 100vh; position: fixed; left: 0; top: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 50; }
         .workspace-container { flex: 1; margin-left: 320px; padding: 60px 100px; position: relative; z-index: 10; }
         
-        /* Interactive Cards */
         .flashcard { background: white; border: 2px solid black; border-radius: 40px; height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; cursor: pointer; perspective: 1000px; position: relative; transition: transform 0.6s; transform-style: preserve-3d; margin-top: 20px; }
         .flashcard.flipped { transform: rotateY(180deg); }
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 30px; border-radius: 38px; }
@@ -74,15 +29,13 @@
         .mode-card.active { background: #000 !important; color: #fff !important; box-shadow: none; }
         
         .upload-compact { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 40px; border-radius: 40px; border: 2px dashed rgba(0,0,0,0.1); margin-bottom: 20px; cursor: pointer; transition: 0.2s; }
-        
         .glass-input { width: 100%; height: 250px; border-radius: 28px; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 30px; resize: none; outline: none; font-size: 1.1rem; line-height: 1.8; }
-        .counter { font-size: 10px; font-weight: bold; color: #94a3b8; position: absolute; bottom: 20px; right: 30px; }
-
-        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 2px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
         
-        /* NEXT STEPS DESIGN */
+        .reveal-up { animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes revealUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #onboarding-ui { position: fixed; top: 30px; right: 30px; background: white; padding: 30px; border-radius: 30px; border: 2px solid black; box-shadow: 0 20px 50px rgba(0,0,0,0.15); z-index: 1000; width: 320px; display: none; }
         .next-step-btn { background: white; border: 2px solid black; padding: 14px 24px; border-radius: 18px; font-size: 13px; font-weight: 800; transition: 0.3s; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .next-step-btn:hover { background: #000; color: #fff; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -96,22 +49,53 @@
         <button id="saveNickBtn" class="bg-black text-white font-bold py-4 px-4 rounded-2xl w-full">Complete Setup</button>
     </div>
 
+    <div id="premiumModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-lg rounded-[40px] p-10 relative shadow-2xl reveal-up">
+            <button onclick="closePremiumModal()" class="absolute top-6 right-8 text-2xl opacity-30">&times;</button>
+            <div class="text-center mb-8">
+                <span class="bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-[10px] font-black uppercase">Early Access</span>
+                <h2 class="text-3xl font-black mt-2">Unlock Clarity Pro.</h2>
+            </div>
+            <div class="space-y-4 mb-10">
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">🚀</div>
+                    <div><p class="font-bold text-sm">Priority Processing</p><p class="text-xs text-slate-500">Instant AI generation using Turbo models.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📝</div>
+                    <div><p class="font-bold text-sm">Exam Mode</p><p class="text-xs text-slate-500">30+ question quizzes with no instant feedback.</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-slate-100 p-2 rounded-lg text-lg">📚</div>
+                    <div><p class="font-bold text-sm">Master Study Guides</p><p class="text-xs text-slate-500">Remove the 2000-word limit and upload multiple PDFs.</p></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="border-2 border-slate-100 p-4 rounded-3xl text-center"><p class="text-[10px] font-bold opacity-40">MONTHLY</p><p class="text-xl font-black">$9.99</p></div>
+                <div class="border-2 border-black p-4 rounded-3xl text-center relative">
+                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] px-2 py-1 rounded-full uppercase">Best Value</span>
+                    <p class="text-[10px] font-bold opacity-40">LIFETIME</p><p class="text-xl font-black">$39.99</p>
+                </div>
+            </div>
+            <button class="w-full bg-black text-white py-5 rounded-2xl font-bold mt-6 opacity-50 cursor-not-allowed">Coming Soon</button>
+        </div>
+    </div>
+
     <aside class="sidebar">
         <div class="logo-box p-8"><img src="Clarity Logo.png" alt="Clarity" class="app-logo"></div>
-        
-        <nav class="nav-area px-6 mb-8">
+        <nav class="nav-area px-6 mb-8 flex-1">
             <a href="index.html" class="flex items-center gap-4 p-4 rounded-2xl bg-black text-white mb-4 shadow-xl"><span>✦</span> Workspace</a>
             <a href="saved.html" id="archive-link" class="hidden flex items-center gap-4 p-4 rounded-2xl text-slate-500 hover:bg-slate-50"><span>📁</span> Archive</a>
         </nav>
-
-        <div class="mt-auto p-8 border-t bg-white/50">
+        <div class="px-6 mb-4">
+            <button onclick="openPremiumModal()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg hover:scale-[1.02] transition uppercase tracking-widest">✨ Go Pro</button>
+        </div>
+        <div class="p-8 border-t bg-white/50">
             <div id="logged-in-ui" class="hidden">
                 <p id="user-display" class="font-bold text-lg mb-1"></p>
                 <button id="logoutBtn" class="text-xs text-red-500">Sign Out</button>
             </div>
-            <div id="login-ui">
-                <button id="loginBtn" class="text-sm font-bold hover:underline">Sign in with Google</button>
-            </div>
+            <div id="login-ui"><button id="loginBtn" class="text-sm font-bold hover:underline">Sign in with Google</button></div>
         </div>
     </aside>
 
@@ -127,8 +111,12 @@
             </div>
 
             <div id="quizSliderContainer" class="hidden mb-6 bg-white p-6 rounded-3xl border-2 border-black reveal-up">
-                <div class="flex justify-between mb-2"><span class="text-xs font-bold uppercase">Questions</span> <span id="qVal" class="text-xs font-bold">5</span></div>
-                <input type="range" id="qSlider" min="3" max="25" value="5" class="w-full accent-black" oninput="document.getElementById('qVal').innerText = this.value">
+                <div class="flex justify-between mb-2">
+                    <span class="text-xs font-bold uppercase">Questions</span> 
+                    <span id="qVal" class="text-xs font-bold">5</span>
+                </div>
+                <input type="range" id="qSlider" min="3" max="10" value="5" class="w-full accent-black" oninput="document.getElementById('qVal').innerText = this.value">
+                <p id="proLimitHint" class="text-[9px] font-bold text-indigo-500 mt-2 uppercase tracking-tighter">Pro users unlock up to 30</p>
             </div>
 
             <label id="dropzone" class="upload-compact">
@@ -137,21 +125,14 @@
             </label>
 
             <div class="relative">
-                <div class="absolute top-4 right-4 flex gap-2 z-10">
-                    <button id="voiceBtn" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold">🎤 VOICE</button>
-                    <button onclick="pasteText()" class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold">📋 PASTE</button>
-                </div>
                 <textarea id="studyInput" class="glass-input" placeholder="What are we learning today?"></textarea>
-                <div id="wordCount" class="counter">0 / 2000 WORDS</div>
+                <div id="wordCount" class="text-[10px] font-bold text-slate-400 absolute bottom-6 right-8">0 / 2000 WORDS</div>
             </div>
 
             <button id="generateBtn" class="w-full bg-black text-white py-6 rounded-[30px] font-bold mt-6 text-lg hover:shadow-2xl transition-all active:scale-[0.98]">Start Session</button>
 
             <div id="interactiveArea" class="hidden mt-10">
-                <div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden">
-                    <span class="text-xs font-bold uppercase opacity-40">Progress</span>
-                    <span id="scoreTracker" class="text-lg font-black tracking-tighter">1 / 5</span>
-                </div>
+                <div id="scoreBox" class="flex justify-between items-center mb-4 px-4 hidden"><span class="text-xs font-bold uppercase opacity-40">Progress</span><span id="scoreTracker" class="text-lg font-black">1 / 5</span></div>
                 <div id="contentDisplay"></div>
             </div>
 
@@ -168,7 +149,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
         const app = initializeApp(firebaseConfig);
@@ -180,66 +161,45 @@
         let currentIdx = 0;
         let score = 0;
         let userAnswers = [];
-
-        const studyInput = document.getElementById('studyInput');
-        studyInput.oninput = () => {
-            const words = studyInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            document.getElementById('wordCount').innerText = `${words} / 2000 WORDS`;
-            const btn = document.getElementById('generateBtn');
-            btn.disabled = words > 2000;
-            btn.style.opacity = words > 2000 ? '0.5' : '1';
-        };
+        let isPremium = false; // Simulated
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('fileInput');
-        dropzone.addEventListener('drop', (ev) => { ev.preventDefault(); handleFiles(ev.dataTransfer.files[0]); });
-        fileInput.onchange = (e) => handleFiles(e.target.files[0]);
-
-        async function handleFiles(file) {
-            if (!file) return;
-            document.getElementById('uploadStatus').innerText = "Reading Knowledge...";
-            const reader = new FileReader();
-            if (file.type === "application/pdf") {
-                reader.onload = async function() {
-                    const typedarray = new Uint8Array(this.result);
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let text = "";
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const content = await page.getTextContent();
-                        text += content.items.map(s => s.str).join(" ") + " ";
-                    }
-                    studyInput.value = text; studyInput.oninput();
-                    document.getElementById('uploadStatus').innerText = "Knowledge Absorbed.";
-                };
-                reader.readAsArrayBuffer(file);
-            } else {
-                reader.onload = (e) => { studyInput.value = e.target.result; studyInput.oninput(); document.getElementById('uploadStatus').innerText = "Ready."; };
-                reader.readAsText(file);
-            }
-        }
 
         window.setMode = (m, el) => {
             currentMode = m;
             document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            document.getElementById('quizSliderContainer').classList.toggle('hidden', m !== 'quiz');
+            const sliderCont = document.getElementById('quizSliderContainer');
+            if (m === 'quiz') {
+                sliderCont.classList.remove('hidden');
+                document.getElementById('qSlider').max = isPremium ? 30 : 10;
+            } else {
+                sliderCont.classList.add('hidden');
+            }
+        };
+
+        window.openPremiumModal = () => document.getElementById('premiumModal').classList.remove('hidden');
+        window.closePremiumModal = () => document.getElementById('premiumModal').classList.add('hidden');
+
+        document.getElementById('studyInput').oninput = (e) => {
+            const words = e.target.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            document.getElementById('wordCount').innerText = `${words} / 2000 WORDS`;
+            document.getElementById('generateBtn').disabled = words > 2000;
         };
 
         document.getElementById('generateBtn').onclick = async () => {
-            if(!studyInput.value) return;
+            const input = document.getElementById('studyInput').value;
+            if(!input) return;
             document.getElementById('interactiveArea').classList.add('hidden');
             document.getElementById('outputArea').classList.add('hidden');
-            if(currentMode === 'quiz' || currentMode === 'flash') await startInteractive(studyInput.value);
-            else await runStandard(studyInput.value);
+            if(currentMode === 'quiz' || currentMode === 'flash') await startInteractive(input);
+            else await runStandard(input);
         };
 
         async function startInteractive(input) {
             const area = document.getElementById('interactiveArea');
             area.classList.remove('hidden');
-            area.classList.add('reveal-up');
-            document.getElementById('contentDisplay').innerHTML = "Initializing...";
+            document.getElementById('contentDisplay').innerHTML = "Generating...";
             const count = document.getElementById('qSlider').value;
             const prompt = currentMode === 'quiz' 
                 ? `JSON ONLY. Create ${count} questions. Format: [{"q":"","options":[],"correct":"","type":"mcq"}] Based on: ${input}`
@@ -247,8 +207,7 @@
 
             const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: prompt })});
             const data = await res.json();
-            const jsonMatch = data.choices[0].message.content.match(/\[[\s\S]*\]/);
-            quizData = JSON.parse(jsonMatch[0]);
+            quizData = JSON.parse(data.choices[0].message.content.match(/\[[\s\S]*\]/)[0]);
             currentIdx = 0; score = 0; userAnswers = [];
             if(currentMode === 'quiz') { document.getElementById('scoreBox').classList.remove('hidden'); renderQuiz(); }
             else { document.getElementById('scoreBox').classList.add('hidden'); renderFlashcard(); }
@@ -257,86 +216,48 @@
         function renderQuiz() {
             const q = quizData[currentIdx];
             document.getElementById('scoreTracker').innerText = `${currentIdx + 1} / ${quizData.length}`;
-            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black reveal-up">
-                <p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Question ${currentIdx + 1}</p>
-                <h3 class="text-2xl font-bold mb-6">${q.q}</h3>`;
-            if(q.type === 'mcq') q.options.forEach(o => html += `<button onclick="handleAns('${o.replace(/'/g, "\\'")}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50 transition">${o}</button>`);
-            else html += `<input type="text" id="openAns" class="w-full border-b-2 border-black mb-6 p-2 outline-none"><button onclick="handleAns(document.getElementById('openAns').value)" class="bg-black text-white px-8 py-3 rounded-xl font-bold">Next</button>`;
-            document.getElementById('contentDisplay').innerHTML = html;
+            let html = `<div class="bg-white p-10 rounded-[30px] border-2 border-black reveal-up"><p class="text-[10px] font-bold opacity-30 mb-2 uppercase">Question ${currentIdx + 1}</p><h3 class="text-2xl font-bold mb-6">${q.q}</h3>`;
+            q.options.forEach(o => html += `<button onclick="handleAns('${o.replace(/'/g, "\\'")}')" class="w-full text-left p-4 border rounded-xl mb-3 hover:bg-slate-50 transition">${o}</button>`);
+            document.getElementById('contentDisplay').innerHTML = html + `</div>`;
         }
 
         window.handleAns = (ans) => {
             if(ans.toLowerCase().trim() === quizData[currentIdx].correct.toLowerCase().trim()) score++;
             userAnswers.push({ q: quizData[currentIdx].q, user: ans, correct: quizData[currentIdx].correct });
-            if(currentIdx < quizData.length - 1) { currentIdx++; renderQuiz(); }
-            else { finishQuiz(); }
+            if(currentIdx < quizData.length - 1) { currentIdx++; renderQuiz(); } else finishQuiz();
         };
 
         async function finishQuiz() {
             document.getElementById('contentDisplay').innerHTML = "Grading...";
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. Short summary and tips.` })});
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Results: ${JSON.stringify(userAnswers)}. Give a 2-sentence summary: 1 sentence on performance, 1 sentence on the biggest fix. Bold key terms.` })});
             const data = await res.json();
-            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black reveal-up">
-                <h2 class="text-3xl font-black mb-2">${score} / ${quizData.length}</h2>
-                <div class="prose text-sm">${marked.parse(data.choices[0].message.content)}</div>
-                <button onclick="location.reload()" class="mt-6 font-bold underline">End Session</button>
-            </div>`;
+            document.getElementById('contentDisplay').innerHTML = `<div class="bg-white p-10 rounded-[40px] border-2 border-black reveal-up"><h2 class="text-3xl font-black mb-2">${score} / ${quizData.length}</h2><div class="text-lg">${marked.parse(data.choices[0].message.content)}</div><button onclick="location.reload()" class="mt-6 font-bold underline">End Session</button></div>`;
         }
 
         function renderFlashcard() {
             const f = quizData[currentIdx];
-            document.getElementById('contentDisplay').innerHTML = `
-                <div class="reveal-up">
-                <div class="flashcard" onclick="this.classList.toggle('flipped')">
-                    <div class="card-face card-front"><p class="text-xl font-bold">${f.front}</p></div>
-                    <div class="card-face card-back"><p class="text-xl font-medium">${f.back}</p></div>
-                </div>
-                <div class="flex justify-between items-center mt-6 px-4">
-                    <button id="fPrev" class="font-bold text-xs border-2 border-black px-4 py-2 rounded-lg">PREV</button>
-                    <span class="font-black">${currentIdx + 1} / ${quizData.length}</span>
-                    <button id="fNext" class="font-bold text-xs border-2 border-black px-4 py-2 rounded-lg">NEXT</button>
-                </div>
-                </div>`;
-            document.getElementById('fPrev').onclick = () => { if(currentIdx > 0) { currentIdx--; renderFlashcard(); } };
-            document.getElementById('fNext').onclick = () => { if(currentIdx < quizData.length - 1) { currentIdx++; renderFlashcard(); } };
+            document.getElementById('contentDisplay').innerHTML = `<div class="reveal-up"><div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="card-face card-front"><p class="text-xl font-bold">${f.front}</p></div><div class="card-face card-back"><p class="text-xl font-medium">${f.back}</p></div></div><div class="flex justify-between items-center mt-6 px-4"><button onclick="prevF()" class="font-bold text-xs border-2 border-black px-4 py-2 rounded-lg">PREV</button><span class="font-black">${currentIdx + 1} / ${quizData.length}</span><button onclick="nextF()" class="font-bold text-xs border-2 border-black px-4 py-2 rounded-lg">NEXT</button></div></div>`;
         }
+        window.prevF = () => { if(currentIdx > 0) { currentIdx--; renderFlashcard(); } };
+        window.nextF = () => { if(currentIdx < quizData.length - 1) { currentIdx++; renderFlashcard(); } };
 
         async function runStandard(input) {
-            const out = document.getElementById('outputArea'); 
-            out.classList.remove('hidden');
-            out.classList.add('reveal-up');
-            document.getElementById('aiResult').innerHTML = "Generating Deep Dive...";
-            document.getElementById('nextSteps').classList.add('hidden');
-            
-            let p = `Mode: ${currentMode}. Bullet points, bold headers. CONTENT: ${input}. 
-                     End with "NEXT_TOPICS:" then 3 comma-separated topics.`;
-            
-            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: p })});
+            const out = document.getElementById('outputArea'); out.classList.remove('hidden');
+            document.getElementById('aiResult').innerHTML = "Deep Diving...";
+            const res = await fetch('/api/generate', { method: 'POST', body: JSON.stringify({ promptText: `Mode: ${currentMode}. Bullet points. CONTENT: ${input}. End with "NEXT_TOPICS:" then 3 comma-separated topics.` })});
             const data = await res.json();
-            let text = data.choices[0].message.content;
-            const parts = text.split("NEXT_TOPICS:");
+            const parts = data.choices[0].message.content.split("NEXT_TOPICS:");
             document.getElementById('aiResult').innerHTML = marked.parse(parts[0]);
-            
             if(parts[1]) {
-                const topics = parts[1].split(",").map(t => t.trim());
-                const btnContainer = document.getElementById('nextStepsButtons');
-                btnContainer.innerHTML = "";
-                topics.forEach(topic => {
-                    const b = document.createElement('button');
-                    b.className = "next-step-btn";
-                    b.innerHTML = `<span>✧</span> ${topic}`;
-                    b.onclick = () => { studyInput.value = `Deep dive into ${topic}`; window.scrollTo({top:0, behavior:'smooth'}); studyInput.oninput(); };
-                    btnContainer.appendChild(b);
-                });
+                const btns = document.getElementById('nextStepsButtons'); btns.innerHTML = "";
+                parts[1].split(",").forEach(t => { const b = document.createElement('button'); b.className="next-step-btn"; b.innerHTML=`<span>✧</span> ${t.trim()}`; b.onclick=()=>{document.getElementById('studyInput').value=`Deep dive into ${t.trim()}`; window.scrollTo(0,0);}; btns.appendChild(b); });
                 document.getElementById('nextSteps').classList.remove('hidden');
             }
         }
 
         onAuthStateChanged(auth, async (u) => {
             if(u) {
-                document.getElementById('login-ui').classList.add('hidden');
-                document.getElementById('logged-in-ui').classList.remove('hidden');
-                document.getElementById('archive-link').classList.remove('hidden');
+                document.getElementById('login-ui').classList.add('hidden'); document.getElementById('logged-in-ui').classList.remove('hidden'); document.getElementById('archive-link').classList.remove('hidden');
                 const s = await getDoc(doc(db, "users", u.uid));
                 if(s.exists()) document.getElementById('user-display').innerText = s.data().nickname;
                 else document.getElementById('onboarding-ui').style.display = 'block';
@@ -347,7 +268,6 @@
             const n = document.getElementById('nickInput').value;
             if(n) { await setDoc(doc(db, "users", auth.currentUser.uid), {nickname: n}); location.reload(); }
         };
-        window.pasteText = async () => { studyInput.value += await navigator.clipboard.readText(); studyInput.oninput(); };
     </script>
 </body>
 </html>
