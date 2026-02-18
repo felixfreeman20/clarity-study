@@ -8,207 +8,333 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <style>
+        /* ---------------------------------------------------------
+           PREMIUM DESIGN SYSTEM VARIABLES
+        --------------------------------------------------------- */
         :root { 
-            --bg: #f8fafc; --panel: rgba(255, 255, 255, 0.8); --text: #0f172a; 
-            --border: rgba(226, 232, 240, 0.8); --subtext: #64748b; 
-            --accent: #4f46e5; --accent-soft: rgba(79, 70, 229, 0.1);
-            /* 4. SEMANTIC DEPTH: Multi-layered shadows */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --bg: #f8fafc; 
+            --panel: rgba(255, 255, 255, 0.85); 
+            --text: #0f172a; 
+            --border: rgba(226, 232, 240, 0.9); 
+            --subtext: #64748b; 
+            --accent: #4f46e5; 
+            --accent-soft: rgba(79, 70, 229, 0.08);
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            --glass: blur(25px);
         }
         .dark-theme { 
-            --bg: #020617; --panel: rgba(15, 23, 42, 0.7); --text: #f8fafc; 
-            --border: rgba(30, 41, 59, 0.7); --subtext: #94a3b8;
-            --accent-soft: rgba(79, 70, 229, 0.2);
+            --bg: #020617; 
+            --panel: rgba(15, 23, 42, 0.75); 
+            --text: #f8fafc; 
+            --border: rgba(30, 41, 59, 0.8); 
+            --subtext: #94a3b8;
+            --accent-soft: rgba(79, 70, 229, 0.15);
+            --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         
+        /* ---------------------------------------------------------
+           BASE LAYOUT & ANIMATION
+        --------------------------------------------------------- */
         body { 
-            background-color: var(--bg); color: var(--text); 
-            font-family: 'Inter', sans-serif; font-optical-sizing: auto;
-            letter-spacing: -0.011em; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-            margin: 0; overflow: hidden;
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100vh;
         }
 
-        /* 2. GLASSMORPHISM: Frosted Sidebar */
         .sidebar { 
-            width: 280px; background: var(--panel); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border); height: 100vh; position: fixed; 
-            display: flex; flex-direction: column; z-index: 50; transition: transform 0.4s spring(1, 80, 10, 0);
+            width: 280px; 
+            background: var(--panel); 
+            backdrop-filter: var(--glass); 
+            -webkit-backdrop-filter: var(--glass);
+            border-right: 1px solid var(--border); 
+            height: 100vh; 
+            position: fixed; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 100; 
+            transition: all 0.5s ease;
         }
 
-        .main-content { margin-left: 280px; padding: 60px; height: 100vh; overflow-y: auto; transition: opacity 0.5s ease; }
+        .main-content { 
+            margin-left: 280px; 
+            padding: 50px 80px; 
+            height: 100vh; 
+            overflow-y: auto; 
+            position: relative; 
+            transition: all 0.5s ease;
+        }
         
-        /* 3. PROGRESSIVE DISCLOSURE: Deep Work Mode */
-        .main-content.focus-mode { opacity: 0.15; filter: blur(2px); }
-        .studio-box:focus-within { transform: scale(1.005); box-shadow: 0 20px 50px rgba(0,0,0,0.1); z-index: 60; }
+        /* ---------------------------------------------------------
+           DEEP WORK / FOCUS MODE
+        --------------------------------------------------------- */
+        body.focus-active .sidebar { transform: translateX(-280px); opacity: 0; }
+        body.focus-active header { opacity: 0.1; filter: blur(10px); transform: translateY(-20px); }
+        body.focus-active .main-content { margin-left: 0; padding: 50px 150px; }
+
+        /* ---------------------------------------------------------
+           STUDIO ELEMENTS
+        --------------------------------------------------------- */
         .studio-box { 
-            background: var(--panel); border: 1px solid var(--border); border-radius: 32px; 
-            display: flex; flex-direction: column; height: 70vh; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; backdrop-filter: blur(10px);
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            height: 70vh; 
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative; 
+            backdrop-filter: var(--glass);
+            z-index: 60; 
+            overflow: hidden;
+            box-shadow: var(--shadow-premium);
         }
 
-        /* 2. MICRO-INTERACTIONS: Sliding Pill Navigation */
         .nav-btn { 
-            padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; 
-            cursor: pointer; font-weight: 500; color: var(--subtext); transition: 0.3s; position: relative;
+            padding: 14px 20px; 
+            border-radius: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: var(--subtext); 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            margin-bottom: 4px;
         }
-        .nav-btn:hover { color: var(--text); background: var(--accent-soft); }
-        .nav-btn.active { background: var(--accent); color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .nav-btn:hover { background: var(--accent-soft); color: var(--text); }
+        .nav-btn.active { background: var(--accent); color: white !important; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
 
         .mode-tab { 
-            padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 13px; 
-            border: 1px solid var(--border); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            background: transparent; color: var(--subtext);
+            padding: 12px 22px; 
+            border-radius: 16px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            border: 1.5px solid var(--border); 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            background: transparent; 
+            color: var(--subtext); 
+            white-space: nowrap;
         }
-        .mode-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
-        .mode-tab.pro-only { border-style: dashed; }
+        .mode-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
         
-        .slider { -webkit-appearance: none; width: 100%; height: 4px; background: var(--border); border-radius: 10px; outline: none; }
+        /* ---------------------------------------------------------
+           QUIZ SLIDER & WORD COUNTER
+        --------------------------------------------------------- */
+        .slider { -webkit-appearance: none; width: 100%; height: 5px; background: var(--border); border-radius: 20px; outline: none; }
         .slider::-webkit-slider-thumb { 
-            -webkit-appearance: none; appearance: none; width: 20px; height: 20px; 
-            background: var(--accent); cursor: pointer; border-radius: 50%; border: 3px solid var(--bg);
-            box-shadow: var(--shadow-sm); transition: 0.2s;
+            -webkit-appearance: none; 
+            appearance: none; 
+            width: 24px; height: 24px; 
+            background: var(--accent); 
+            cursor: pointer; 
+            border-radius: 50%; 
+            border: 4px solid var(--bg); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-        .onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; items: center; justify-content: center; backdrop-filter: blur(40px); }
-        .pro-badge { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 2px 7px; border-radius: 6px; font-size: 9px; font-weight: 900; }
-        
+        .count-indicator { 
+            font-size: 11px; font-weight: 900; 
+            letter-spacing: 0.05em; 
+            padding: 6px 14px; 
+            border-radius: 12px; 
+            background: var(--accent-soft);
+            border: 1px solid var(--border); 
+        }
+
+        /* ---------------------------------------------------------
+           INPUT AREA
+        --------------------------------------------------------- */
         textarea { 
-            background: transparent; color: var(--text); resize: none; border: none; outline: none; 
-            width: 100%; height: 100%; padding: 48px; font-size: 20px; line-height: 1.7;
+            background: transparent; 
+            color: var(--text); 
+            resize: none; 
+            border: none; 
+            outline: none; 
+            width: 100%; 
+            height: 100%; 
+            padding: 60px; 
+            font-size: 22px; 
+            line-height: 1.7;
             font-weight: 400;
+            overflow-y: auto;
         }
-        .settings-card { 
-            background: var(--panel); border: 1px solid var(--border); padding: 28px; border-radius: 24px; 
-            transition: 0.3s; backdrop-filter: blur(5px);
-        }
-        .settings-card:hover { border-color: var(--accent); }
 
-        /* Custom Scrollbar for Premium Feel */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--subtext); }
+        /* ---------------------------------------------------------
+           ONBOARDING & PRO CARDS
+        --------------------------------------------------------- */
+        .onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; items: center; justify-content: center; backdrop-filter: blur(50px); }
+        .pro-badge { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; }
+        .settings-card { background: var(--panel); border: 1px solid var(--border); padding: 35px; border-radius: 30px; transition: 0.4s ease; }
+        .settings-card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
-        @keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .ai-loading { animation: shimmer 1.5s infinite; }
+        /* ---------------------------------------------------------
+           ANIMATIONS
+        --------------------------------------------------------- */
+        @keyframes streamIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-stream { animation: streamIn 0.4s ease forwards; }
     </style>
 </head>
 <body class="dark-theme">
 
     <div id="onboarding" class="hidden onboarding-overlay">
-        <div class="max-w-md w-full p-10 text-center animate-in fade-in zoom-in duration-700">
-            <h2 class="text-6xl font-black mb-4 tracking-tighter text-current">Clarity.</h2>
-            <p class="text-gray-500 mb-12 font-medium text-lg">Your workspace is ready. Who are you?</p>
-            <input type="text" id="nickInput" class="w-full text-center text-4xl font-bold bg-transparent border-b-2 border-gray-800 focus:border-indigo-500 outline-none pb-4 mb-16 text-current transition-all" placeholder="Enter Name">
-            <button id="saveNickBtn" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-bold text-lg hover:bg-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/40 transition-all active:scale-95">Enter Private Studio</button>
+        <div class="max-w-xl w-full p-12 text-center animate-stream">
+            <h2 class="text-7xl font-black mb-6 tracking-tighter">Clarity.</h2>
+            <p class="text-gray-500 mb-14 text-xl font-medium">Step into your private study studio.</p>
+            <input type="text" id="nickInput" class="w-full text-center text-4xl font-bold bg-transparent border-b-4 border-gray-800 focus:border-indigo-500 outline-none pb-6 mb-16 text-current transition-all" placeholder="Your Name">
+            <button id="saveNickBtn" class="w-full bg-indigo-600 text-white py-6 rounded-3xl font-black text-xl hover:bg-indigo-500 hover:scale-[1.02] transition-all shadow-2xl shadow-indigo-600/30">Enter Workspace</button>
         </div>
     </div>
 
-    <aside class="sidebar p-8">
-        <div class="flex items-center gap-3 mb-16 px-2">
-            <div class="h-8 w-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
-                <img src="Clarity Logo.png" class="h-5 w-5 brightness-200">
+    <aside class="sidebar p-10">
+        <div class="flex items-center gap-4 mb-20 px-2">
+            <div class="h-10 w-10 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/40">
+                <img src="Clarity Logo.png" class="h-6 w-6 brightness-200">
             </div>
-            <span class="font-extrabold text-xl tracking-tighter">CLARITY</span>
+            <span class="font-black text-2xl tracking-tighter italic">CLARITY</span>
         </div>
 
-        <nav class="flex-1 space-y-2">
+        <nav class="flex-1 space-y-4">
             <div onclick="switchView('studio')" id="tab-studio" class="nav-btn active">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 AI Studio
             </div>
             <div onclick="switchView('pro')" id="tab-pro" class="nav-btn">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"/></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 Pro Features
             </div>
             <div onclick="switchView('settings')" id="tab-settings" class="nav-btn">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
                 Settings
             </div>
         </nav>
 
-        <div class="mt-auto border-t border-gray-800/50 pt-8">
-            <div class="flex items-center gap-4 group cursor-pointer">
-                <div class="h-11 w-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-110 transition-transform" id="userInitial">?</div>
+        <div class="mt-auto border-t border-gray-800/40 pt-10">
+            <div class="flex items-center gap-5 group cursor-pointer" onclick="switchView('settings')">
+                <div class="h-14 w-14 bg-indigo-600 rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-xl group-hover:rotate-6 transition-transform" id="userInitial">?</div>
                 <div class="overflow-hidden">
-                    <p id="profileName" class="font-bold text-sm truncate">Student</p>
-                    <button onclick="logout()" class="text-[10px] uppercase tracking-widest text-gray-500 hover:text-red-500 font-black transition-colors">Sign Out</button>
+                    <p id="profileName" class="font-black text-base truncate tracking-tight">Student</p>
+                    <button onclick="logout()" class="text-[11px] uppercase tracking-widest text-indigo-500 font-black">Disconnect</button>
                 </div>
             </div>
         </div>
     </aside>
 
-    <main class="main-content" id="mainContainer">
+    <main class="main-content">
         
-        <div id="view-studio" class="max-w-5xl">
-            <header class="mb-14">
-                <h1 class="text-5xl font-black tracking-tighter mb-2">AI Studio.</h1>
-                <p class="text-gray-500 font-medium">Processing notes for <span id="helloName" class="text-indigo-500 font-bold">...</span></p>
-            </header>
+        <header class="mb-14 max-w-5xl">
+            <h1 class="text-6xl font-black mb-3 tracking-tighter">AI Studio.</h1>
+            <p class="text-gray-500 text-lg font-medium">Refining knowledge for <span id="helloName" class="text-indigo-500 font-bold">...</span></p>
+        </header>
 
-            <div class="studio-box shadow-premium">
-                <textarea id="aiInput" onfocus="toggleFocus(true)" onblur="toggleFocus(false)" placeholder="Paste your study materials here to begin..."></textarea>
+        <div id="view-studio" class="max-w-5xl">
+            <div class="studio-box">
+                <div class="absolute top-8 right-10 flex items-center gap-5 z-20">
+                    <input type="file" id="pdfInput" accept=".pdf" class="hidden">
+                    <label for="pdfInput" class="cursor-pointer px-6 py-2.5 rounded-2xl text-[11px] font-black tracking-widest bg-white/5 border border-white/10 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        IMPORT PDF
+                    </label>
+                    <div id="wordCounter" class="count-indicator text-gray-400">0 / 1000 WORDS</div>
+                </div>
+
+                <textarea id="aiInput" 
+                    placeholder="Paste your messy lecture notes, transcripts, or thoughts here..." 
+                    onfocus="setFocus(true)" 
+                    onblur="setFocus(false)"></textarea>
                 
-                <div class="p-8 bg-black/10 dark:bg-white/5 rounded-b-[32px] border-t border-gray-100 dark:border-gray-800/50">
-                    <div class="flex flex-wrap items-center justify-between gap-6">
-                        <div class="flex flex-wrap gap-2">
+                <div class="p-10 bg-black/20 dark:bg-white/5 border-t border-gray-800/50">
+                    <div class="flex flex-wrap items-center justify-between gap-8">
+                        <div class="flex flex-wrap gap-3">
                             <button class="mode-tab active" onclick="setMode('deep', this)">Deep Dive</button>
                             <button class="mode-tab" onclick="setMode('speed', this)">Speed</button>
                             <button class="mode-tab" onclick="setMode('flashcards', this)">Flashcards</button>
                             <button class="mode-tab" onclick="setMode('quiz', this)">Quiz</button>
-                            <button class="mode-tab pro-only" onclick="setMode('simulate', this)">Simulate Exam <span class="pro-badge">Pro</span></button>
+                            <button class="mode-tab" onclick="setMode('simulate', this)">Simulate Exam <span class="pro-badge ml-2">PRO</span></button>
                         </div>
 
-                        <button id="genBtn" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-sm hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20 active:scale-95 flex items-center gap-3">
-                            GENERATE <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1a1 1 0 112 0v1a1 1 0 11-2 0zM13.536 14.95a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM15 10a5 5 0 11-10 0 5 5 0 0110 0z"/></svg>
+                        <button id="genBtn" class="bg-indigo-600 text-white px-12 py-5 rounded-[24px] font-black text-sm hover:bg-indigo-500 hover:shadow-2xl hover:shadow-indigo-600/30 active:scale-95 transition-all">
+                            GENERATE
                         </button>
                     </div>
 
-                    <div id="quizConfig" class="hidden mt-8 pt-8 border-t border-gray-800/30">
-                        <div class="flex items-center justify-between mb-5 px-1">
-                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Question Volume</p>
-                            <span id="sliderVal" class="font-black text-indigo-500 text-xl tracking-tighter">5</span>
+                    <div id="quizConfig" class="hidden mt-10 pt-10 border-t border-gray-800/30 animate-stream">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <p class="text-[11px] font-black text-gray-500 uppercase tracking-widest">Question Quantity</p>
+                                <p id="proWarning" class="hidden text-[10px] text-indigo-400 font-bold mt-1 uppercase">Free tier: Max 10. Go Pro for 50.</p>
+                            </div>
+                            <span id="sliderVal" class="font-black text-indigo-500 text-3xl tracking-tighter">5</span>
                         </div>
                         <input type="range" min="5" max="50" value="5" step="5" class="slider" id="questionSlider">
-                        <p id="proWarning" class="hidden text-[10px] text-indigo-400 font-bold mt-4 uppercase tracking-widest text-center">Pro Membership unlocks up to 50 questions.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="view-pro" class="hidden max-w-4xl">
-            <h1 class="text-5xl font-black mb-12 tracking-tighter">Clarity Pro.</h1>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="settings-card bg-indigo-600/5">
-                    <h3 class="text-xl font-bold mb-3">Simulate Exam</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Experience real exam pressure with AI-curated timed tests that adapt to your weaknesses.</p>
-                    <span class="pro-badge px-3 py-1">UNLOCKED WITH PRO</span>
+        <div id="view-pro" class="hidden max-w-6xl animate-stream">
+            <h1 class="text-7xl font-black mb-6 tracking-tighter">Pro Access.</h1>
+            <p class="text-gray-500 text-xl mb-16 font-medium">The complete toolkit for academic excellence.</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="settings-card bg-indigo-600/10 border-indigo-500/40">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">3,000 Words</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Process entire textbooks, long-form journals, or full hour-long lecture transcripts without hitting limits.</p>
                 </div>
                 <div class="settings-card">
-                    <h3 class="text-xl font-bold mb-3">Unlimited Quizzes</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Break the 10-question barrier. Generate up to 50 targeted questions for deep subject mastery.</p>
-                    <button class="text-indigo-500 font-bold text-sm">Upgrade Now →</button>
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Simulate Exam</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Mimic real-world testing environments with timed AI-generated exams that grade you on logic, not just keywords.</p>
+                </div>
+                <div class="settings-card">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Audio Lectures</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Convert your summaries into high-fidelity AI voice podcasts. Study while you commute or workout.</p>
+                </div>
+                <div class="settings-card">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Mind Map Export</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Instantly visualize your notes as structural diagrams. Export to PDF or high-res SVG for printing.</p>
+                </div>
+                <div class="settings-card">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Active Recall</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Smart notification system that pings you exactly when you're likely to forget a concept based on your quiz data.</p>
+                </div>
+                <div class="settings-card">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Custom Quizzes</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Unlock advanced quiz formats: Fill-in-the-blank, Case Study analysis, and Boolean (True/False) mastery.</p>
+                </div>
+                <div class="settings-card">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Unlimited Storage</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Archive every summary, every flashcard, and every quiz result forever in the Clarity Cloud.</p>
+                </div>
+                <div class="settings-card">
+                    <h3 class="text-2xl font-black mb-4 tracking-tight">Priority AI</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Bypass server congestion during peak exam seasons. Your requests are prioritized for sub-2-second results.</p>
+                </div>
+                <div class="settings-card bg-indigo-600 flex flex-col justify-center items-center text-center text-white">
+                    <h3 class="text-3xl font-black mb-2">$9.99/mo</h3>
+                    <p class="text-white/70 font-bold text-sm mb-6 uppercase tracking-widest">Mastery Plan</p>
+                    <button class="bg-white text-indigo-600 px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">UPGRADE NOW</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-settings" class="hidden max-w-2xl">
-            <h1 class="text-5xl font-black mb-12 tracking-tighter">Settings.</h1>
-            <div class="space-y-4">
+        <div id="view-settings" class="hidden max-w-2xl animate-stream">
+            <h1 class="text-6xl font-black mb-12 tracking-tighter">Settings.</h1>
+            <div class="space-y-6">
                 <div class="settings-card flex items-center justify-between">
                     <div>
-                        <p class="font-bold">Dark Mode</p>
-                        <p class="text-gray-400 text-xs">Switch to light interface.</p>
+                        <p class="text-xl font-black tracking-tight">Appearance</p>
+                        <p class="text-gray-500 text-sm">Switch between Light and Dark themes.</p>
                     </div>
-                    <button onclick="toggleTheme()" class="bg-gray-800/50 p-3 rounded-2xl hover:bg-indigo-600 transition-all">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    </button>
+                    <button onclick="toggleTheme()" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold">Toggle</button>
                 </div>
                 <div class="settings-card">
-                    <p class="font-bold mb-1">Reset Session</p>
-                    <button onclick="resetName()" class="text-red-500 font-black text-xs uppercase tracking-widest mt-4">Wipe Identity</button>
+                    <p class="text-xl font-black tracking-tight mb-2">Danger Zone</p>
+                    <p class="text-gray-500 text-sm mb-8">Resetting your identity will clear your nickname from the cloud.</p>
+                    <button onclick="resetName()" class="text-red-500 font-black text-xs uppercase tracking-widest bg-red-500/10 px-6 py-3 rounded-xl border border-red-500/20">Wipe Identity Data</button>
                 </div>
             </div>
         </div>
@@ -227,17 +353,14 @@
         let userDoc = null;
         let activeMode = 'deep';
 
-        onAuthStateChanged(auth, async (user) => {
-            if(!user) return window.location.href="index.html";
-            const snap = await getDoc(doc(db, "users", user.uid));
+        // AUTH & ONBOARDING SYSTEM
+        onAuthStateChanged(auth, async (u) => {
+            if(!u) return window.location.href="index.html";
+            const snap = await getDoc(doc(db, "users", u.uid));
             if(snap.exists()){
                 userDoc = snap.data();
-                if(userDoc.isVerified === false) return window.location.href="verify.html";
-                if(!userDoc.nickname) {
-                    document.getElementById('onboarding').classList.remove('hidden');
-                } else {
-                    setupWorkspace(userDoc.nickname);
-                }
+                if(!userDoc.nickname) document.getElementById('onboarding').classList.remove('hidden');
+                else setupWorkspace(userDoc.nickname);
             }
         });
 
@@ -246,13 +369,54 @@
             document.getElementById('helloName').innerText = name;
             document.getElementById('userInitial').innerText = name.charAt(0).toUpperCase();
             document.getElementById('onboarding').classList.add('hidden');
+            updateWordCountUI();
         }
 
-        // 3. PROGRESSIVE DISCLOSURE: Focus Mode Trigger
-        window.toggleFocus = (isFocused) => {
-            const container = document.getElementById('mainContainer');
-            if(isFocused) container.classList.add('focus-mode');
-            else container.classList.remove('focus-mode');
+        // WORD COUNT & PDF SIMULATION
+        const aiInput = document.getElementById('aiInput');
+        const wordCounter = document.getElementById('wordCounter');
+
+        aiInput.oninput = () => {
+            const words = aiInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const limit = (userDoc && userDoc.isPro) ? 3000 : 1000;
+            
+            if(words > limit) {
+                const truncated = aiInput.value.split(/\s+/).slice(0, limit).join(" ");
+                aiInput.value = truncated;
+                alert(`The ${limit} word limit has been reached.`);
+            }
+            updateWordCountUI();
+        };
+
+        function updateWordCountUI() {
+            const words = aiInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const limit = (userDoc && userDoc.isPro) ? 3000 : 1000;
+            wordCounter.innerText = `${words} / ${limit} WORDS`;
+            wordCounter.style.color = (words >= limit) ? '#f43f5e' : '#94a3b8';
+        }
+
+        document.getElementById('pdfInput').onchange = (e) => {
+            const f = e.target.files[0];
+            if(f) {
+                document.getElementById('genBtn').innerText = "SCANNING PDF...";
+                setTimeout(() => { document.getElementById('genBtn').innerText = "GENERATE"; alert("PDF Data Extracted."); }, 1500);
+            }
+        };
+
+        // UI MOTION LOGIC
+        window.setFocus = (active) => {
+            document.body.classList.toggle('focus-active', active);
+        };
+
+        window.setMode = (mode, btn) => {
+            if(mode === 'simulate' && (!userDoc || !userDoc.isPro)) {
+                switchView('pro');
+                return;
+            }
+            activeMode = mode;
+            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('quizConfig').classList.toggle('hidden', mode !== 'quiz');
         };
 
         const slider = document.getElementById('questionSlider');
@@ -271,52 +435,38 @@
             sliderVal.innerText = val;
         };
 
-        window.setMode = (mode, btn) => {
-            if(mode === 'simulate' && (!userDoc || !userDoc.isPro)) {
-                alert("Simulate Exam requires Pro Membership.");
-                switchView('pro');
-                return;
-            }
-            activeMode = mode;
-            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('quizConfig').classList.toggle('hidden', mode !== 'quiz');
-        };
-
         window.switchView = (v) => {
             ['studio', 'pro', 'settings'].forEach(view => {
-                const el = document.getElementById(`view-${view}`);
-                const tab = document.getElementById(`tab-${view}`);
-                if(el) el.classList.toggle('hidden', view !== v);
-                if(tab) tab.classList.toggle('active', view === v);
+                document.getElementById(`view-${view}`).classList.toggle('hidden', view !== v);
+                document.getElementById(`tab-${view}`).classList.toggle('active', view === v);
             });
         };
 
         window.toggleTheme = () => document.body.classList.toggle('dark-theme');
-
+        window.logout = () => signOut(auth);
+        
         window.resetName = async () => {
-            await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
-            location.reload();
+            if(confirm("Confirm: Reset your identity?")) {
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
+                location.reload();
+            }
         };
 
         document.getElementById('saveNickBtn').onclick = async () => {
-            const nick = document.getElementById('nickInput').value.trim();
-            if(!nick) return;
-            await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: nick });
-            setupWorkspace(nick);
+            const n = document.getElementById('nickInput').value.trim();
+            if(n) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }); setupWorkspace(n); }
         };
 
-        window.logout = () => signOut(auth);
-
         document.getElementById('genBtn').onclick = () => {
-            const input = document.getElementById('aiInput').value;
-            if(!input) return;
-            // 5. AI GHOST WRITING (Placeholder alert for logic flow)
-            document.getElementById('genBtn').innerText = "THINKING...";
+            if(!aiInput.value) return alert("Please provide source material.");
+            const btn = document.getElementById('genBtn');
+            btn.innerText = "PROCESSING...";
+            btn.style.opacity = "0.5";
             setTimeout(() => {
-                document.getElementById('genBtn').innerText = "GENERATE";
-                alert("AI Engine: " + activeMode.toUpperCase());
-            }, 1500);
+                btn.innerText = "GENERATE";
+                btn.style.opacity = "1";
+                alert(`Engine active: ${activeMode.toUpperCase()}\nStatus: Success`);
+            }, 2500);
         };
     </script>
 </body>
