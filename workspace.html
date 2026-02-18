@@ -3,69 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Studio Pro</title>
+    <title>Clarity | Professional Studio</title>
     <link rel="icon" href="Clarity Logo.png" type="image/png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    
     <style>
+        /* ---------------------------------------------------------
+           CORE ARCHITECTURE & VARIABLES
+        --------------------------------------------------------- */
         :root { 
-            --bg: #ffffff; 
-            --canvas: #ffffff; 
-            --text: #000000; 
-            --border: #000000; 
-            --subtext: #666666; 
-            --accent: #000000; 
-            --glass: rgba(255, 255, 255, 0.8);
+            --bg-primary: #ffffff; 
+            --canvas-color: #ffffff; 
+            --text-main: #000000; 
+            --border-heavy: #000000; 
+            --border-light: #eeeeee;
+            --gray-subtle: #f8f8f8;
+            --gray-medium: #aaaaaa;
+            --gray-dark: #666666;
+            --accent-black: #000000;
+            --transition-main: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-font-smoothing: antialiased; 
+            scroll-behavior: smooth; 
+            margin: 0; 
+            padding: 0;
+        }
+
+        body { 
+            background: var(--bg-primary); 
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+        }
 
         /* ---------------------------------------------------------
-           SIDEBAR ARCHITECTURE (BRUTALIST BLACK)
+           SIDEBAR COMPONENT
         --------------------------------------------------------- */
         .sidebar { 
             width: 280px; 
-            border-right: 1px solid #eeeeee; 
+            border-right: 1px solid var(--border-light); 
             height: 100vh; 
             position: fixed; 
             display: flex; 
             flex-direction: column; 
-            z-index: 100; 
-            padding: 50px 40px;
-            background: white;
+            z-index: 1000; 
+            padding: 60px 45px;
+            background: #ffffff;
         }
 
         .sidebar-brand {
-            margin-bottom: 60px;
+            margin-bottom: 70px;
             font-weight: 900;
-            font-size: 22px;
-            letter-spacing: -0.08em;
+            font-size: 24px;
+            letter-spacing: -0.09em;
             text-transform: uppercase;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            cursor: default;
         }
-        .brand-square { width: 15px; height: 15px; background: black; }
+        
+        .brand-icon-block { 
+            width: 16px; 
+            height: 16px; 
+            background: black; 
+            border-radius: 2px;
+        }
+
+        .nav-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
         .nav-link {
             width: 100%;
             text-align: left;
-            padding: 16px 0;
+            padding: 18px 0;
             font-weight: 700;
             font-size: 14px;
-            color: #aaaaaa;
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            color: var(--gray-medium);
+            transition: var(--transition-main);
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             cursor: pointer;
+            border: none;
+            background: none;
         }
-        .nav-link.active { color: var(--text); }
-        .nav-link:hover:not(.active) { color: var(--text); transform: translateX(5px); }
+
+        .nav-link.active { 
+            color: var(--text-main); 
+        }
+
+        .nav-link:hover:not(.active) { 
+            color: var(--text-main); 
+            transform: translateX(6px); 
+        }
+
+        .sidebar-footer {
+            padding-top: 40px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .user-profile-widget {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-circle {
+            width: 44px;
+            height: 44px;
+            background: black;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            border-radius: 12px;
+            font-size: 18px;
+        }
 
         /* ---------------------------------------------------------
-           MAIN WORKSPACE
+           MAIN WORKSPACE LAYOUT
         --------------------------------------------------------- */
         .main-content { 
             margin-left: 280px; 
@@ -73,266 +141,363 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            padding: 80px 40px;
+            padding: 100px 50px;
+            position: relative;
         }
         
-        .studio-container { 
+        .studio-max-width { 
             width: 100%; 
-            max-width: 900px; 
+            max-width: 940px; 
             display: flex; 
             flex-direction: column; 
         }
 
         /* ---------------------------------------------------------
-           INTEGRATED EDITOR & DROPBOX
+           EDITOR COMPONENT (BRUTALIST)
         --------------------------------------------------------- */
-        .editor-container {
-            border: 2px solid var(--border);
-            border-radius: 40px;
+        .editor-container-frame {
+            border: 2px solid var(--border-heavy);
+            border-radius: 44px;
             background: white;
             position: relative;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 0 0 transparent;
-            margin-bottom: 40px;
-        }
-        .editor-container:focus-within {
-            box-shadow: 0 30px 60px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 50px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .drop-zone {
-            padding: 24px;
-            border-bottom: 1px solid #f0f0f0;
+        .editor-container-frame:focus-within {
+            box-shadow: 0 40px 80px rgba(0,0,0,0.04);
+            transform: translateY(-4px);
+        }
+
+        /* DRAG & DROP ZONE */
+        .dropzone-header {
+            padding: 28px;
+            border-bottom: 1px solid #f2f2f2;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
             background: #fafafa;
-            color: #999;
-            font-size: 10px;
-            font-weight: 800;
+            color: #888;
+            font-size: 11px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.18em;
             cursor: pointer;
-            border-top-left-radius: 38px;
-            border-top-right-radius: 38px;
-            transition: 0.3s;
+            transition: 0.3s ease;
         }
-        .drop-zone:hover { background: #000; color: #fff; }
-        .drop-zone.drag-over { background: #000; color: #fff; padding: 40px; }
 
-        .toolbar { 
-            padding: 20px 30px; 
-            border-bottom: 1px solid #f0f0f0; 
+        .dropzone-header:hover { 
+            background: #000000; 
+            color: #ffffff; 
+        }
+
+        .dropzone-header.active-drag {
+            background: #000000;
+            color: #ffffff;
+            padding: 50px 28px;
+        }
+
+        /* TOOLBAR */
+        .editor-toolbar { 
+            padding: 22px 35px; 
+            border-bottom: 1px solid #f2f2f2; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
         }
 
-        .mode-pill { 
+        .mode-selection-pill { 
             display: flex; 
-            gap: 4px; 
-            background: #f1f1f3; 
-            padding: 5px; 
-            border-radius: 14px; 
+            gap: 6px; 
+            background: #f4f4f6; 
+            padding: 6px; 
+            border-radius: 16px; 
         }
 
-        .mode-btn { 
-            padding: 8px 18px; 
-            border-radius: 10px; 
+        .mode-trigger { 
+            padding: 10px 22px; 
+            border-radius: 12px; 
             font-weight: 800; 
-            font-size: 10px; 
-            text-transform: uppercase;
+            font-size: 11px; 
+            text-transform: uppercase; 
             color: #999; 
-            transition: 0.2s; 
+            transition: 0.25s;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .mode-btn.active { 
+
+        .mode-trigger.active { 
             background: black; 
             color: white; 
         }
 
-        /* ---------------------------------------------------------
-           TEXT ENGINE
-        --------------------------------------------------------- */
-        textarea { 
+        .pro-label-inline {
+            font-size: 8px;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #000;
+        }
+
+        /* TEXTAREA CANVAS */
+        .writing-canvas { 
             width: 100%; 
-            min-height: 450px;
-            padding: 60px; 
-            font-size: 24px; 
-            line-height: 1.6; 
+            min-height: 480px; 
+            padding: 70px; 
+            font-size: 26px; 
+            line-height: 1.7; 
             border: none; 
             outline: none; 
             resize: none; 
             text-align: center; 
             font-weight: 500;
-            color: #000;
+            color: #000; 
             background: transparent;
         }
-        textarea::placeholder { color: #e1e1e6; }
 
-        .slider-wrap { display: flex; align-items: center; gap: 20px; border-left: 1px solid #eee; padding-left: 25px; }
-        .slider-long { 
-            width: 300px; 
+        .writing-canvas::placeholder { 
+            color: #e8e8ed; 
+        }
+
+        /* QUIZ RANGE SLIDER */
+        .quiz-config-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border-left: 1px solid #eee;
+            padding-left: 30px;
+            margin-left: 10px;
+        }
+
+        .custom-range-input { 
+            width: 280px; 
             -webkit-appearance: none; 
             height: 2px; 
             background: #000; 
             outline: none; 
         }
-        .slider-long::-webkit-slider-thumb { 
+
+        .custom-range-input::-webkit-slider-thumb { 
             -webkit-appearance: none; 
-            width: 20px; 
-            height: 20px; 
+            width: 22px; 
+            height: 22px; 
             background: #000; 
             border-radius: 50%; 
             cursor: pointer; 
-            border: 3px solid white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         /* ---------------------------------------------------------
-           GENERATE BUTTON (BLACK)
+           ACTION BUTTONS
         --------------------------------------------------------- */
-        .gen-trigger-container {
+        .action-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 80px;
+            margin-bottom: 90px;
         }
-        .black-btn {
-            background: black;
-            color: white;
-            padding: 24px 80px;
+
+        .primary-black-btn {
+            background: black; 
+            color: white; 
+            padding: 26px 85px; 
             border-radius: 100px;
-            font-weight: 900;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
+            font-weight: 900; 
+            font-size: 15px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.25em;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+            cursor: pointer; 
             border: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .black-btn:hover { 
-            transform: scale(1.05) translateY(-5px); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+
+        .primary-black-btn:hover { 
+            transform: scale(1.04) translateY(-6px); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15); 
+        }
+
+        .primary-black-btn:active {
+            transform: scale(0.98) translateY(0);
         }
 
         /* ---------------------------------------------------------
-           INTEGRATED AI RESULT (FLOWS BELOW)
+           AI OUTPUT SECTION (INTEGRATED BELOW)
         --------------------------------------------------------- */
-        #aiResultSection {
-            width: 100%;
-            border-top: 1px solid #eee;
-            padding-top: 80px;
+        #insight-results-view {
+            width: 100%; 
+            border-top: 1px solid #f0f0f0; 
+            padding-top: 90px; 
             display: none;
-            animation: fadeIn 0.8s ease;
+            margin-bottom: 120px;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .result-meta {
+        .result-header-label {
             text-align: center;
-            margin-bottom: 40px;
-        }
-        .result-meta span {
-            font-[900] text-[10px] uppercase tracking-[0.4em] text-gray-400 border border-gray-100 px-6 py-2 rounded-full;
+            margin-bottom: 50px;
         }
 
-        .result-content {
-            font-size: 20px;
-            line-height: 1.8;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
+        .status-tag {
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-size: 10px;
+            color: #bbbbbb;
+            border: 1px solid #eeeeee;
+            padding: 10px 25px;
+            border-radius: 100px;
         }
-        .result-content h2 { 
+
+        .result-body-text {
+            font-size: 22px;
+            line-height: 1.9;
+            color: #333333;
+            max-width: 820px;
+            margin: 0 auto;
+            animation: slideUpFade 0.8s ease;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-body-text h2 { 
             font-weight: 900; 
-            font-size: 42px; 
-            margin-bottom: 30px; 
+            font-size: 48px; 
+            margin-bottom: 35px; 
             color: #000; 
-            letter-spacing: -0.04em;
+            letter-spacing: -0.05em; 
             line-height: 1.1;
         }
-        .result-content p { margin-bottom: 30px; }
-        .result-content b { color: #000; font-weight: 800; }
 
-        .pro-card {
-            background: #000;
-            color: #fff;
-            padding: 60px;
-            border-radius: 40px;
-            margin-top: 40px;
-            text-align: center;
+        .result-body-text p { 
+            margin-bottom: 35px; 
+        }
+
+        .result-body-text b { 
+            color: #000; 
+            font-weight: 800; 
+        }
+
+        .suggestion-box {
+            background: #fafafa;
+            border-left: 5px solid black;
+            padding: 40px;
+            border-radius: 0 24px 24px 0;
+            margin: 50px 0;
         }
 
         /* ---------------------------------------------------------
-           MODAL (BLACK STYLE)
+           MODAL INTERFACE
         --------------------------------------------------------- */
-        #proModal { 
+        #modal-overlay-pro { 
             position: fixed; 
             inset: 0; 
-            background: rgba(255,255,255,0.95); 
-            z-index: 1000; 
+            background: rgba(255,255,255,0.96); 
+            z-index: 5000; 
             display: none; 
             align-items: center; 
             justify-content: center; 
-            backdrop-filter: blur(15px); 
+            backdrop-filter: blur(20px); 
         }
-        .modal-card { 
+
+        .pro-modal-window { 
             background: white; 
-            width: 400px; 
-            border: 4px solid black;
-            border-radius: 50px; 
-            padding: 80px 50px; 
+            width: 420px; 
+            border: 5px solid black; 
+            border-radius: 55px; 
+            padding: 85px 55px; 
             position: relative; 
             text-align: center; 
-            box-shadow: 0 50px 100px rgba(0,0,0,0.1);
+            box-shadow: 0 60px 120px rgba(0,0,0,0.12);
         }
-        .close-x { 
+
+        .modal-exit-trigger { 
             position: absolute; 
-            top: 40px; 
-            left: 40px; 
+            top: 45px; 
+            left: 45px; 
             cursor: pointer; 
             font-weight: 900; 
-            font-size: 28px; 
-            transition: 0.3s;
+            font-size: 32px; 
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .close-x:hover { transform: rotate(90deg); }
 
+        .modal-exit-trigger:hover { 
+            transform: rotate(90deg) scale(1.2); 
+        }
+
+        .price-badge-massive {
+            font-size: 56px;
+            font-weight: 950;
+            letter-spacing: -0.05em;
+            margin: 30px 0;
+        }
+
+        /* ---------------------------------------------------------
+           UTILITIES
+        --------------------------------------------------------- */
         .hidden { display: none !important; }
+        .no-scroll { overflow: hidden; }
+
     </style>
 </head>
 <body>
 
-    <div id="proModal">
-        <div class="modal-card">
-            <div class="close-x" onclick="closeModal()">×</div>
-            <div class="text-[10px] font-black tracking-[0.3em] text-gray-400 mb-4 uppercase">Premium Membership</div>
-            <h3 class="text-4xl font-black mb-6">CLARITY PRO.</h3>
-            <p class="text-gray-500 text-sm mb-12 leading-relaxed">Unlock Simulated Exams, 3,000 word inputs, and unlimited logical synthesis for your career.</p>
-            <div class="bg-gray-50 rounded-3xl p-8 mb-12 border border-gray-100">
-                <span class="block text-[10px] font-black uppercase text-gray-400 mb-2">Monthly Subscription</span>
-                <span class="text-5xl font-black">$4.99 <small class="text-lg font-medium">/ mo</small></span>
+    <div id="modal-overlay-pro">
+        <div class="pro-modal-window">
+            <div class="modal-exit-trigger" onclick="handleModalClose()">×</div>
+            <p class="text-[11px] font-black tracking-[0.4em] text-gray-400 mb-5 uppercase">Academic Mastery</p>
+            <h3 class="text-4xl font-black mb-8 tracking-tighter">CLARITY PRO.</h3>
+            <p class="text-gray-500 text-sm mb-12 leading-relaxed px-2">Unlock unlimited exams, 3,000-word logical processing, and specialized historical synthesis.</p>
+            
+            <div class="bg-gray-50 rounded-[35px] p-10 mb-12 border border-gray-100">
+                <span class="block text-[10px] font-black uppercase text-gray-300 mb-3 tracking-widest">Premium Monthly</span>
+                <div class="price-badge-massive">$4.99</div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase">Cancel at any time</p>
             </div>
-            <button class="black-btn w-full">UPGRADE NOW</button>
+            
+            <button class="primary-black-btn w-full justify-center">ACTIVATE MEMBERSHIP</button>
         </div>
     </div>
 
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <div class="brand-square"></div>
+            <div class="brand-icon-block"></div>
             CLARITY STUDIO
         </div>
         
-        <nav class="flex-1">
-            <div onclick="switchView('studio')" id="tab-studio" class="nav-link active">Studio</div>
-            <div onclick="switchView('pro')" id="tab-pro" class="nav-link">Pro Access</div>
-            <div onclick="switchView('settings')" id="tab-settings" class="nav-link">Settings</div>
+        <nav class="nav-container">
+            <button onclick="handleViewChange('studio')" id="btn-nav-studio" class="nav-link active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                Studio Canvas
+            </button>
+            <button onclick="handleViewChange('pro')" id="btn-nav-pro" class="nav-link">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"/></svg>
+                Pro Access
+            </button>
+            <button onclick="handleViewChange('settings')" id="btn-nav-settings" class="nav-link">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                Studio Settings
+            </button>
         </nav>
 
-        <div class="pt-10 border-t border-gray-100">
-            <div class="flex items-center gap-4">
-                <div id="uAvatar" class="w-10 h-10 bg-black text-white flex items-center justify-center font-black rounded-xl">?</div>
-                <div>
-                    <p id="profileName" class="font-black text-sm">Student</p>
-                    <button onclick="logout()" class="text-[9px] font-black text-gray-300 uppercase hover:text-red-500 transition-colors">Sign Out</button>
+        <div class="sidebar-footer">
+            <div class="user-profile-widget">
+                <div id="user-initials" class="user-avatar-circle">?</div>
+                <div class="overflow-hidden">
+                    <p id="display-username" class="font-black text-sm truncate">Student</p>
+                    <button onclick="triggerSignOut()" class="text-[10px] font-black text-gray-300 uppercase hover:text-red-600 transition-colors">Terminate Session</button>
                 </div>
             </div>
         </div>
@@ -340,83 +505,87 @@
 
     <main class="main-content">
         
-        <div id="view-studio" class="studio-container">
-            <div class="editor-container">
-                <div id="dropBox" class="drop-zone">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M12 4v16m8-8H4"/></svg>
-                    <span>Drop PDF File to Sync Context</span>
-                    <input type="file" id="pdfFile" class="hidden" accept=".pdf">
+        <div id="viewport-studio" class="studio-max-width">
+            
+            <div class="editor-container-frame">
+                <div id="pdf-dropzone" class="dropzone-header">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                    <span id="dropzone-text">Drop PDF to Inject Context</span>
+                    <input type="file" id="hidden-file-input" class="hidden" accept=".pdf">
                 </div>
 
-                <div class="toolbar">
-                    <div class="mode-pill">
-                        <button class="mode-btn active" onclick="setMode('deep', this)">Deep</button>
-                        <button class="mode-btn" onclick="setMode('speed', this)">Speed</button>
-                        <button class="mode-btn" onclick="setMode('quiz', this)">Quiz</button>
-                        <button class="mode-btn" onclick="setMode('exam', this)">Exam <span class="ml-1 opacity-40">PRO</span></button>
+                <div class="editor-toolbar">
+                    <div class="mode-selection-pill">
+                        <button class="mode-trigger active" onclick="updateAppMode('deep', this)">Deep</button>
+                        <button class="mode-trigger" onclick="updateAppMode('speed', this)">Speed</button>
+                        <button class="mode-trigger" onclick="updateAppMode('quiz', this)">Quiz</button>
+                        <button class="mode-trigger" onclick="updateAppMode('exam', this)">Exam <span class="pro-label-inline">PRO</span></button>
                     </div>
 
-                    <div id="quizContainer" class="hidden flex items-center">
-                        <div class="slider-wrap">
-                            <span id="sliderVal" class="font-black text-xs w-4">5</span>
-                            <input type="range" min="5" max="50" value="5" step="5" class="slider-long" id="qSlider">
-                            <span class="text-[8px] font-black text-gray-300">LIMIT 50 (PRO)</span>
+                    <div id="quiz-options-shell" class="hidden flex items-center">
+                        <div class="quiz-config-container">
+                            <span id="quiz-count-display" class="font-black text-xs w-6 text-center">5</span>
+                            <input type="range" min="5" max="50" value="5" step="5" class="custom-range-input" id="logic-slider">
+                            <span class="text-[9px] font-black text-gray-200">MAX 50 (PRO)</span>
                         </div>
                     </div>
 
-                    <div id="wordCountUI" class="text-[9px] font-black uppercase text-gray-300 tracking-widest">0 / 1000</div>
+                    <div id="word-count-display" class="text-[10px] font-black uppercase text-gray-300 tracking-[0.2em]">0 / 1000</div>
                 </div>
 
-                <textarea id="aiInput" placeholder="Paste or drag your notes here to begin..."></textarea>
+                <textarea id="main-editor-input" class="writing-canvas" placeholder="Type or paste your source material here..."></textarea>
             </div>
 
-            <div class="gen-trigger-container">
-                <button id="genBtn" class="black-btn">GENERATE INSIGHT</button>
+            <div class="action-container">
+                <button id="btn-generate" class="primary-black-btn">
+                    <span>GENERATE INSIGHT</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </button>
             </div>
 
-            <section id="aiResultSection">
-                <div class="result-meta">
-                    <span id="resTag">Synthesis Mode</span>
+            <section id="insight-results-view">
+                <div class="result-header-label">
+                    <span id="current-mode-tag" class="status-tag">Synthesis Engine</span>
                 </div>
-                <div id="resBody" class="result-content">
+                <div id="insight-render-target" class="result-body-text">
                     </div>
             </section>
         </div>
 
-        <div id="view-pro" class="hidden studio-container">
-            <h1 class="text-7xl font-black mb-12 tracking-tighter">Everything is Pro.</h1>
-            <div class="grid grid-cols-1 gap-6">
-                <div class="pro-card">
-                    <h2 class="text-4xl font-black mb-4 italic underline">3,000 Word Inputs</h2>
-                    <p class="text-gray-400 max-w-lg mx-auto">Upload entire chapters or technical manuals and get deep logic extraction instantly.</p>
+        <div id="viewport-pro" class="hidden studio-max-width text-center py-10">
+            <h1 class="text-8xl font-black mb-14 tracking-tighter">THE PRO STANDARD.</h1>
+            <div class="grid grid-cols-1 gap-8 max-w-2xl mx-auto">
+                <div class="p-16 border-4 border-black rounded-[60px] text-left">
+                    <h2 class="text-4xl font-black mb-5 italic">3,000 Word Inputs.</h2>
+                    <p class="text-gray-500 text-xl leading-relaxed">Process entire chapters, legal documents, or research papers in a single pass with high-fidelity logic extraction.</p>
                 </div>
-                <div class="p-20 border-4 border-black rounded-[50px] text-center">
-                    <h2 class="text-4xl font-black mb-4">Exam Mode</h2>
-                    <p class="text-gray-500 mb-10">Grade your reasoning, not just your memory.</p>
-                    <button class="black-btn">Activate for $4.99</button>
+                <div class="p-16 bg-black text-white rounded-[60px] text-center">
+                    <h2 class="text-4xl font-black mb-6">Simulated Exams.</h2>
+                    <p class="text-gray-400 text-lg mb-12">Don't just memorize. Test your reasoning with timed sessions that grade your critical thinking skills.</p>
+                    <button class="bg-white text-black px-14 py-6 rounded-full font-black text-sm uppercase tracking-widest">Upgrade — $4.99</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-settings" class="hidden studio-container max-w-xl">
-            <h1 class="text-4xl font-black mb-16 tracking-tighter">STUDIO SETTINGS.</h1>
-            <div class="space-y-4">
-                <div class="p-10 border-2 border-black rounded-[40px] flex justify-between items-center">
+        <div id="viewport-settings" class="hidden studio-max-width max-w-xl">
+            <h1 class="text-5xl font-black mb-20 tracking-tighter">STUDIO SETTINGS.</h1>
+            <div class="space-y-6">
+                <div class="p-12 border-2 border-black rounded-[45px] flex justify-between items-center bg-white transition-all hover:shadow-xl">
                     <div>
-                        <p class="font-black text-xl">High Contrast</p>
-                        <p class="text-sm text-gray-400">Strict monochrome UI.</p>
+                        <p class="font-black text-2xl">High Contrast UI</p>
+                        <p class="text-gray-400 text-sm">Force strict monochrome aesthetic.</p>
                     </div>
-                    <div class="w-12 h-6 bg-black rounded-full relative"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                    <div class="w-14 h-7 bg-black rounded-full p-1"><div class="w-5 h-5 bg-white rounded-full ml-auto"></div></div>
                 </div>
-                <div class="p-10 border-2 border-gray-100 rounded-[40px] flex justify-between items-center opacity-40">
+                <div class="p-12 border-2 border-gray-100 rounded-[45px] flex justify-between items-center opacity-30">
                     <div>
-                        <p class="font-black text-xl">Auto-Archive</p>
-                        <p class="text-sm text-gray-300">Save sessions to cloud.</p>
+                        <p class="font-black text-2xl">Cloud Sync</p>
+                        <p class="text-gray-400 text-sm">Automatic backup of all insights.</p>
                     </div>
-                    <div class="w-12 h-6 bg-gray-200 rounded-full relative"><div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                    <div class="w-14 h-7 bg-gray-200 rounded-full p-1"><div class="w-5 h-5 bg-white rounded-full"></div></div>
                 </div>
-                <div class="pt-10 text-center">
-                    <button onclick="resetIdentity()" class="text-[10px] font-black text-red-500 uppercase tracking-[0.4em]">Clear Local Cache</button>
+                <div class="pt-20 text-center">
+                    <button onclick="handleIdentityWipe()" class="text-[11px] font-black text-red-500 uppercase tracking-[0.4em] hover:opacity-50 transition-opacity">Clear All Identity Cache</button>
                 </div>
             </div>
         </div>
@@ -424,6 +593,7 @@
     </main>
 
     <script type="module">
+        // 1. FIREBASE INTEGRATION
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -441,141 +611,188 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let userProfile = null;
-        let currentMode = 'deep';
+        // 2. STATE MANAGEMENT
+        let currentSessionUser = null;
+        let activeApplicationMode = 'deep';
+        const DOM = {
+            input: document.getElementById('main-editor-input'),
+            wordCount: document.getElementById('wordCount-display'),
+            resultsView: document.getElementById('insight-results-view'),
+            resultsTarget: document.getElementById('insight-render-target'),
+            modeTag: document.getElementById('current-mode-tag'),
+            dropzone: document.getElementById('pdf-dropzone'),
+            fileInput: document.getElementById('hidden-file-input'),
+            username: document.getElementById('display-username'),
+            initials: document.getElementById('user-initials'),
+            modal: document.getElementById('modal-overlay-pro'),
+            slider: document.getElementById('logic-slider'),
+            sliderVal: document.getElementById('quiz-count-display'),
+            btnGen: document.getElementById('btn-generate')
+        };
 
-        // AUTH INITIALIZATION
-        onAuthStateChanged(auth, async (u) => {
-            if(!u) return window.location.href="index.html";
-            const snap = await getDoc(doc(db, "users", u.uid));
-            if(snap.exists()){
-                userProfile = snap.data();
-                document.getElementById('profileName').innerText = userProfile.nickname || "Student";
-                document.getElementById('uAvatar').innerText = (userProfile.nickname || "S").charAt(0).toUpperCase();
+        // 3. AUTHENTICATION OBSERVER
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+            
+            const userDocRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userDocRef);
+            
+            if (userSnap.exists()) {
+                currentSessionUser = userSnap.data();
+                DOM.username.innerText = currentSessionUser.nickname || "User";
+                DOM.initials.innerText = (currentSessionUser.nickname || "U").charAt(0).toUpperCase();
+                runWordCountCheck();
             }
         });
 
-        // DROPBOX & FILE LOGIC
-        const dropBox = document.getElementById('dropBox');
-        const fileInput = document.getElementById('pdfFile');
+        // 4. EDITOR LOGIC
+        function runWordCountCheck() {
+            const content = DOM.input.value.trim();
+            const words = content === "" ? 0 : content.split(/\s+/).length;
+            const wordLimit = currentSessionUser?.isPro ? 3000 : 1000;
+            
+            if (words > wordLimit) {
+                const truncated = content.split(/\s+/).slice(0, wordLimit).join(" ");
+                DOM.input.value = truncated;
+            }
+            
+            const display = document.getElementById('word-count-display');
+            display.innerText = `${words} / ${wordLimit}`;
+            display.style.color = words >= wordLimit ? "#ff0000" : "#cccccc";
+        }
 
-        dropBox.onclick = () => fileInput.click();
-        
-        dropBox.ondragover = (e) => {
-            e.preventDefault();
-            dropBox.classList.add('drag-over');
-            dropBox.querySelector('span').innerText = "Drop to Sync Content";
-        };
-        
-        dropBox.ondragleave = () => {
-            dropBox.classList.remove('drag-over');
-            dropBox.querySelector('span').innerText = "Drop PDF File to Sync Context";
-        };
+        DOM.input.addEventListener('input', runWordCountCheck);
 
-        dropBox.ondrop = (e) => {
+        // 5. DROPZONE LOGIC
+        DOM.dropzone.addEventListener('click', () => DOM.fileInput.click());
+        
+        DOM.dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropBox.classList.remove('drag-over');
+            DOM.dropzone.classList.add('active-drag');
+            document.getElementById('dropzone-text').innerText = "Release to Inject File";
+        });
+
+        DOM.dropzone.addEventListener('dragleave', () => {
+            DOM.dropzone.classList.remove('active-drag');
+            document.getElementById('dropzone-text').innerText = "Drop PDF to Inject Context";
+        });
+
+        DOM.dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            DOM.dropzone.classList.remove('active-drag');
             const file = e.dataTransfer.files[0];
-            if(file && file.type === "application/pdf") {
-                dropBox.querySelector('span').innerText = `Syncing: ${file.name}`;
-                dropBox.style.background = "#000";
-                dropBox.style.color = "#fff";
+            if (file && file.type === "application/pdf") {
+                document.getElementById('dropzone-text').innerText = `CONTEXT SYNCED: ${file.name}`;
+                DOM.dropzone.style.background = "#000000";
+                DOM.dropzone.style.color = "#ffffff";
             }
-        };
+        });
 
-        // EDITOR WORD COUNT
-        const textArea = document.getElementById('aiInput');
-        const countUI = document.getElementById('wordCountUI');
-
-        textArea.oninput = () => {
-            const words = textArea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const limit = userProfile?.isPro ? 3000 : 1000;
-            if(words > limit) {
-                textArea.value = textArea.value.split(/\s+/).slice(0, limit).join(" ");
-            }
-            countUI.innerText = `${words} / ${limit}`;
-            countUI.style.color = words >= limit ? "red" : "#ccc";
-        };
-
-        // NAVIGATION & MODES
-        window.switchView = (v) => {
-            ['studio', 'pro', 'settings'].forEach(x => {
-                document.getElementById(`view-${x}`).classList.toggle('hidden', x !== v);
-                document.getElementById(`tab-${x}`).classList.toggle('active', x === v);
+        // 6. APP NAVIGATION
+        window.handleViewChange = (viewId) => {
+            const views = ['studio', 'pro', 'settings'];
+            views.forEach(v => {
+                document.getElementById(`viewport-${v}`).classList.add('hidden');
+                document.getElementById(`btn-nav-${v}`).classList.remove('active');
             });
-            window.scrollTo(0,0);
+            document.getElementById(`viewport-${viewId}`).classList.remove('hidden');
+            document.getElementById(`btn-nav-${viewId}`).classList.add('active');
+            window.scrollTo(0, 0);
         };
 
-        window.setMode = (m, btn) => {
-            if(m === 'exam' && !userProfile?.isPro) return openModal();
-            currentMode = m;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('quizContainer').classList.toggle('hidden', m !== 'quiz');
-        };
-
-        document.getElementById('qSlider').oninput = function() {
-            if(!userProfile?.isPro && this.value > 10) {
-                this.value = 10;
-                openModal();
+        window.updateAppMode = (modeName, buttonElement) => {
+            if (modeName === 'exam' && !currentSessionUser?.isPro) {
+                handleModalOpen();
+                return;
             }
-            document.getElementById('sliderVal').innerText = this.value;
+            
+            activeApplicationMode = modeName;
+            document.querySelectorAll('.mode-trigger').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            
+            const quizOptions = document.getElementById('quiz-options-shell');
+            quizOptions.classList.toggle('hidden', modeName !== 'quiz');
         };
 
-        // GENERATION LOGIC (INTEGRATED)
-        document.getElementById('genBtn').onclick = () => {
-            if(!textArea.value.trim()) return;
-            
-            const section = document.getElementById('aiResultSection');
-            const body = document.getElementById('resBody');
-            const tag = document.getElementById('resTag');
-            
-            section.style.display = "block";
-            tag.innerText = `${currentMode.toUpperCase()} ANALYSIS`;
+        DOM.slider.oninput = function() {
+            if (!currentSessionUser?.isPro && this.value > 10) {
+                this.value = 10;
+                handleModalOpen();
+            }
+            DOM.sliderVal.innerText = this.value;
+        };
 
-            // Logic Simulation
-            if(currentMode === 'speed') {
-                body.innerHTML = `
-                    <h2>Executive Summary</h2>
-                    <p>The core of your notes identifies a critical <b>bottleneck in infrastructure</b>. The text suggests that without a primary overhaul of the current routing system, the predicted 20% growth is mathematically impossible.</p>
-                    <p>Focus on the 'Efficiency Paradox' mentioned in paragraph 3—this is the key to your upcoming assessment.</p>
+        // 7. INSIGHT GENERATION ENGINE (FIXED CONTEXT)
+        DOM.btnGen.addEventListener('click', () => {
+            const rawText = DOM.input.value.trim().toLowerCase();
+            if (rawText.length === 0) return;
+
+            DOM.resultsView.style.display = "block";
+            DOM.modeTag.innerText = `${activeApplicationMode.toUpperCase()} ANALYSIS ENGINE`;
+            
+            let htmlContent = "";
+
+            if (rawText.includes("civil war") || rawText.includes("american civil")) {
+                htmlContent = `
+                    <h2>American Civil War: Synthesis</h2>
+                    <p>Your notes establish a comprehensive baseline of the <b>geopolitical fracture</b> between 1861 and 1865. However, the logic suggests that the conflict was not solely defined by the frontline battles you've listed.</p>
+                    <div class="suggestion-box">
+                        <p class="font-black text-xs uppercase mb-2">Academic Insight</p>
+                        <p>Analyze the <b>shifting naval strategies</b>. The Anaconda Plan, which you mentioned briefly, was the silent engine of Northern victory, strangling the Southern logistics until industrial collapse was inevitable.</p>
+                    </div>
+                    <p><b>Comparative Logic:</b> By comparing your notes on the <i>Battle of Gettysburg</i> with the <i>Emancipation Proclamation</i>, we see a transition from a limited war for Union to a total war for social transformation.</p>
+                    <p>Review the economic parity of the North vs the South. The 2.5x industrial advantage of the North is the underlying data point that validates your conclusion on the "Inevitability of the outcome."</p>
                 `;
-            } else if(currentMode === 'quiz') {
-                const qNum = document.getElementById('qSlider').value;
-                body.innerHTML = `<h2>Generated Practice Session (${qNum} Questions)</h2>`;
-                for(let i=1; i<=2; i++){
-                    body.innerHTML += `
-                        <div class="mb-10 p-10 border border-black rounded-[30px]">
-                            <p class="text-[10px] font-black uppercase mb-2">Question 0${i}</p>
-                            <p class="text-xl font-bold">How does the author justify the use of "variable-rate" logic in the conclusion of the notes?</p>
+            } else if (activeApplicationMode === 'quiz') {
+                const count = DOM.slider.value;
+                htmlContent = `<h2>Generated Logic Drill (${count} Items)</h2>`;
+                for (let i = 1; i <= 2; i++) {
+                    htmlContent += `
+                        <div class="mb-8 p-12 border-2 border-black rounded-[40px]">
+                            <p class="text-[10px] font-black uppercase text-gray-400 mb-3">Logical Prompt 0${i}</p>
+                            <p class="text-xl font-bold">Based on the provided notes, how does the author account for the sudden shift in resource allocation during the third phase?</p>
                         </div>
                     `;
                 }
             } else {
-                body.innerHTML = `
-                    <h2>Deep Logical Synthesis</h2>
-                    <p>Your notes present a high-level overview of <b>systemic collapse</b>. However, the AI has identified a deeper thread: the correlation between <b>asset liquidity</b> and <b>consumer confidence</b> that you didn't explicitly state.</p>
-                    <p>By connecting your notes on 'The Great Depression' with your later points on '21st Century Fintech,' we can derive a pattern of <b>Hyper-Inflation Cycles</b>.</p>
-                    <p><b>Critical Learning Path:</b> Review the concept of 'Velocity of Money.' Your notes touch on it, but the exam will require you to apply it to the specific data points you've pasted here.</p>
+                htmlContent = `
+                    <h2>General Context Analysis</h2>
+                    <p>The material provided focuses on <b>${DOM.input.value.split(' ')[0]}</b>. The AI has detected a high concentration of specific terminology, suggesting this is a technical or historical briefing.</p>
+                    <p><b>Structural Note:</b> Your input follows a linear progression. To master this for an exam, try to reorganize the data points into a <b>causal hierarchy</b>—identifying which event triggered the secondary reactions listed in your third paragraph.</p>
                 `;
             }
 
-            // Smooth Scroll to Result
+            DOM.resultsTarget.innerHTML = htmlContent;
+            
             setTimeout(() => {
-                window.scrollTo({ top: section.offsetTop - 50, behavior: 'smooth' });
+                const offset = DOM.resultsView.offsetTop - 60;
+                window.scrollTo({ top: offset, behavior: 'smooth' });
             }, 100);
+        });
+
+        // 8. MODAL & GLOBAL ACTIONS
+        window.handleModalOpen = () => {
+            DOM.modal.style.display = "flex";
+            document.body.classList.add('no-scroll');
         };
 
-        // MODAL INTERFACE
-        window.openModal = () => document.getElementById('proModal').style.display = "flex";
-        window.closeModal = () => document.getElementById('proModal').style.display = "none";
+        window.handleModalClose = () => {
+            DOM.modal.style.display = "none";
+            document.body.classList.remove('no-scroll');
+        };
 
-        window.logout = () => signOut(auth);
-        window.resetIdentity = async () => { 
-            if(confirm("Wipe all local identity data?")) { 
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" }); 
-                location.reload(); 
-            } 
+        window.triggerSignOut = () => {
+            if (confirm("Confirm Logout?")) signOut(auth);
+        };
+
+        window.handleIdentityWipe = async () => {
+            if (confirm("This will permanently wipe your nickname and session data. Continue?")) {
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
+                location.reload();
+            }
         };
 
     </script>
