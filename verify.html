@@ -3,60 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Verification | Clarity</title>
-    <link rel="icon" href="Clarity Logo.png" type="image/png">
+    <title>Verify Identity | Clarity</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#0f172a', accent: '#4f46e5' } } }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #ffffff; overflow: hidden; }
-        .heavy-input {
-            background: #f8fafc;
-            border: 4px solid transparent;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .heavy-input:focus {
-            background: #ffffff;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 20px rgba(99,102,241,0.05);
-            transform: scale(1.02);
-        }
-        .aura-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        body { background-color: #f8fafc; color: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .input-code { font-size: 2rem; letter-spacing: 0.5em; text-align: center; border: 2px solid #e2e8f0; transition: all 0.2s; padding-left: 0.5em; }
+        .input-code:focus { border-color: #4f46e5; outline: none; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-8">
+<body>
 
-    <div class="w-full max-w-3xl text-center">
-        <div class="mb-16">
-            <img src="Clarity Logo.png" class="h-24 mx-auto mb-10">
-            <h1 class="text-8xl md:text-9xl font-black tracking-tighter mb-8 italic">Verify.</h1>
-            <p id="statusMsg" class="text-slate-400 font-bold text-2xl md:text-3xl max-w-2xl mx-auto leading-relaxed">
-                Check your inbox. We sent a code to unlock your global account.
-            </p>
+    <div id="toastContainer" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[9999] flex flex-col gap-2"></div>
+
+    <div class="w-full max-w-sm p-8 bg-white rounded-2xl shadow-sm border border-gray-200 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
         </div>
-
-        <div class="relative max-w-2xl mx-auto">
-            <input type="text" id="codeField" maxlength="6" 
-                class="w-full text-center text-8xl font-black tracking-[2rem] heavy-input p-16 rounded-[4rem] outline-none mb-12" 
-                placeholder="000000">
+        
+        <h2 class="text-2xl font-bold mb-2 tracking-tight text-brand">Check your inbox</h2>
+        <p class="text-gray-500 text-sm mb-8">Enter the 6-digit code sent to your email to verify your identity.</p>
+        
+        <div class="space-y-6">
+            <input type="text" id="code" maxlength="6" class="w-full bg-gray-50 rounded-xl py-4 input-code font-bold text-brand" placeholder="000000" autocomplete="off">
             
-            <button id="vAction" 
-                class="w-full bg-black text-white py-10 rounded-[4rem] font-black text-4xl shadow-2xl hover:bg-indigo-600 transition-all active:scale-95">
-                Verify Identity —>
+            <button id="verifyBtn" class="w-full bg-brand text-white py-3.5 rounded-xl font-semibold hover:bg-gray-800 transition-colors flex justify-center items-center">
+                <span id="btnText">Verify & Continue</span>
             </button>
         </div>
 
-        <div class="mt-16">
-            <button onclick="resendCode()" class="text-indigo-600 font-black text-2xl underline decoration-4 underline-offset-8">
-                Resend Global Code
-            </button>
-        </div>
+        <p class="mt-6 text-sm text-gray-500 font-medium">
+            Didn't receive it? 
+            <button onclick="resend()" id="resendBtn" class="text-accent font-semibold hover:underline">Resend code</button>
+        </p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", 
@@ -66,60 +56,108 @@
             messagingSenderId: "92484724607", 
             appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" 
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- GLOBAL REAL-TIME OBSERVER ---
-        // This listens to the database. If you verify on another device, 
-        // this page will automatically "poof" and go to the workspace.
-        onAuthStateChanged(auth, (user) => {
+        // Simple Toast for Verify Screen
+        function showToast(msg, isError = false) {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `px-6 py-3 rounded-lg text-white text-sm font-medium shadow-lg transition-all duration-300 ${isError ? 'bg-red-500' : 'bg-brand'}`;
+            t.innerText = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        // Security Check: Redirect if not logged in or already verified
+        onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 window.location.href = "index.html";
                 return;
             }
-
-            const userRef = doc(db, "users", user.uid);
-            onSnapshot(userRef, (docSnap) => {
-                if (docSnap.exists() && docSnap.data().isVerified === true) {
-                    document.getElementById('statusMsg').innerText = "Verified! Redirecting...";
-                    document.getElementById('statusMsg').classList.add('text-indigo-600', 'aura-pulse');
-                    setTimeout(() => {
-                        window.location.href = "workspace.html";
-                    }, 1500);
-                }
-            });
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists() && snap.data().isVerified) {
+                window.location.href = "workspace.html";
+            }
         });
 
-        // MANUAL VERIFY
-        document.getElementById('vAction').onclick = async () => {
-            const u = auth.currentUser;
-            const entered = document.getElementById('codeField').value.trim();
-            if(!u || entered.length < 6) return;
+        // Verify Logic
+        document.getElementById('verifyBtn').onclick = async () => {
+            const user = auth.currentUser;
+            const input = document.getElementById('code').value.trim();
+            const btnText = document.getElementById('btnText');
+            
+            if(!user) return window.location.href = "index.html";
+            if(input.length !== 6) return showToast("Enter the full 6-digit code.", true);
 
-            const snap = await getDoc(doc(db, "users", u.uid));
-            if(snap.exists() && snap.data().tempCode === entered) {
-                await updateDoc(doc(db, "users", u.uid), { isVerified: true });
-                // onSnapshot above will handle the redirect
-            } else { 
-                alert("Invalid Code.");
+            btnText.innerText = "Checking...";
+
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if(snap.exists() && snap.data().tempCode === input) {
+                    // Update Database to Verified
+                    await updateDoc(doc(db, "users", user.uid), { 
+                        isVerified: true,
+                        tempCode: null // Clear temp code for security
+                    });
+                    
+                    showToast("Verified! Redirecting...");
+                    setTimeout(() => window.location.href = "workspace.html", 1000);
+                } else {
+                    showToast("Invalid code. Please try again.", true);
+                    document.getElementById('code').value = '';
+                    btnText.innerText = "Verify & Continue";
+                }
+            } catch (err) {
+                showToast("Database error.", true);
+                btnText.innerText = "Verify & Continue";
             }
         };
 
-        // RESEND CODE
-        window.resendCode = async () => {
-            const u = auth.currentUser;
-            if(!u) return;
-            const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-            await updateDoc(doc(db, "users", u.uid), { tempCode: newCode });
+        // Resend Logic
+        window.resend = async () => {
+            const user = auth.currentUser;
+            if(!user) return;
             
-            await fetch('/api/send', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ email: u.email, code: newCode }) 
-            });
-            alert("Code resent to " + u.email);
+            const btn = document.getElementById('resendBtn');
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            try {
+                // Save new code to database
+                await updateDoc(doc(db, "users", user.uid), { tempCode: newCode });
+                
+                // Trigger backend route
+                const response = await fetch('/api/send', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ email: user.email, code: newCode }) 
+                });
+
+                if(response.ok) {
+                    showToast("New code sent to your email.");
+                } else {
+                    showToast("Server failed to send email.", true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Network error trying to resend.", true);
+            }
+
+            // Cooldown timer to prevent spamming
+            let cd = 30;
+            const interval = setInterval(() => {
+                btn.innerText = `Wait ${cd}s`;
+                cd--;
+                if(cd < 0) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    btn.innerText = "Resend code";
+                }
+            }, 1000);
         };
     </script>
 </body>
