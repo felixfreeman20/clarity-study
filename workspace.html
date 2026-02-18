@@ -6,94 +6,104 @@
     <title>Clarity | Professional Studio</title>
     <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #ffffff; 
             --canvas: #fcfcfc; 
-            --text: #000000; 
-            --border: #eeeeee; 
-            --subtext: #888888; 
+            --text: #0a0a0a; 
+            --border: #ececec; 
+            --subtext: #8e8e93; 
             --accent: #4f46e5; 
-            --accent-soft: rgba(79, 70, 229, 0.08);
+            --accent-soft: rgba(79, 70, 229, 0.05);
         }
         
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            overflow: hidden; 
-            height: 100vh; 
-        }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; height: 100vh; }
 
         /* ---------------------------------------------------------
-           SIDEBAR
+           SIDEBAR ARCHITECTURE
         --------------------------------------------------------- */
         .sidebar { 
-            width: 260px; 
+            width: 280px; 
             border-right: 1px solid var(--border); 
             height: 100vh; 
             position: fixed; 
             display: flex; 
             flex-direction: column; 
             z-index: 100; 
-            padding: 40px; 
-            background: white; 
+            padding: 50px 40px;
+            background: var(--bg);
         }
 
-        .nav-link { 
-            width: 100%; 
-            text-align: left; 
-            padding: 14px 0; 
-            font-weight: 700; 
-            font-size: 15px;
-            color: var(--subtext); 
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            cursor: pointer; 
+        .sidebar-brand {
+            margin-bottom: 60px;
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: -0.05em;
+            font-style: italic;
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
+        .brand-dot { width: 12px; height: 12px; background: var(--accent); border-radius: 4px; }
+
+        .nav-link {
+            width: 100%;
+            text-align: left;
+            padding: 16px 0;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--subtext);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+        }
         .nav-link.active { color: var(--accent); }
-        .nav-link:hover:not(.active) { color: var(--text); transform: translateX(4px); }
+        .nav-link:hover:not(.active) { color: var(--text); transform: translateX(8px); }
 
         /* ---------------------------------------------------------
-           MAIN CONTENT & EDITOR FRAME
+           MAIN CONTENT & EDITOR CANVAS
         --------------------------------------------------------- */
         .main-content { 
-            margin-left: 260px; 
+            margin-left: 280px; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            padding: 40px; 
-            position: relative; 
+            padding: 60px; 
+            position: relative;
         }
-
+        
         .studio-frame { 
             width: 100%; 
-            max-width: 950px; 
+            max-width: 1000px; 
             height: 85vh; 
             display: flex; 
             flex-direction: column; 
-            position: relative; 
-            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.05);
+            position: relative;
         }
 
-        .editor-surface { 
+        .editor-surface {
             flex: 1; 
             display: flex; 
             flex-direction: column; 
-            background: var(--canvas); 
-            border-radius: 40px; 
+            background: var(--canvas);
+            border-radius: 50px; 
             border: 1px solid var(--border); 
             overflow: hidden; 
-            position: relative; 
+            position: relative;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.03);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
-        /* TOP BAR */
+
+        /* ---------------------------------------------------------
+           TOP MODE BAR (STATIONARY)
+        --------------------------------------------------------- */
         .top-nav-bar { 
             padding: 24px 35px; 
             border-bottom: 1px solid var(--border); 
@@ -107,103 +117,49 @@
         .mode-group { 
             display: flex; 
             gap: 4px; 
-            background: #f5f5f7; 
-            padding: 5px; 
-            border-radius: 16px; 
+            background: #f1f1f3; 
+            padding: 6px; 
+            border-radius: 18px; 
         }
 
         .mode-btn { 
-            padding: 10px 18px; 
+            padding: 10px 20px; 
             border-radius: 12px; 
             font-weight: 700; 
             font-size: 11px; 
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             color: var(--subtext); 
             transition: 0.2s; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
         }
         .mode-btn.active { 
             background: white; 
             color: var(--accent); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
         }
 
-        /* TEXTAREA (Centered Canvas) */
-        textarea { 
-            width: 100%; 
-            height: 100%; 
-            padding: 100px 80px; 
-            font-size: 26px; 
-            line-height: 1.6; 
-            border: none; 
-            outline: none; 
-            background: transparent; 
-            resize: none; 
-            text-align: center; 
-            font-weight: 500; 
-            color: var(--text);
-        }
-        textarea::placeholder { color: #d1d1d6; }
-
-        /* ---------------------------------------------------------
-           MODALS & OVERLAYS
-        --------------------------------------------------------- */
-        
-        /* PRO MODAL */
-        #proModal { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.3); 
-            z-index: 1000; 
-            display: none; 
-            align-items: center; 
-            justify-content: center; 
-            backdrop-filter: blur(8px); 
-        }
-        .modal-card { 
-            background: white; 
-            width: 350px; 
-            border-radius: 35px; 
-            padding: 45px; 
-            position: relative; 
-            text-align: center; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
-            animation: modalScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes modalScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        
-        .close-x { 
-            position: absolute; 
-            top: 25px; 
-            left: 25px; 
-            cursor: pointer; 
-            font-weight: 900; 
-            font-size: 22px; 
-            color: #d1d1d6; 
-            transition: 0.2s; 
-        }
-        .close-x:hover { color: black; }
-
-        /* RESPONSE PANEL (Sliding Overlay) */
-        #responsePanel { 
-            position: absolute; 
-            inset: 12px; 
-            background: rgba(255, 255, 255, 0.98); 
-            backdrop-filter: blur(25px); 
-            border-radius: 32px; 
-            border: 1px solid var(--border); 
-            z-index: 200; 
-            display: none; 
-            flex-direction: column; 
-            padding: 60px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        .pro-badge-small {
+            font-size: 8px;
+            background: #000;
+            color: #fff;
+            padding: 2px 5px;
+            border-radius: 5px;
+            font-weight: 900;
+            letter-spacing: 0;
+            line-height: 1;
         }
 
         /* ---------------------------------------------------------
-           COMPONENTS
+           COMPONENTS: SLIDER & BUTTONS
         --------------------------------------------------------- */
+        #quizOptions { display: flex; align-items: center; gap: 20px; border-left: 1px solid #eee; padding-left: 30px; }
+        
         .slider-long { 
-            width: 280px; 
+            width: 320px; 
             -webkit-appearance: none; 
             height: 4px; 
             background: #eee; 
@@ -212,54 +168,128 @@
         }
         .slider-long::-webkit-slider-thumb { 
             -webkit-appearance: none; 
-            width: 22px; 
-            height: 22px; 
+            width: 24px; 
+            height: 24px; 
             background: var(--accent); 
             border-radius: 50%; 
             cursor: pointer; 
-            border: 4px solid white; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            border: 5px solid white; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12); 
         }
 
-        .gen-btn { 
+        .slider-pro-tag { 
+            font-size: 9px; 
+            font-weight: 900; 
+            color: #ccc; 
+            letter-spacing: 0.1em; 
+            background: #f8f8fa;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .generate-btn { 
             background: var(--accent); 
             color: white; 
-            padding: 18px 70px; 
-            border-radius: 24px; 
+            padding: 20px 80px; 
+            border-radius: 28px; 
             font-weight: 900; 
             font-size: 14px; 
-            letter-spacing: 0.05em;
-            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.2); 
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            letter-spacing: 0.1em;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.25); 
         }
-        .gen-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3); }
-        .gen-btn:active { transform: scale(0.96); }
+        .generate-btn:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 25px 50px rgba(79, 70, 229, 0.35); }
+        .generate-btn:active { transform: translateY(0) scale(0.98); }
 
-        .toggle-switch {
-            width: 44px;
-            height: 22px;
-            background: #e5e5ea;
-            border-radius: 20px;
-            position: relative;
-            cursor: pointer;
-            transition: 0.3s;
+        /* ---------------------------------------------------------
+           CENTERED TEXT ENGINE
+        --------------------------------------------------------- */
+        textarea { 
+            width: 100%; 
+            height: 100%; 
+            padding: 100px; 
+            font-size: 28px; 
+            line-height: 1.7; 
+            border: none; 
+            outline: none; 
+            background: transparent;
+            resize: none; 
+            text-align: center; 
+            font-weight: 500;
+            color: var(--text);
+            transition: all 0.3s;
         }
+        textarea::placeholder { color: #e1e1e6; }
+
+        /* ---------------------------------------------------------
+           PREMIUM PRO MODAL (Compact, X Top Left)
+        --------------------------------------------------------- */
+        #proModal { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.4); 
+            z-index: 1000; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(12px); 
+        }
+        .modal-card { 
+            background: white; 
+            width: 360px; 
+            border-radius: 40px; 
+            padding: 50px; 
+            position: relative; 
+            text-align: center; 
+            box-shadow: 0 40px 80px rgba(0,0,0,0.2); 
+            animation: modalSpring 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalSpring { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        .close-x { 
+            position: absolute; 
+            top: 25px; 
+            left: 25px; 
+            cursor: pointer; 
+            font-weight: 900; 
+            font-size: 24px; 
+            color: #e5e5ea; 
+            transition: 0.3s; 
+        }
+        .close-x:hover { color: black; transform: rotate(90deg); }
+
+        .pro-price-card {
+            background: #f8f8fa; 
+            padding: 25px; 
+            border-radius: 28px; 
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        /* ---------------------------------------------------------
+           DYNAMIC OVERLAYS & SETTINGS
+        --------------------------------------------------------- */
+        #responsePanel { 
+            position: absolute; 
+            inset: 15px; 
+            background: rgba(255, 255, 255, 0.99); 
+            backdrop-filter: blur(30px); 
+            border-radius: 40px; 
+            border: 1px solid var(--border); 
+            z-index: 200; 
+            display: none; 
+            flex-direction: column; 
+            padding: 80px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.06);
+        }
+
+        .toggle-switch { width: 50px; height: 26px; background: #e9e9eb; border-radius: 25px; position: relative; cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .toggle-switch.active { background: var(--accent); }
-        .toggle-circle {
-            width: 18px;
-            height: 18px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .toggle-switch.active .toggle-circle { left: 24px; }
+        .toggle-circle { width: 20px; height: 20px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .toggle-switch.active .toggle-circle { left: 27px; }
 
         .hidden { display: none !important; }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
     </style>
 </head>
@@ -268,44 +298,48 @@
     <div id="proModal">
         <div class="modal-card">
             <div class="close-x" onclick="closeModal()">×</div>
-            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <h3 class="text-2xl font-black mb-2 tracking-tight">Unlock Clarity Pro</h3>
-            <p class="text-gray-400 text-sm mb-10 leading-relaxed px-4">Get unlimited questions, Simulated Exams, and 3,000 word inputs.</p>
-            <div class="bg-gray-50 p-6 rounded-[24px] mb-8 border border-gray-100">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Premium Mastery</p>
-                <p class="text-3xl font-black">$4.99 <span class="text-sm font-medium text-gray-400">/ mo</span></p>
+            <h3 class="text-2xl font-black mb-3 tracking-tight">Upgrade to Pro</h3>
+            <p class="text-gray-400 text-sm mb-10 leading-relaxed px-4">Get Simulated Exams, 3,000 word limits, and unlimited logic depth.</p>
+            
+            <div class="pro-price-card">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Standard Access</p>
+                <p class="text-4xl font-black text-black">$4.99 <span class="text-sm font-medium text-gray-400">/ mo</span></p>
             </div>
-            <button class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-sm tracking-widest shadow-xl shadow-indigo-200">UPGRADE NOW</button>
+            
+            <button class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-sm tracking-widest shadow-2xl shadow-indigo-100 transition-all hover:scale-[1.02]">ACTIVATE PRO</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="mb-20 flex items-center gap-3">
-            <div class="w-8 h-8 bg-indigo-600 rounded-xl"></div>
-            <span class="font-black text-2xl tracking-tighter italic">CLARITY.</span>
+        <div class="sidebar-brand">
+            <div class="brand-dot"></div>
+            CLARITY STUDIO
         </div>
-        <nav class="flex-1 space-y-2">
+        
+        <nav class="flex-1 space-y-3">
             <div onclick="switchView('studio')" id="tab-studio" class="nav-link active">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 Studio
             </div>
             <div onclick="switchView('pro')" id="tab-pro" class="nav-link">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"/></svg>
                 Pro Access
             </div>
             <div onclick="switchView('settings')" id="tab-settings" class="nav-link">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
                 Settings
             </div>
         </nav>
-        <div class="pt-8 border-t border-gray-100">
+
+        <div class="pt-10 border-t border-gray-100">
             <div class="flex items-center gap-4">
-                <div id="uAvatar" class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-black text-indigo-600">?</div>
-                <div>
-                    <p id="profileName" class="font-black text-sm tracking-tight">Student</p>
-                    <button onclick="logout()" class="text-[10px] font-bold text-gray-400 hover:text-red-500 uppercase tracking-widest">Sign Out</button>
+                <div id="uAvatar" class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center font-black text-indigo-600 text-lg">?</div>
+                <div class="overflow-hidden">
+                    <p id="profileName" class="font-black text-sm tracking-tight truncate">Student</p>
+                    <button onclick="logout()" class="text-[10px] font-bold text-gray-400 hover:text-red-500 uppercase tracking-widest transition-colors">Sign Out</button>
                 </div>
             </div>
         </div>
@@ -321,91 +355,89 @@
                         <button class="mode-btn active" onclick="setMode('deep', this)">Deep</button>
                         <button class="mode-btn" onclick="setMode('speed', this)">Speed</button>
                         <button class="mode-btn" onclick="setMode('quiz', this)">Quiz</button>
-                        <button class="mode-btn" onclick="setMode('exam', this)">Exam</button>
+                        <button class="mode-btn" onclick="setMode('exam', this)">Exam <span class="pro-badge-small">PRO</span></button>
                     </div>
 
-                    <div id="quizOptions" class="hidden flex items-center gap-6 border-l pl-8 border-gray-100">
-                        <span id="sliderVal" class="font-black text-indigo-600 text-lg w-6">5</span>
-                        <input type="range" min="5" max="50" value="5" step="5" class="slider-long" id="qSlider">
+                    <div id="quizContainer" class="hidden flex items-center">
+                        <div id="quizOptions">
+                            <span id="sliderVal" class="font-black text-indigo-600 text-xl w-8 text-center">5</span>
+                            <div class="flex items-center gap-4">
+                                <input type="range" min="5" max="50" value="5" step="5" class="slider-long" id="qSlider">
+                                <span class="slider-pro-tag">PRO (50)</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-5">
                         <input type="file" id="pdfInput" class="hidden">
-                        <label for="pdfInput" class="text-[10px] font-black uppercase cursor-pointer border border-gray-200 px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-all">Import PDF</label>
-                        <div id="wordCountUI" class="text-[10px] font-black uppercase text-gray-400 tracking-widest">0 / 1000</div>
+                        <label for="pdfInput" class="text-[10px] font-black uppercase cursor-pointer border border-gray-100 px-6 py-3 rounded-2xl hover:bg-gray-50 transition-all">Import PDF</label>
+                        <div id="wordCountUI" class="text-[10px] font-black uppercase text-gray-400 tracking-[0.1em]">0 / 1000</div>
                     </div>
                 </div>
 
-                <textarea id="aiInput" placeholder="Paste your messy lecture notes or thoughts here..."></textarea>
+                <textarea id="aiInput" placeholder="Drop your knowledge here..."></textarea>
 
                 <div class="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none">
-                    <button id="genBtn" class="gen-btn pointer-events-auto">GENERATE INSIGHT</button>
+                    <button id="genBtn" class="generate-btn pointer-events-auto">GENERATE INSIGHT</button>
                 </div>
 
                 <div id="responsePanel">
                     <div class="flex justify-between items-center mb-12">
                         <div class="flex items-center gap-4">
-                            <span id="resTag" class="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-full">Analysis</span>
+                            <span id="resTag" class="px-5 py-2 bg-indigo-50 text-indigo-600 text-[11px] font-black uppercase tracking-[0.2em] rounded-full">Synthesis</span>
                             <span id="examTimer" class="hidden text-red-500 font-black text-xs tracking-widest">15:00</span>
                         </div>
-                        <button onclick="closeResponse()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-50 transition-all">
-                            <svg class="w-5 h-5 text-gray-300 hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <button onclick="closeResponse()" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-50 transition-all">
+                            <svg class="w-6 h-6 text-gray-300 hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
-                    <div id="resBody" class="flex-1 overflow-y-auto custom-scroll pr-4 text-xl leading-relaxed text-gray-600 space-y-8">
+                    <div id="resBody" class="flex-1 overflow-y-auto custom-scroll pr-6 text-xl leading-relaxed text-gray-600 space-y-10">
                         </div>
                 </div>
             </div>
         </div>
 
-        <div id="view-pro" class="hidden view-section w-full max-w-3xl text-center">
-            <h1 class="text-6xl font-black mb-6 tracking-tighter">Limitless Learning.</h1>
-            <p class="text-gray-400 text-xl font-medium mb-16">The complete toolkit for the modern student.</p>
-            <div class="grid grid-cols-2 gap-6 text-left">
-                <div class="p-10 border border-gray-100 rounded-[40px] bg-gray-50/50">
-                    <h4 class="font-black text-2xl mb-3">3,000 Words</h4>
-                    <p class="text-gray-500 leading-relaxed text-sm">Process entire textbook chapters or scientific journals in a single click.</p>
+        <div id="view-pro" class="hidden view-section w-full max-w-4xl text-center">
+            <h1 class="text-7xl font-black mb-6 tracking-tighter">Study Without Limits.</h1>
+            <p class="text-gray-400 text-2xl font-medium mb-20 px-20">The complete suite for students who demand more from their focus.</p>
+            <div class="grid grid-cols-2 gap-8 text-left">
+                <div class="p-12 border border-gray-100 rounded-[50px] bg-gray-50/50">
+                    <h4 class="font-black text-3xl mb-4 italic">3,000 Words</h4>
+                    <p class="text-gray-500 leading-relaxed text-lg">Analyze massive research papers and complex textbooks in a single second.</p>
                 </div>
-                <div class="p-10 border border-gray-100 rounded-[40px] bg-gray-50/50">
-                    <h4 class="font-black text-2xl mb-3">Simulated Exams</h4>
-                    <p class="text-gray-500 leading-relaxed text-sm">Experience timed mock tests with instant logical grading and feedback.</p>
+                <div class="p-12 border border-gray-100 rounded-[50px] bg-gray-50/50">
+                    <h4 class="font-black text-3xl mb-4 italic">Simulated Exams</h4>
+                    <p class="text-gray-500 leading-relaxed text-lg">Experience timed environments that grade your logic and reasoning instantly.</p>
                 </div>
-                <div class="p-10 bg-indigo-600 text-white rounded-[40px] col-span-2 flex items-center justify-between">
+                <div class="p-12 bg-indigo-600 text-white rounded-[50px] col-span-2 flex items-center justify-between">
                     <div>
-                        <h4 class="font-black text-3xl mb-1 italic">Clarity Pro</h4>
-                        <p class="text-indigo-100 font-medium">Join 500+ students studying smarter today.</p>
+                        <h4 class="font-black text-4xl mb-2 tracking-tighter">Unlimited Clarity</h4>
+                        <p class="text-indigo-100 text-xl font-medium">Join our premium community of academic masters.</p>
                     </div>
-                    <button class="bg-white text-indigo-600 px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl">Upgrade Now</button>
+                    <button class="bg-white text-indigo-600 px-12 py-6 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl transition-transform hover:scale-105">UPGRADE — $4.99</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-settings" class="hidden view-section w-full max-w-xl">
-            <h1 class="text-5xl font-black mb-16 tracking-tighter text-center">Settings.</h1>
-            <div class="space-y-4">
-                <div class="p-8 border border-gray-100 rounded-[35px] flex items-center justify-between">
+        <div id="view-settings" class="hidden view-section w-full max-w-2xl">
+            <h1 class="text-5xl font-black mb-20 tracking-tighter text-center">Settings.</h1>
+            <div class="space-y-6">
+                <div class="p-10 border border-gray-100 rounded-[40px] flex items-center justify-between transition-all hover:bg-gray-50">
                     <div>
-                        <p class="font-black text-lg">Focus Mode</p>
-                        <p class="text-gray-400 text-sm">Minimal UI during writing sessions.</p>
+                        <p class="font-black text-xl mb-1">Focus Mode</p>
+                        <p class="text-gray-400 text-sm">Minimal UI and animations during sessions.</p>
                     </div>
-                    <div id="s_focus" class="toggle-switch active" onclick="toggleSetting(this)"><div class="toggle-circle"></div></div>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"><div class="toggle-circle"></div></div>
                 </div>
-                <div class="p-8 border border-gray-100 rounded-[35px] flex items-center justify-between">
+                <div class="p-10 border border-gray-100 rounded-[40px] flex items-center justify-between transition-all hover:bg-gray-50">
                     <div>
-                        <p class="font-black text-lg">Auto-Save PDF</p>
-                        <p class="text-gray-400 text-sm">Instantly save all results to local library.</p>
+                        <p class="font-black text-xl mb-1">Auto-Archive</p>
+                        <p class="text-gray-400 text-sm">Save every AI generation to local history automatically.</p>
                     </div>
-                    <div id="s_save" class="toggle-switch" onclick="toggleSetting(this)"><div class="toggle-circle"></div></div>
+                    <div class="toggle-switch" onclick="this.classList.toggle('active')"><div class="toggle-circle"></div></div>
                 </div>
-                <div class="p-8 border border-gray-100 rounded-[35px] flex items-center justify-between">
-                    <div>
-                        <p class="font-black text-lg">High Contrast</p>
-                        <p class="text-gray-400 text-sm">Increase text visibility for long reads.</p>
-                    </div>
-                    <div id="s_contrast" class="toggle-switch" onclick="toggleSetting(this)"><div class="toggle-circle"></div></div>
-                </div>
-                <div class="pt-10 text-center">
-                    <button onclick="resetIdentity()" class="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] hover:opacity-60 transition-all">Wipe Local Identity & Cache</button>
+                <div class="pt-12 text-center">
+                    <button onclick="resetIdentity()" class="text-xs font-black text-red-500 uppercase tracking-[0.3em] hover:opacity-50 transition-all">Reset Identity & Cache</button>
                 </div>
             </div>
         </div>
@@ -417,7 +449,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIG
         const firebaseConfig = { 
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", 
             authDomain: "clarity-study-cd835.firebaseapp.com", 
@@ -433,9 +464,9 @@
 
         let userProfile = null;
         let currentMode = 'deep';
-        let examInt = null;
+        let timerInt = null;
 
-        // AUTH
+        // AUTH & PROFILE INITIALIZATION
         onAuthStateChanged(auth, async (u) => {
             if(!u) return window.location.href="index.html";
             const snap = await getDoc(doc(db, "users", u.uid));
@@ -447,47 +478,33 @@
             }
         });
 
-        // MODAL HANDLERS
+        // MODAL INTERFACE
         window.openModal = () => document.getElementById('proModal').style.display = "flex";
         window.closeModal = () => document.getElementById('proModal').style.display = "none";
 
-        // EDITOR LOGIC
+        // CANVAS LOGIC
         const textArea = document.getElementById('aiInput');
         const wordUI = document.getElementById('wordCountUI');
 
         textArea.oninput = updateWordCount;
 
         function updateWordCount() {
-            const count = textArea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const words = textArea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             const limit = userProfile?.isPro ? 3000 : 1000;
-            if(count > limit) {
+            if(words > limit) {
                 textArea.value = textArea.value.split(/\s+/).slice(0, limit).join(" ");
             }
-            wordUI.innerText = `${count} / ${limit}`;
-            wordUI.style.color = count >= limit ? "#ef4444" : "#888888";
+            wordUI.innerText = `${words} / ${limit}`;
+            wordUI.style.color = words >= limit ? "#ef4444" : "#8e8e93";
         }
 
-        document.getElementById('pdfInput').onchange = (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const label = document.querySelector('label[for="pdfInput"]');
-                label.innerText = "Extracting...";
-                setTimeout(() => {
-                    const data = `\n[EXTRACTED DATA: ${file.name.toUpperCase()}]\nThe Great Depression was a severe worldwide economic depression that took place mostly during the 1930s. It began in the United States after a major fall in stock prices. In 1932, unemployment reached 25%.`;
-                    textArea.value += data;
-                    label.innerText = "Import PDF";
-                    updateWordCount();
-                }, 1200);
-            }
-        };
-
-        // MODE SELECTION & PRO LOCKS
+        // MODE & QUIZ SELECTION
         window.setMode = (m, btn) => {
             if(m === 'exam' && !userProfile?.isPro) return openModal();
             currentMode = m;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('quizOptions').classList.toggle('hidden', m !== 'quiz');
+            document.getElementById('quizContainer').classList.toggle('hidden', m !== 'quiz');
         };
 
         document.getElementById('qSlider').oninput = function() {
@@ -514,36 +531,36 @@
 
             if(currentMode === 'speed') {
                 body.innerHTML = `
-                    <h2 class="text-4xl font-black text-black tracking-tighter">Speed Briefing.</h2>
-                    <p class="font-bold text-black border-l-4 border-indigo-600 pl-6 italic">"The Depression started in the US in 1929 and lasted a decade, peaking with 25% unemployment in 1932."</p>
-                    <p>Key Insight: Financial collapses often stem from speculative bubbles followed by rapid loss of consumer confidence.</p>
+                    <h2 class="text-4xl font-black text-black">Rapid Briefing.</h2>
+                    <p class="font-bold border-l-4 border-indigo-600 pl-6 italic">Summary: Your content focuses on the structural failure of debt-cycles in the 1920s.</p>
+                    <p>Key Insight: The lack of bank regulation was the primary catalyst for the 1929 collapse.</p>
                 `;
             } else if(currentMode === 'quiz') {
-                const qNum = document.getElementById('qSlider').value;
-                body.innerHTML = `<h2 class="text-4xl font-black text-black tracking-tighter">${qNum} Practice Items.</h2>`;
+                const count = document.getElementById('qSlider').value;
+                body.innerHTML = `<h2 class="text-4xl font-black text-black">${count} Questions Generated.</h2>`;
                 for(let i=1; i<=2; i++) {
                     body.innerHTML += `
-                        <div class="p-6 bg-gray-50 rounded-3xl border border-gray-100">
-                            <p class="text-[10px] font-black text-indigo-600 uppercase mb-2">Recall Q${i}</p>
-                            <p class="font-bold text-black">What was the maximum unemployment rate recorded in 1932?</p>
+                        <div class="p-8 bg-gray-50 rounded-[30px] border border-gray-100">
+                            <p class="text-[10px] font-black text-indigo-600 uppercase mb-2">Item Q${i}</p>
+                            <p class="font-bold text-black">What evidence does the text provide for systemic failure?</p>
                         </div>
                     `;
                 }
             } else if(currentMode === 'exam') {
                 body.innerHTML = `
-                    <h2 class="text-4xl font-black text-black tracking-tighter">Mock Assessment.</h2>
-                    <p>This is a timed logic exam. Answer the prompts based on the provided text. You have 15 minutes.</p>
+                    <h2 class="text-4xl font-black text-black italic">Simulated Final.</h2>
+                    <p>Answer the following prompts using the logic derived from your notes. You have 15 minutes.</p>
                     <hr class="border-gray-100">
-                    <p class="font-black text-black">Prompt 1: Evaluate the systemic impact of the 1929 stock market crash on global trade...</p>
+                    <p class="font-black text-black">Section 1: Critical Analysis of Liquid Asset Management...</p>
                 `;
                 startTimer(15);
             } else {
                 body.innerHTML = `
-                    <h2 class="text-4xl font-black text-black tracking-tighter">Deep Synthesis.</h2>
-                    <p>The core narrative of your notes suggests a systemic failure of liquidity. While the <strong>1929 crash</strong> was the catalyst, the longevity of the depression was caused by protectionist trade policies like the Smoot-Hawley Tariff.</p>
-                    <div class="p-8 bg-indigo-50 rounded-[35px] border border-indigo-100">
-                        <h4 class="font-black text-indigo-600 mb-2 italic text-lg">Mastery Insight</h4>
-                        <p class="text-gray-600 text-sm leading-relaxed">To master this topic, don't just memorize dates. Focus on the transition from 'Roaring Twenties' consumerism to 1930s austerity.</p>
+                    <h2 class="text-4xl font-black text-black">Deep Synthesis.</h2>
+                    <p>The notes provided indicate a complex relationship between production and consumption. While you noted the 'crash,' the real depth lies in the <strong>liquidity trap</strong> that followed.</p>
+                    <div class="p-10 bg-indigo-50 rounded-[40px] border border-indigo-100">
+                        <p class="text-indigo-600 font-black mb-2 uppercase text-xs tracking-widest">Mastery Tip</p>
+                        <p class="text-gray-600 text-lg">Focus on the 'Multiplier Effect' to bridge the gap between your data points.</p>
                     </div>
                 `;
             }
@@ -551,22 +568,22 @@
 
         function startTimer(m) {
             let s = m * 60;
-            if(examInt) clearInterval(examInt);
-            examInt = setInterval(() => {
+            if(timerInt) clearInterval(timerInt);
+            timerInt = setInterval(() => {
                 let mins = Math.floor(s / 60);
                 let secs = s % 60;
                 document.getElementById('examTimer').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-                if(s <= 0) clearInterval(examInt);
+                if(s <= 0) clearInterval(timerInt);
                 s--;
             }, 1000);
         }
 
         window.closeResponse = () => {
-            if(examInt) clearInterval(examInt);
+            if(timerInt) clearInterval(timerInt);
             document.getElementById('responsePanel').style.display = "none";
         };
 
-        // SETTINGS & UI
+        // VIEW NAVIGATION
         window.switchView = (v) => {
             ['studio', 'pro', 'settings'].forEach(x => {
                 document.getElementById(`view-${x}`).classList.toggle('hidden', x !== v);
@@ -574,9 +591,13 @@
             });
         };
 
-        window.toggleSetting = (el) => el.classList.toggle('active');
         window.logout = () => signOut(auth);
-        window.resetIdentity = async () => { if(confirm("Reset everything?")) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" }); location.reload(); } };
+        window.resetIdentity = async () => { 
+            if(confirm("Wipe identity?")) { 
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" }); 
+                location.reload(); 
+            } 
+        };
 
     </script>
 </body>
