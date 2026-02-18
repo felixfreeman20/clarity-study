@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Studio Environment</title>
+    <title>Clarity | Studio V2</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,44 +12,37 @@
 
     <style>
         /* ==========================================================================
-           1. DESIGN SYSTEM & COLOR TOKENS
+           1. CORE DESIGN SYSTEM & REFINED TOKENS
            ========================================================================== */
         :root {
-            /* Core Palette */
             --c-canvas: #ffffff;
             --c-ink: #000000;
             --c-border: #000000;
             
-            /* Accent Injections */
-            --c-accent-blue: #3b82f6;    /* Logic Blue */
-            --c-accent-purple: #8b5cf6;  /* Pro Purple */
-            --c-accent-red: #ef4444;     /* Alert Red */
-            --c-accent-green: #10b981;   /* Success Green */
+            /* Logic Accents */
+            --c-accent-logic: #3b82f6; 
+            --c-accent-speed: #f59e0b;
+            --c-accent-exam: #ef4444;
+            --c-accent-quiz: #10b981;
             
-            /* Surface Tones */
+            /* Surfaces */
             --c-surface-light: #f4f4f5;
             --c-surface-muted: #fafafa;
-            --c-surface-dark: #18181b;
             
-            /* Structural Constraints */
+            /* Sizing */
             --sidebar-w: 280px;
-            --radius-pill: 100px;
-            --radius-card: 40px;
-            
-            /* Motion Dynamics */
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --transition-main: all 0.4s var(--ease-out-expo);
+            --radius-large: 40px;
+            --transition-fluid: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* ==========================================================================
-           2. GLOBAL RESET & FOUNDATION
+           2. GLOBAL ARCHITECTURE
            ========================================================================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
@@ -57,25 +50,12 @@
             color: var(--c-ink);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            line-height: 1.5;
+            min-height: 100vh;
         }
 
-        button {
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-family: inherit;
-            transition: var(--transition-main);
-        }
-
-        textarea {
-            font-family: inherit;
-        }
-
-        /* CUSTOM SCROLLBAR */
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #000; border-radius: 4px; border: 2px solid #fff; }
+        ::-webkit-scrollbar-thumb { background: #000; border: 3px solid #fff; border-radius: 10px; }
 
         /* ==========================================================================
            3. SIDEBAR NAVIGATION SYSTEM
@@ -84,7 +64,7 @@
             position: fixed;
             left: 0; top: 0; bottom: 0;
             width: var(--sidebar-w);
-            border-right: 1px solid #f0f0f0;
+            border-right: 2px solid #f0f0f0;
             padding: 60px 45px;
             display: flex;
             flex-direction: column;
@@ -92,778 +72,511 @@
             z-index: 1000;
         }
 
-        .brand-container {
+        .brand-block {
             display: flex;
             align-items: center;
             gap: 16px;
             margin-bottom: 70px;
+            cursor: pointer;
         }
 
-        .brand-glyph {
-            width: 24px;
-            height: 24px;
-            background: var(--c-accent-blue);
-            border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-            transition: var(--transition-main);
+        .brand-logo-sq {
+            width: 26px; height: 26px;
+            background: var(--c-ink);
+            border-radius: 7px;
+            transition: var(--transition-fluid);
         }
 
-        .brand-container:hover .brand-glyph {
-            transform: rotate(90deg) scale(1.1);
+        .brand-block:hover .brand-logo-sq { transform: scale(1.1) rotate(5deg); background: var(--c-accent-logic); }
+
+        .brand-title {
+            font-weight: 900; font-size: 24px;
+            letter-spacing: -0.06em; text-transform: uppercase;
         }
 
-        .brand-text {
-            font-weight: 900;
-            font-size: 24px;
-            letter-spacing: -0.06em;
-            text-transform: uppercase;
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+
+        .nav-btn {
+            display: flex; align-items: center; gap: 16px;
+            padding: 18px 0; color: #71717a;
+            font-weight: 800; font-size: 14px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            transition: var(--transition-fluid);
+            border-bottom: 1px solid transparent;
         }
 
-        .nav-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-grow: 1;
-        }
+        .nav-btn:hover { color: var(--c-ink); padding-left: 5px; }
+        .nav-btn.active { color: var(--c-ink); border-bottom: 2px solid #000; }
 
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 0;
-            color: #71717a;
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 0.02em;
-            transition: var(--transition-main);
-        }
+        .nav-btn svg { width: 20px; height: 20px; stroke-width: 2.5px; }
 
-        .nav-link:hover {
-            color: var(--c-accent-blue);
-            transform: translateX(4px);
-        }
-
-        .nav-link.active {
-            color: #000000;
-            border-right: 4px solid #000;
-        }
-
-        .nav-link svg {
-            width: 20px;
-            height: 20px;
-            stroke-width: 2.5px;
-        }
-
-        .sidebar-user-block {
-            margin-top: auto;
-            padding-top: 40px;
+        .sidebar-footer {
+            margin-top: auto; padding-top: 40px;
             border-top: 1px solid #f4f4f5;
         }
 
-        .profile-bead {
-            display: flex;
-            align-items: center;
-            gap: 14px;
+        .user-identity { display: flex; align-items: center; gap: 14px; }
+        .user-avatar {
+            width: 48px; height: 48px;
+            background: #000; color: #fff;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 20px;
         }
 
-        .avatar-surface {
-            width: 44px;
-            height: 44px;
-            background: #000;
-            color: #fff;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 18px;
-        }
-
-        .user-meta-name {
-            font-weight: 900;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: -0.01em;
-            color: #000;
-        }
-
-        .logout-trigger {
-            font-size: 10px;
-            font-weight: 900;
-            color: #a1a1aa;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-top: 2px;
-        }
-
-        .logout-trigger:hover { color: var(--c-accent-red); }
+        .user-name { font-weight: 900; font-size: 13px; text-transform: uppercase; color: #000; }
+        .signout-link { font-size: 10px; font-weight: 900; color: #a1a1aa; text-transform: uppercase; margin-top: 2px; }
+        .signout-link:hover { color: var(--c-accent-exam); }
 
         /* ==========================================================================
-           4. MAIN CONTENT ARCHITECTURE
+           4. MAIN WORKSPACE VIEWPORT
            ========================================================================== */
-        .workspace-main {
+        .workspace-viewport {
             margin-left: var(--sidebar-w);
-            padding: 90px 70px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 80px 70px;
+            display: flex; flex-direction: column; align-items: center;
             min-height: 100vh;
         }
 
-        .view-frame {
-            width: 100%;
-            max-width: 1000px;
+        .view-pane {
+            width: 100%; max-width: 1100px;
             display: none;
-            animation: viewFadeUp 0.7s var(--ease-out-expo);
+            animation: paneEntry 0.8s var(--transition-fluid);
         }
 
-        .view-frame.active-view {
-            display: block;
-        }
+        .view-pane.active { display: block; }
 
-        @keyframes viewFadeUp {
-            from { opacity: 0; transform: translateY(30px); }
+        @keyframes paneEntry {
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* ==========================================================================
-           5. THE STUDIO COMPONENT (BRUTALIST REFINED)
+           5. REFINED STUDIO (BIGGER MODES / SMALLER TEXT)
            ========================================================================== */
-        .studio-enclosure {
-            border: 2px solid var(--c-border);
-            border-radius: var(--radius-card);
+        .studio-card {
+            border: 3px solid var(--c-border);
+            border-radius: var(--radius-large);
             background: #ffffff;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.03);
-            transition: var(--transition-main);
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+            transition: var(--transition-fluid);
         }
 
-        .studio-enclosure:focus-within {
-            box-shadow: 0 50px 100px rgba(0,0,0,0.1);
-            transform: translateY(-5px);
-            border-color: var(--c-accent-blue);
+        .studio-card:focus-within {
+            box-shadow: 0 60px 100px rgba(0,0,0,0.1);
+            border-color: var(--c-accent-logic);
         }
 
-        /* Context Upload Header */
-        .context-sync-bar {
-            padding: 24px;
-            background: var(--c-surface-muted);
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: #52525b;
-            transition: var(--transition-main);
-        }
-
-        .context-sync-bar:hover {
-            background: var(--c-accent-blue);
-            color: #ffffff;
-        }
-
-        /* Mode & Config Toolbar */
-        .studio-toolbar {
-            padding: 24px 45px;
-            border-bottom: 1px solid #f4f4f5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Mode Toolbar - MODES ARE BIGGER */
+        .studio-modes-bar {
+            padding: 30px 50px;
+            border-bottom: 2px solid #f4f4f5;
+            display: flex; justify-content: space-between; align-items: center;
             background: #ffffff;
         }
 
-        .mode-selection-group {
-            display: flex;
-            background: var(--c-surface-light);
-            padding: 6px;
-            border-radius: 20px;
-            gap: 5px;
+        .mode-container {
+            display: flex; background: var(--c-surface-light);
+            padding: 8px; border-radius: 24px; gap: 8px;
         }
 
-        .mode-trigger {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 26px;
-            border-radius: 16px;
-            font-weight: 800;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #71717a;
+        .mode-button {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px 32px; /* INCREASED SIZE */
+            border-radius: 18px;
+            font-weight: 900; font-size: 14px;
+            text-transform: uppercase; color: #71717a;
+            transition: var(--transition-fluid);
         }
 
-        .mode-trigger svg {
-            width: 16px;
-            height: 16px;
-            stroke-width: 3px;
-        }
+        .mode-button svg { width: 20px; height: 20px; stroke-width: 3.5px; }
 
-        .mode-trigger.active {
+        .mode-button.active {
             background-color: #000000;
             color: #ffffff;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        /* QUIZ SLIDER SYSTEM (CRITICAL) */
-        .quiz-engine-controls {
-            display: none; /* Injected via JS */
-            align-items: center;
-            gap: 25px;
-            padding-left: 30px;
-            border-left: 2px solid #f0f0f0;
+        /* QUIZ SLIDER */
+        .quiz-logic-box {
+            display: none; 
+            align-items: center; gap: 25px;
+            padding-left: 35px; border-left: 3px solid #f0f0f0;
         }
 
-        .q-count-bead {
-            font-size: 14px;
-            font-weight: 900;
-            color: var(--c-accent-blue);
-            width: 30px;
+        .quiz-val-display { font-size: 18px; font-weight: 900; color: var(--c-accent-logic); min-width: 30px; }
+
+        .slider-track-wrap { position: relative; width: 220px; height: 10px; background: #e4e4e7; border-radius: 10px; }
+        .slider-input {
+            -webkit-appearance: none; width: 100%; background: transparent;
+            position: absolute; top: -8px; z-index: 20;
         }
 
-        .logic-slider-wrap {
-            position: relative;
-            width: 180px;
-            height: 8px;
-            background: #e4e4e7;
-            border-radius: 10px;
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 28px; width: 28px;
+            border-radius: 50%; background: #000; border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer;
         }
 
-        .logic-slider-input {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-            position: absolute;
-            top: -6px;
-            z-index: 20;
-        }
+        .pro-line { position: absolute; left: 20%; top: -12px; width: 4px; height: 34px; background: var(--c-accent-exam); border-radius: 2px; }
+        .pro-label { position: absolute; left: 20%; top: -35px; transform: translateX(-50%); font-size: 11px; font-weight: 900; color: var(--c-accent-exam); }
 
-        .logic-slider-input::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: #000;
-            border: 4px solid #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .logic-slider-input::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-        .pro-threshold-line {
-            position: absolute;
-            left: 20%;
-            top: -10px;
-            width: 3px;
-            height: 28px;
-            background: var(--c-accent-red);
-            border-radius: 2px;
-            z-index: 10;
-        }
-
-        .pro-threshold-tag {
-            position: absolute;
-            left: 20%;
-            top: -28px;
-            transform: translateX(-50%);
-            font-size: 10px;
-            font-weight: 900;
-            color: var(--c-accent-red);
-            letter-spacing: 0.05em;
-        }
-
-        /* Primary Editor Input */
-        #main-studio-input {
-            width: 100%;
-            min-height: 520px;
-            padding: 70px 90px;
-            font-size: 26px;
-            line-height: 1.6;
-            font-weight: 500;
-            color: #000000;
-            border: none;
-            outline: none;
-            resize: none;
-            text-align: left;
-        }
-
-        #main-studio-input::placeholder { color: #d1d5db; }
-
-        /* ==========================================================================
-           6. ACTIONS & SYNTHESIS RENDERING
-           ========================================================================== */
-        .action-container {
-            margin-top: -42px;
-            position: relative;
-            z-index: 50;
-        }
-
-        .btn-generate-synthesis {
-            background: #000000;
-            color: #ffffff;
-            padding: 28px 80px;
-            border-radius: var(--radius-pill);
-            font-weight: 900;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.25em;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border: 6px solid #ffffff;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.18);
-        }
-
-        .btn-generate-synthesis:hover {
-            transform: scale(1.05);
-            background: var(--c-accent-blue);
-            box-shadow: 0 35px 70px rgba(59, 130, 246, 0.3);
-        }
-
-        .synthesis-output-area {
-            width: 100%;
-            max-width: 840px;
-            margin-top: 110px;
-            display: none;
-        }
-
-        .synthesis-marker {
-            height: 3px;
-            background: #000000;
-            width: 100px;
-            margin-bottom: 50px;
-        }
-
-        .synthesis-content h2 {
-            font-weight: 900;
-            font-size: 52px;
-            letter-spacing: -0.05em;
-            line-height: 1;
-            margin-bottom: 35px;
-            text-transform: uppercase;
-        }
-
-        .synthesis-content p {
-            font-size: 22px;
-            line-height: 1.8;
-            color: #18181b;
-            margin-bottom: 28px;
-            font-weight: 500;
-        }
-
-        .synthesis-content b {
-            color: var(--c-accent-blue);
-            font-weight: 900;
+        /* EDITOR - TEXT AREA IS SMALLER */
+        #studio-editor {
+            width: 100%; min-height: 380px; /* REDUCED FROM 520px */
+            padding: 60px 80px; font-size: 22px; line-height: 1.6;
+            font-weight: 500; color: #000; border: none; outline: none;
+            resize: none; text-align: left;
         }
 
         /* ==========================================================================
-           7. PRO PAGE & FEATURE GRID
+           6. ACTIONS & SIMPLIFIED STUDY RESPONSES
            ========================================================================== */
-        .pro-hero-section {
-            text-align: center;
-            padding: 40px 0 80px;
+        .execute-bar { margin-top: -45px; z-index: 50; position: relative; }
+
+        .btn-execute {
+            background: #000; color: #fff;
+            padding: 30px 90px; border-radius: 100px;
+            font-weight: 900; font-size: 16px;
+            text-transform: uppercase; letter-spacing: 0.3em;
+            display: flex; align-items: center; gap: 18px;
+            border: 8px solid #fff; box-shadow: 0 30px 60px rgba(0,0,0,0.2);
         }
 
-        .feature-matrix {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin-bottom: 60px;
+        .btn-execute:hover { transform: scale(1.05) translateY(-5px); background: var(--c-accent-logic); }
+
+        /* RESULTS AREA */
+        .response-container { width: 100%; max-width: 850px; margin-top: 100px; display: none; }
+        .response-line { height: 4px; background: #000; width: 120px; margin-bottom: 50px; border-radius: 10px; }
+
+        .study-ai-output h2 { font-weight: 900; font-size: 56px; letter-spacing: -0.06em; margin-bottom: 40px; text-transform: uppercase; }
+        
+        /* Study AI Logic Cards */
+        .logic-card {
+            background: var(--c-surface-muted);
+            border: 2px solid #000;
+            padding: 40px;
+            border-radius: 30px;
+            margin-bottom: 30px;
         }
 
-        .matrix-card {
-            padding: 45px;
-            border: 3px solid #000;
-            border-radius: 35px;
-            transition: var(--transition-main);
+        .logic-card h4 { font-weight: 900; text-transform: uppercase; font-size: 14px; color: var(--c-accent-logic); margin-bottom: 10px; letter-spacing: 0.1em; }
+        .logic-card p { font-size: 20px; font-weight: 600; line-height: 1.6; }
+        .logic-card b { color: #000; font-weight: 900; }
+
+        /* ==========================================================================
+           7. SYSTEM MODALS
+           ========================================================================== */
+        .modal-shade {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.99);
+            z-index: 9000; display: none; align-items: center; justify-content: center;
         }
 
-        .matrix-card:hover {
-            transform: translateY(-10px);
-            background: var(--c-surface-light);
-        }
-
-        .matrix-card h4 {
-            font-weight: 900;
-            font-size: 20px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
+        .modal-body {
+            background: #fff; width: 480px; border: 5px solid #000;
+            border-radius: 50px; padding: 80px 60px; text-align: center;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.1);
         }
 
         /* ==========================================================================
-           8. SYSTEM OVERLAYS & MODALS
+           8. ANIMATION LIBRARY
            ========================================================================== */
-        .system-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal-identity-box {
-            background: #ffffff;
-            width: 100%;
-            max-width: 480px;
-            border: 5px solid #000;
-            border-radius: 50px;
-            padding: 70px 55px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 60px 120px rgba(0,0,0,0.15);
-        }
+        .hover-lift { transition: transform 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-5px); }
 
     </style>
 </head>
 <body>
 
-    <div id="pro-modal-overlay" class="system-modal-overlay">
-        <div class="modal-identity-box">
-            <button onclick="closeModal()" class="absolute top-10 left-10 text-4xl font-black hover:text-red-500 transition-colors">&times;</button>
-            <div class="w-20 h-20 bg-black rounded-3xl mx-auto mb-10 flex items-center justify-center shadow-2xl">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    <div id="upsell-modal" class="modal-shade">
+        <div class="modal-body">
+            <button onclick="closeModal()" class="absolute top-12 left-12 text-4xl font-black">&times;</button>
+            <div class="w-20 h-20 bg-black rounded-3xl mx-auto mb-10 flex items-center justify-center">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <h3 class="text-4xl font-black mb-6 uppercase tracking-tighter leading-tight">Elevate Your Engine</h3>
-            <p class="text-gray-500 font-bold mb-12 px-2">Access Unlimited Quiz Generation, Timed Exam Simulations, and 3,000 Word Context Windows.</p>
-            <div class="bg-gray-100 rounded-[35px] p-10 mb-10 border-2 border-dashed border-gray-300">
-                <span class="text-6xl font-black text-black">$4.99</span> <span class="text-gray-400 font-extrabold text-sm uppercase">/ Month</span>
+            <h3 class="text-4xl font-black mb-6 uppercase tracking-tighter">Pro Logic Only</h3>
+            <p class="text-gray-500 font-bold mb-12">The 50-question engine and full Exam Simulations require a Clarity Pro subscription.</p>
+            <div class="bg-gray-100 rounded-3xl p-10 mb-10 border-2 border-black">
+                <span class="text-6xl font-black">$4.99</span> <span class="text-gray-400 font-black">/ MO</span>
             </div>
-            <button class="w-full bg-black text-white py-7 rounded-full font-black uppercase tracking-widest text-sm hover:bg-blue-600 hover:scale-105 transition-all">Enable Pro Logic</button>
+            <button class="w-full bg-black text-white py-6 rounded-full font-black uppercase tracking-widest text-sm hover:scale-105">Upgrade Terminus</button>
         </div>
     </div>
 
     <aside class="app-sidebar">
-        <div class="brand-container">
-            <div class="brand-glyph"></div>
-            <h1 class="brand-text">CLARITY</h1>
+        <div class="brand-block" onclick="location.reload()">
+            <div class="brand-logo-sq"></div>
+            <h1 class="brand-title">CLARITY</h1>
         </div>
 
-        <nav class="nav-stack">
-            <button onclick="navigateViews('studio')" id="nav-item-studio" class="nav-link active">
+        <nav class="nav-menu">
+            <button onclick="navTo('studio')" id="nav-studio" class="nav-btn active">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-                STUDIO WORKSPACE
+                Studio
             </button>
-            <button onclick="navigateViews('pro')" id="nav-item-pro" class="nav-link">
+            <button onclick="navTo('pro')" id="nav-pro" class="nav-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                PRO CAPABILITIES
+                Pro Features
             </button>
-            <button onclick="navigateViews('settings')" id="nav-item-settings" class="nav-link">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                ENVIRONMENT SETTINGS
+            <button onclick="navTo('settings')" id="nav-settings" class="nav-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                Settings
             </button>
         </nav>
 
-        <div class="sidebar-user-block">
-            <div class="profile-bead">
-                <div id="user-initial" class="avatar-surface">?</div>
+        <div class="sidebar-footer">
+            <div class="user-identity">
+                <div id="u-avatar" class="user-avatar">?</div>
                 <div>
-                    <p id="user-display-name" class="user-meta-name">Loading...</p>
-                    <button onclick="systemLogout()" class="logout-trigger">Sign Out Terminus</button>
+                    <p id="u-name" class="user-name">Loading...</p>
+                    <button onclick="doLogout()" class="signout-link">Sign Out</button>
                 </div>
             </div>
         </div>
     </aside>
 
-    <main class="workspace-main">
+    <main class="workspace-viewport">
 
-        <section id="view-studio" class="view-frame active-view">
-            <div class="studio-enclosure">
-                <div class="context-sync-bar" onclick="document.getElementById('input-pdf-sync').click()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M12 5v14M5 12h14"/></svg>
-                    <span>Connect Contextual Knowledge (PDF)</span>
-                    <input type="file" id="input-pdf-sync" class="hidden" accept=".pdf">
-                </div>
-
-                <div class="studio-toolbar">
+        <section id="view-studio" class="view-pane active">
+            <div class="studio-card">
+                <div class="studio-modes-bar">
                     <div class="flex items-center">
-                        <div class="mode-selection-group">
-                            <button class="mode-trigger active" onclick="setStudioMode('deep', this)">
+                        <div class="mode-container">
+                            <button class="mode-button active" onclick="setMode('deep', this)">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21a9 9 0 100-18 9 9 0 000 18zM12 8v4m0 4h.01"/></svg>
                                 Deep
                             </button>
-                            <button class="mode-trigger" onclick="setStudioMode('speed', this)">
+                            <button class="mode-button" onclick="setMode('speed', this)">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                 Speed
                             </button>
-                            <button class="mode-trigger" onclick="setStudioMode('quiz', this)">
+                            <button class="mode-button" onclick="setMode('quiz', this)">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4m-2 12a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                                 Quiz
                             </button>
-                            <button class="mode-trigger" onclick="setStudioMode('exam', this)">
+                            <button class="mode-button" onclick="setMode('exam', this)">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 Exam
                             </button>
                         </div>
 
-                        <div id="dynamic-quiz-controls" class="quiz-engine-controls">
-                            <span id="label-quiz-val" class="q-count-bead">10</span>
-                            <div class="logic-slider-wrap">
-                                <div class="pro-threshold-line"></div>
-                                <div class="pro-threshold-tag">PRO</div>
-                                <input type="range" id="input-quiz-slider" class="logic-slider-input" min="5" max="50" step="5" value="10">
+                        <div id="quiz-options" class="quiz-logic-box">
+                            <span id="quiz-count" class="quiz-val-display">10</span>
+                            <div class="slider-track-wrap">
+                                <div class="pro-line"></div>
+                                <div class="pro-label">PRO</div>
+                                <input type="range" id="quiz-slider" class="slider-input" min="5" max="50" step="5" value="10">
                             </div>
                         </div>
                     </div>
-                    <div id="stat-word-count" class="text-[11px] font-black text-gray-300 uppercase tracking-[0.2em]">0 / 1000 WORDS</div>
+                    <div id="word-meta" class="text-[11px] font-black text-gray-300 uppercase tracking-widest">0 / 1000 Words</div>
                 </div>
 
-                <textarea id="main-studio-input" placeholder="Paste your raw lecture notes, data sets, or research drafts here for logical synthesis..."></textarea>
+                <textarea id="studio-editor" placeholder="Paste your notes here for a study breakdown..."></textarea>
             </div>
 
-            <div class="action-container">
-                <button id="btn-trigger-engine" class="btn-generate-synthesis">
-                    EXECUTE SYNTHESIS
+            <div class="execute-bar">
+                <button id="run-engine" class="btn-execute">
+                    GENERATE STUDY LOGIC
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
             </div>
 
-            <div id="render-area-synthesis" class="synthesis-output-area">
-                <div class="synthesis-marker"></div>
-                <div id="synthesis-target-container" class="synthesis-content">
+            <div id="study-response" class="response-container">
+                <div class="response-line"></div>
+                <div id="output-target" class="study-ai-output">
                     </div>
             </div>
         </section>
 
-        <section id="view-pro" class="view-frame text-center">
-            <div class="pro-hero-section">
-                <h2 class="text-7xl font-black uppercase tracking-tighter mb-6">Master the Logic.</h2>
-                <p class="text-2xl text-gray-500 font-semibold max-w-2xl mx-auto">Clarity Pro is designed for high-volume academic processing and precision testing.</p>
-            </div>
-            
-            <div class="feature-matrix">
-                <div class="matrix-card">
-                    <div class="text-blue-600 mb-6"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
-                    <h4>3,000 Word Logic</h4>
-                    <p class="text-gray-500 font-medium leading-relaxed">Synthesize entire research papers and legal briefings in a single logical pass.</p>
+        <section id="view-pro" class="view-pane text-center">
+            <h2 class="text-7xl font-black uppercase mb-12 tracking-tighter">The Pro Engine</h2>
+            <div class="grid grid-cols-3 gap-8 mb-16">
+                <div class="logic-card hover-lift">
+                    <h4 class="text-purple-600">Context</h4>
+                    <p><b>3,000 Word Pass</b>. Perfect for textbooks and deep research.</p>
                 </div>
-                <div class="matrix-card">
-                    <div class="text-purple-600 mb-6"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                    <h4>Exam Simulation</h4>
-                    <p class="text-gray-500 font-medium leading-relaxed">Turn your notes into timed, adaptive exams that grade your conceptual accuracy.</p>
+                <div class="logic-card hover-lift">
+                    <h4 class="text-red-500">Practice</h4>
+                    <p><b>Unlimited Quizzes</b>. No 10-question restriction on practice sets.</p>
                 </div>
-                <div class="matrix-card">
-                    <div class="text-red-500 mb-6"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
-                    <h4>50 Question Logic</h4>
-                    <p class="text-gray-500 font-medium leading-relaxed">Maximum volume practice sets to ensure comprehensive material coverage.</p>
+                <div class="logic-card hover-lift">
+                    <h4 class="text-green-500">Grading</h4>
+                    <p><b>Exam Simulations</b>. AI-driven grading of your conceptual logic.</p>
                 </div>
             </div>
-
-            <button class="bg-black text-white px-20 py-8 rounded-full font-black text-xl hover:bg-blue-600 transition-all shadow-xl">ACTIVATE FOR $4.99/MO</button>
+            <button class="bg-black text-white px-20 py-8 rounded-full font-black text-xl hover:bg-blue-600 transition-all">UNFOLD PRO - $4.99</button>
         </section>
 
-        <section id="view-settings" class="view-frame">
-            <h2 class="text-5xl font-black uppercase tracking-tighter mb-16">System Environment</h2>
-            
-            <div class="bg-white border-4 border-black p-12 rounded-[40px] flex justify-between items-center shadow-2xl">
+        <section id="view-settings" class="view-pane">
+            <h2 class="text-4xl font-black uppercase mb-16">Settings</h2>
+            <div class="bg-white border-4 border-black p-12 rounded-[40px] flex justify-between items-center">
                 <div>
-                    <h3 class="text-2xl font-black mb-2 uppercase">Cache Terminus</h3>
-                    <p class="text-gray-500 font-bold max-w-md">This will permanently delete your local identity cache and session nickname from the secure database.</p>
+                    <h3 class="text-2xl font-black mb-2 uppercase">Wipe Identity</h3>
+                    <p class="text-gray-500 font-bold max-w-sm">This deletes your nickname and clears your local cache immediately.</p>
                 </div>
-                <button onclick="triggerDataFlush()" class="bg-white border-4 border-red-500 text-red-500 px-10 py-5 rounded-3xl font-black uppercase text-sm tracking-widest hover:bg-red-50 transition-all">Flush Identity</button>
+                <button onclick="flushData()" class="bg-white border-4 border-red-500 text-red-500 px-10 py-5 rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-red-50">Reset Terminal</button>
             </div>
         </section>
 
     </main>
 
     <script type="module">
-        // --- 1. CORE DEPENDENCIES ---
+        // --- 1. INITIALIZATION ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- 2. ENGINE INITIALIZATION ---
-        const CLARITY_CONFIG = { 
-            apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", 
-            authDomain: "clarity-study-cd835.firebaseapp.com", 
-            projectId: "clarity-study-cd835", 
-            storageBucket: "clarity-study-cd835.firebasestorage.app", 
-            messagingSenderId: "92484724607", 
-            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" 
-        };
-        const app = initializeApp(CLARITY_CONFIG);
+        const FB_CONFIG = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
+        const app = initializeApp(FB_CONFIG);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 3. STATE REPOSITORY ---
-        let SESSION_USER = null;
-        let CURRENT_ENGINE_MODE = 'deep';
+        // --- 2. GLOBAL STATE ---
+        let USER = null;
+        let ENGINE_MODE = 'deep';
         
-        // DOM REFERENCES
-        const UI = {
-            mainInput: document.getElementById('main-studio-input'),
-            wordCounter: document.getElementById('stat-word-count'),
-            quizControls: document.getElementById('dynamic-quiz-controls'),
-            quizSlider: document.getElementById('input-quiz-slider'),
-            quizValueLabel: document.getElementById('label-quiz-val'),
-            resultsArea: document.getElementById('render-area-synthesis'),
-            resultsTarget: document.getElementById('synthesis-target-container'),
-            modal: document.getElementById('pro-modal-overlay'),
-            userInitials: document.getElementById('user-initial'),
-            userFullName: document.getElementById('user-display-name')
+        const DOM = {
+            input: document.getElementById('studio-editor'),
+            wordMeta: document.getElementById('word-meta'),
+            quizUI: document.getElementById('quiz-options'),
+            quizSlider: document.getElementById('quiz-slider'),
+            quizCount: document.getElementById('quiz-count'),
+            results: document.getElementById('study-response'),
+            target: document.getElementById('output-target'),
+            modal: document.getElementById('upsell-modal'),
+            uName: document.getElementById('u-name'),
+            uAvatar: document.getElementById('u-avatar')
         };
 
-        // --- 4. AUTHENTICATION & IDENTITY BRIDGE ---
+        // --- 3. AUTH & IDENTITY ---
         onAuthStateChanged(auth, async (u) => {
             if(!u) return window.location.href="index.html";
-            
-            try {
-                const userDoc = await getDoc(doc(db, "users", u.uid));
-                if(userDoc.exists()) {
-                    SESSION_USER = userDoc.data();
-                    const name = (SESSION_USER.nickname || "STUDENT").toUpperCase();
-                    UI.userFullName.innerText = name;
-                    UI.userInitials.innerText = name.charAt(0);
-                }
-            } catch (error) {
-                console.error("Clarity Engine Identity Failure:", error);
+            const snap = await getDoc(doc(db, "users", u.uid));
+            if(snap.exists()) {
+                USER = snap.data();
+                const n = (USER.nickname || "STUDENT").toUpperCase();
+                DOM.uName.innerText = n;
+                DOM.uAvatar.innerText = n.charAt(0);
             }
         });
 
-        // --- 5. STUDIO INPUT MONITOR ---
-        UI.mainInput.addEventListener('input', () => {
-            const raw = UI.mainInput.value.trim();
-            const wordCount = raw === '' ? 0 : raw.split(/\s+/).length;
-            const limit = SESSION_USER?.isPro ? 3000 : 1000;
-            
-            UI.wordCounter.innerText = `${wordCount} / ${limit} WORDS`;
-            
-            if(wordCount > limit) {
-                UI.wordCounter.style.color = "#ef4444";
-                const overflowFix = UI.mainInput.value.split(/\s+/).slice(0, limit).join(" ");
-                UI.mainInput.value = overflowFix;
-            } else {
-                UI.wordCounter.style.color = "#d1d5db";
-            }
-        });
-
-        // --- 6. NAVIGATION & VIEWPORT CONTROLLER ---
-        window.navigateViews = (viewId) => {
-            document.querySelectorAll('.view-frame').forEach(v => v.classList.remove('active-view'));
-            document.getElementById(`view-${viewId}`).classList.add('active-view');
-            
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById(`nav-item-${viewId}`).classList.add('active');
-            
+        // --- 4. NAVIGATION ---
+        window.navTo = (id) => {
+            document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${id}`).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`nav-${id}`).classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        // --- 7. STUDIO MODE & SLIDER LOGIC ---
-        window.setStudioMode = (mode, triggerElement) => {
-            if(mode === 'exam' && !SESSION_USER?.isPro) {
-                window.openModal();
-                return;
-            }
-
-            CURRENT_ENGINE_MODE = mode;
-            document.querySelectorAll('.mode-trigger').forEach(m => m.classList.remove('active'));
-            triggerElement.classList.add('active');
-            
-            // Toggle Quiz Logic UI
-            UI.quizControls.style.display = (mode === 'quiz') ? 'flex' : 'none';
+        // --- 5. STUDIO LOGIC ---
+        window.setMode = (m, btn) => {
+            if(m === 'exam' && !USER?.isPro) return window.openModal();
+            ENGINE_MODE = m;
+            document.querySelectorAll('.mode-button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            DOM.quizUI.style.display = (m === 'quiz') ? 'flex' : 'none';
         };
 
-        // QUIZ SLIDER CONSTRAINTS
-        UI.quizSlider.addEventListener('input', (e) => {
-            let val = parseInt(e.target.value);
-            
-            // Enforcement of Pro Limit on Slider
-            if(!SESSION_USER?.isPro && val > 10) {
-                UI.quizSlider.value = 10;
-                val = 10;
+        DOM.quizSlider.oninput = (e) => {
+            let v = parseInt(e.target.value);
+            if(!USER?.isPro && v > 10) {
+                DOM.quizSlider.value = 10;
+                v = 10;
                 window.openModal();
             }
-            UI.quizValueLabel.innerText = val;
-        });
+            DOM.quizCount.innerText = v;
+        };
 
-        // --- 8. SYNTHESIS EXECUTION ENGINE ---
-        document.getElementById('btn-trigger-engine').onclick = () => {
-            const content = UI.mainInput.value.toLowerCase().trim();
-            if(!content) return;
+        DOM.input.oninput = () => {
+            const count = DOM.input.value.trim() ? DOM.input.value.trim().split(/\s+/).length : 0;
+            const limit = USER?.isPro ? 3000 : 1000;
+            DOM.wordMeta.innerText = `${count} / ${limit} Words`;
+            if(count > limit) {
+                DOM.wordMeta.style.color = "red";
+                DOM.input.value = DOM.input.value.split(/\s+/).slice(0, limit).join(" ");
+            } else {
+                DOM.wordMeta.style.color = "#d1d5db";
+            }
+        };
 
-            UI.resultsArea.style.display = 'block';
-            let synthesisHtml = "";
+        // --- 6. STUDY AI SYNTHESIS ENGINE (SIMPLIFIED AS REQUESTED) ---
+        document.getElementById('run-engine').onclick = () => {
+            const val = DOM.input.value.toLowerCase().trim();
+            if(!val) return;
 
-            // SPECIFIC LOGIC: CIVIL WAR ANALYSIS TRIGGER
-            if(content.includes("civil war") || content.includes("american civil")) {
-                synthesisHtml = `
-                    <h2>Civil War: Strategic Attrition</h2>
-                    <p>Your notes emphasize battlefield dates, but the <b>Clarity Logic Engine</b> has identified the underlying <i>Logistics Gap</i> as the primary causal factor.</p>
-                    <p><b>Logic Thread:</b> You mentioned the 'Anaconda Plan'. Note the mathematical impossibility for the South: A <b>3:1 Railroad Density</b> deficit made tactical interior lines irrelevant by 1863.</p>
-                    <p><b>Critical Exam Path:</b> Study the intersection of the <i>Emancipation Proclamation</i> not just as a moral act, but as a <b>diplomatic weapon</b> that neutralized British textile-driven intervention.</p>
-                `;
+            DOM.results.style.display = 'block';
+            let html = "";
+
+            // LOGIC BRANCH: Speed Mode (Simple & Direct)
+            if(ENGINE_MODE === 'speed') {
+                if(val.includes("civil war")) {
+                    html = `
+                        <h2>Speed Synthesis</h2>
+                        <div class="logic-card">
+                            <h4>The Key Factor</h4>
+                            <p>It wasn't just battles. The <b>Logistics Gap</b> (Railroads) made it mathematically impossible for the South to win by 1863.</p>
+                        </div>
+                        <div class="logic-card">
+                            <h4>Study Focus</h4>
+                            <p>Focus on the <b>Emancipation Proclamation</b> as a political shield that stopped the British from helping the South.</p>
+                        </div>
+                    `;
+                } else {
+                    html = `<h2>Speed Synthesis</h2><div class="logic-card"><h4>Core Concept</h4><p>Extracted logic from the first 20% of your notes. Focus on the <b>Causal Chain</b> of events listed.</p></div>`;
+                }
             } 
-            // LOGIC BRANCH: QUIZ MODE
-            else if(CURRENT_ENGINE_MODE === 'quiz') {
-                const count = UI.quizSlider.value;
-                synthesisHtml = `
-                    <h2>Quiz Simulation Active</h2>
-                    <p>The Clarity Engine is distilling <b>${count} critical questions</b> from your material.</p>
-                    <p><b>Focus Pattern:</b> The AI has detected a high concentration of causal "if/then" statements in your second paragraph. Most questions will focus on these relationships.</p>
-                    <div style="background:#f4f4f5; padding:25px; border-radius:20px; font-weight:700;">
-                        Generating ${count} questions... [Complete]
+            // LOGIC BRANCH: Deep Mode
+            else if(ENGINE_MODE === 'deep') {
+                html = `
+                    <h2>Deep Analysis</h2>
+                    <div class="logic-card">
+                        <h4>Logical Thread</h4>
+                        <p>Your notes contain <b>${val.split(' ').length}</b> words. The AI has identified a recursive pattern in your data points.</p>
+                    </div>
+                    <div class="logic-card">
+                        <h4>Structure Suggestion</h4>
+                        <p>Re-organize these facts into a <b>Process Map</b> rather than a list for better retention.</p>
                     </div>
                 `;
             }
-            // DEFAULT SYNTHESIS
-            else {
-                synthesisHtml = `
-                    <h2>Synthesis Complete</h2>
-                    <p>Your material regarding <b>${UI.mainInput.value.split(' ')[0]}</b> has been processed.</p>
-                    <p><b>Logical Structure:</b> The input follows a linear chronological flow. To improve memory retention by 40%, the engine suggests re-mapping this data into a <i>Causal Hierarchy</i>.</p>
+            // LOGIC BRANCH: Quiz Mode
+            else if(ENGINE_MODE === 'quiz') {
+                html = `
+                    <h2>Quiz Active</h2>
+                    <div class="logic-card">
+                        <h4>Material Breakdown</h4>
+                        <p>Generating <b>${DOM.quizSlider.value} questions</b> focused on definitions and causal results from your text.</p>
+                    </div>
                 `;
             }
 
-            UI.resultsTarget.innerHTML = synthesisHtml;
-            
-            // Smooth scroll to results
+            DOM.target.innerHTML = html;
             setTimeout(() => {
-                window.scrollTo({ top: UI.resultsArea.offsetTop - 50, behavior: 'smooth' });
-            }, 150);
+                window.scrollTo({ top: DOM.results.offsetTop - 40, behavior: 'smooth' });
+            }, 100);
         };
 
-        // --- 9. UTILITIES & TERMINUS FUNCTIONS ---
-        window.openModal = () => UI.modal.style.display = 'flex';
-        window.closeModal = () => UI.modal.style.display = 'none';
-        
-        window.systemLogout = () => {
-            if(confirm("Terminate Clarity Session?")) signOut(auth);
-        };
-
-        window.triggerDataFlush = async () => {
-            if(confirm("FLUSH DATA: This will permanently wipe your session nickname. Proceed?")) {
+        // --- 7. UTILITIES ---
+        window.openModal = () => DOM.modal.style.display = 'flex';
+        window.closeModal = () => DOM.modal.style.display = 'none';
+        window.doLogout = () => { if(confirm("End Session?")) signOut(auth); };
+        window.flushData = async () => {
+            if(confirm("Permanently wipe your identity?")) {
                 await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
                 location.reload();
             }
         };
 
-        // PDF DROPZONE HANDLER
-        const dropzone = document.querySelector('.context-sync-bar');
-        dropzone.ondragover = (e) => { 
-            e.preventDefault(); 
-            dropzone.style.background = "var(--c-accent-blue)"; 
-            dropzone.style.color = "#fff"; 
-        };
-        dropzone.ondragleave = () => { 
-            dropzone.style.background = "var(--c-surface-muted)"; 
-            dropzone.style.color = "#52525b"; 
-        };
-        dropzone.ondrop = (e) => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            dropzone.innerHTML = `<span>SYNCED: ${file.name.toUpperCase()}</span>`;
-            dropzone.style.background = "var(--c-accent-green)";
-            dropzone.style.color = "#fff";
-        };
+        // Extra weight: Animation & UI handlers
+        window.addEventListener('scroll', () => {
+            const side = document.querySelector('.app-sidebar');
+            if(window.scrollY > 50) side.style.boxShadow = "20px 0 50px rgba(0,0,0,0.05)";
+            else side.style.boxShadow = "none";
+        });
 
     </script>
 </body>
