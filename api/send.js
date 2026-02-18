@@ -1,22 +1,31 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
-  const { email, code } = req.body;
+    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+    const { email, code } = req.body;
 
-  // This runs on Vercel's servers, so your password is never seen by users
-  const response = await fetch('https://api.smtpjs.com/v1/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      'SecureToken': '', // We'll use direct login instead for reliability
-      'Host': 'smtp.gmail.com',
-      'Username': 'YOUR_GMAIL@gmail.com', 
-      'Password': 'tzyg wscp mgmu zgt',
-      'To': email,
-      'From': 'YOUR_GMAIL@gmail.com',
-      'Subject': `${code} is your Clarity code`,
-      'Body': `<h1>Welcome to Clarity.</h1><p>Your verification code is: <b>${code}</b></p>`
-    })
-  });
+    // Log this to your Vercel console so you can see if the function actually fires
+    console.log(`Attempting to send code ${code} to ${email}`);
 
-  res.status(200).json({ sent: true });
+    try {
+        const response = await fetch('https://api.smtpjs.com/v1/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                'SecureToken': 'YOUR_SMTPJS_TOKEN', // If you have a token, use it here
+                'To': email,
+                'From': 'YOUR_GMAIL@gmail.com', // Your Gmail
+                'Subject': `${code} is your Clarity Code`,
+                'Body': `Welcome! Your verification code is ${code}`,
+                'Host': 'smtp.gmail.com',
+                'Username': 'YOUR_GMAIL@gmail.com', // Your Gmail
+                'Password': 'xxxx xxxx xxxx xxxx' // 16-character APP PASSWORD
+            })
+        });
+
+        const result = await response.text();
+        console.log("SMTPJS Result:", result); // Look for "OK" in Vercel logs
+        res.status(200).json({ success: true, info: result });
+    } catch (err) {
+        console.error("API Error:", err);
+        res.status(500).json({ error: err.message });
+    }
 }
