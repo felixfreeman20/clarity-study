@@ -6,17 +6,16 @@
     <title>Clarity | Professional Studio</title>
     <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #ffffff; 
-            --canvas: #fcfcfc;
-            --panel: #ffffff; 
-            --text: #0a0a0a; 
-            --border: #ececec; 
-            --subtext: #8e8e93; 
+            --canvas: #fcfcfc; 
+            --text: #000000; 
+            --border: #eeeeee; 
+            --subtext: #888888; 
             --accent: #4f46e5; 
-            --accent-soft: rgba(79, 70, 229, 0.05);
+            --accent-soft: rgba(79, 70, 229, 0.08);
         }
         
         body { 
@@ -28,257 +27,285 @@
             height: 100vh; 
         }
 
-        /* SIDEBAR NAVIGATION */
+        /* ---------------------------------------------------------
+           SIDEBAR
+        --------------------------------------------------------- */
         .sidebar { 
-            width: 280px; 
+            width: 260px; 
             border-right: 1px solid var(--border); 
             height: 100vh; 
             position: fixed; 
             display: flex; 
             flex-direction: column; 
             z-index: 100; 
-            padding: 50px 40px;
-            background: var(--bg);
+            padding: 40px; 
+            background: white; 
         }
 
-        .nav-link {
-            width: 100%;
-            text-align: left;
-            padding: 12px 0;
-            font-weight: 700;
+        .nav-link { 
+            width: 100%; 
+            text-align: left; 
+            padding: 14px 0; 
+            font-weight: 700; 
             font-size: 15px;
-            color: var(--subtext);
-            transition: all 0.3s ease;
+            color: var(--subtext); 
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            cursor: pointer; 
             display: flex;
             align-items: center;
             gap: 12px;
         }
         .nav-link.active { color: var(--accent); }
-        .nav-link:hover:not(.active) { color: var(--text); }
+        .nav-link:hover:not(.active) { color: var(--text); transform: translateX(4px); }
 
-        /* MAIN CONTENT & CANVAS AREA */
+        /* ---------------------------------------------------------
+           MAIN CONTENT & EDITOR FRAME
+        --------------------------------------------------------- */
         .main-content { 
-            margin-left: 280px; 
+            margin-left: 260px; 
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            padding: 60px; 
-            position: relative;
+            padding: 40px; 
+            position: relative; 
         }
-        
+
         .studio-frame { 
             width: 100%; 
-            max-width: 1000px; 
+            max-width: 950px; 
             height: 85vh; 
             display: flex; 
             flex-direction: column; 
-            position: relative;
+            position: relative; 
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.05);
         }
 
-        /* CENTERED TEXT ENGINE */
-        .editor-surface {
+        .editor-surface { 
             flex: 1; 
             display: flex; 
             flex-direction: column; 
-            background: var(--canvas);
-            border-radius: 48px; 
-            border: 1px solid var(--border); 
-            overflow: hidden; 
-            position: relative;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        textarea { 
-            width: 100%; 
-            height: 100%; 
-            padding: 120px 80px; 
-            font-size: 26px; 
-            line-height: 1.6; 
-            border: none; 
-            outline: none; 
-            background: transparent;
-            resize: none; 
-            text-align: center; 
-            font-weight: 500;
-            color: var(--text);
-        }
-        textarea::placeholder { color: #d1d1d6; }
-
-        /* INTEGRATED RESPONSE PANEL */
-        #responsePanel {
-            position: absolute; 
-            inset: 15px;
-            background: rgba(255, 255, 255, 0.98); 
-            backdrop-filter: blur(30px);
+            background: var(--canvas); 
             border-radius: 40px; 
             border: 1px solid var(--border); 
-            z-index: 200;
-            display: none; 
-            flex-direction: column; 
-            padding: 60px; 
-            box-shadow: 0 40px 80px rgba(0,0,0,0.08);
-            transform: translateY(20px);
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden; 
+            position: relative; 
         }
-        #responsePanel.show { display: flex; transform: translateY(0); opacity: 1; }
-
-        /* UI ELEMENTS */
-        .top-shelf { 
-            position: absolute; 
-            top: 40px; 
-            left: 0; 
-            right: 0; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            gap: 20px; 
-            z-index: 90; 
-        }
-
-        .util-btn {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 8px 18px;
-            border-radius: 14px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .util-btn:hover { background: #fafafa; border-color: #d1d1d6; }
-
-        .bottom-bar { 
-            padding: 30px 45px; 
-            border-top: 1px solid var(--border); 
+        
+        /* TOP BAR */
+        .top-nav-bar { 
+            padding: 24px 35px; 
+            border-bottom: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            background: white;
+            background: white; 
+            z-index: 80; 
         }
-        
-        .mode-group { display: flex; gap: 4px; background: #f5f5f7; padding: 4px; border-radius: 16px; }
+
+        .mode-group { 
+            display: flex; 
+            gap: 4px; 
+            background: #f5f5f7; 
+            padding: 5px; 
+            border-radius: 16px; 
+        }
+
         .mode-btn { 
             padding: 10px 18px; 
             border-radius: 12px; 
             font-weight: 700; 
-            font-size: 12px; 
+            font-size: 11px; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--subtext); 
             transition: 0.2s; 
         }
         .mode-btn.active { 
             background: white; 
             color: var(--accent); 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
         }
+
+        /* TEXTAREA (Centered Canvas) */
+        textarea { 
+            width: 100%; 
+            height: 100%; 
+            padding: 100px 80px; 
+            font-size: 26px; 
+            line-height: 1.6; 
+            border: none; 
+            outline: none; 
+            background: transparent; 
+            resize: none; 
+            text-align: center; 
+            font-weight: 500; 
+            color: var(--text);
+        }
+        textarea::placeholder { color: #d1d1d6; }
+
+        /* ---------------------------------------------------------
+           MODALS & OVERLAYS
+        --------------------------------------------------------- */
         
-        .generate-trigger { 
-            background: var(--accent); 
-            color: white; 
-            padding: 18px 45px; 
-            border-radius: 22px; 
+        /* PRO MODAL */
+        #proModal { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.3); 
+            z-index: 1000; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(8px); 
+        }
+        .modal-card { 
+            background: white; 
+            width: 350px; 
+            border-radius: 35px; 
+            padding: 45px; 
+            position: relative; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
+            animation: modalScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        .close-x { 
+            position: absolute; 
+            top: 25px; 
+            left: 25px; 
+            cursor: pointer; 
             font-weight: 900; 
-            font-size: 14px; 
-            letter-spacing: 0.02em;
-            transition: 0.3s; 
+            font-size: 22px; 
+            color: #d1d1d6; 
+            transition: 0.2s; 
         }
-        .generate-trigger:hover { transform: scale(1.02); box-shadow: 0 15px 30px rgba(79, 70, 229, 0.2); }
+        .close-x:hover { color: black; }
 
-        .pro-badge { 
-            background: #000; 
-            color: #fff; 
-            padding: 2px 6px; 
-            border-radius: 6px; 
-            font-size: 8px; 
-            margin-left: 6px; 
-            font-weight: 900;
+        /* RESPONSE PANEL (Sliding Overlay) */
+        #responsePanel { 
+            position: absolute; 
+            inset: 12px; 
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(25px); 
+            border-radius: 32px; 
+            border: 1px solid var(--border); 
+            z-index: 200; 
+            display: none; 
+            flex-direction: column; 
+            padding: 60px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
         }
 
-        /* SLIDER COMPONENT */
-        .slider-wrap { display: flex; items-center; gap: 15px; border-left: 1px solid var(--border); padding-left: 25px; }
-        .slider { 
+        /* ---------------------------------------------------------
+           COMPONENTS
+        --------------------------------------------------------- */
+        .slider-long { 
+            width: 280px; 
             -webkit-appearance: none; 
-            width: 120px; 
             height: 4px; 
-            background: #e5e5ea; 
+            background: #eee; 
             border-radius: 10px; 
-            outline: none;
+            outline: none; 
         }
-        .slider::-webkit-slider-thumb { 
+        .slider-long::-webkit-slider-thumb { 
             -webkit-appearance: none; 
-            width: 20px; 
-            height: 20px; 
+            width: 22px; 
+            height: 22px; 
             background: var(--accent); 
             border-radius: 50%; 
             cursor: pointer; 
             border: 4px solid white; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
 
-        /* VIEWS */
-        .view-section { width: 100%; max-width: 1000px; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ONBOARDING */
-        .onboard-overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: white; 
-            z-index: 2000; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        .gen-btn { 
+            background: var(--accent); 
+            color: white; 
+            padding: 18px 70px; 
+            border-radius: 24px; 
+            font-weight: 900; 
+            font-size: 14px; 
+            letter-spacing: 0.05em;
+            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.2); 
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
         }
+        .gen-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3); }
+        .gen-btn:active { transform: scale(0.96); }
 
-        .loading-dots:after {
-            content: '.';
-            animation: dots 1.5s steps(5, end) infinite;
+        .toggle-switch {
+            width: 44px;
+            height: 22px;
+            background: #e5e5ea;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } }
+        .toggle-switch.active { background: var(--accent); }
+        .toggle-circle {
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toggle-switch.active .toggle-circle { left: 24px; }
+
+        .hidden { display: none !important; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="onboarding" class="onboard-overlay hidden">
-        <div class="text-center w-full max-w-sm px-6">
-            <h1 class="text-6xl font-black mb-4 tracking-tighter">Clarity.</h1>
-            <p class="text-gray-400 font-medium mb-12">Who are we studying with today?</p>
-            <input type="text" id="nickInput" class="w-full text-center text-4xl font-bold border-b-2 border-black outline-none pb-4 mb-12 transition-colors focus:border-indigo-600" placeholder="Name">
-            <button id="saveNickBtn" class="w-full bg-black text-white py-6 rounded-3xl font-black text-lg shadow-2xl">Start Session</button>
+    <div id="proModal">
+        <div class="modal-card">
+            <div class="close-x" onclick="closeModal()">×</div>
+            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3 class="text-2xl font-black mb-2 tracking-tight">Unlock Clarity Pro</h3>
+            <p class="text-gray-400 text-sm mb-10 leading-relaxed px-4">Get unlimited questions, Simulated Exams, and 3,000 word inputs.</p>
+            <div class="bg-gray-50 p-6 rounded-[24px] mb-8 border border-gray-100">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Premium Mastery</p>
+                <p class="text-3xl font-black">$4.99 <span class="text-sm font-medium text-gray-400">/ mo</span></p>
+            </div>
+            <button class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-sm tracking-widest shadow-xl shadow-indigo-200">UPGRADE NOW</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="flex items-center gap-3 mb-20">
-            <div class="w-8 h-8 bg-indigo-600 rounded-lg"></div>
+        <div class="mb-20 flex items-center gap-3">
+            <div class="w-8 h-8 bg-indigo-600 rounded-xl"></div>
             <span class="font-black text-2xl tracking-tighter italic">CLARITY.</span>
         </div>
-        
-        <nav class="flex-1">
-            <button onclick="switchView('studio')" id="tab-studio" class="nav-link active">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+        <nav class="flex-1 space-y-2">
+            <div onclick="switchView('studio')" id="tab-studio" class="nav-link active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                 Studio
-            </button>
-            <button onclick="switchView('pro')" id="tab-pro" class="nav-link">
+            </div>
+            <div onclick="switchView('pro')" id="tab-pro" class="nav-link">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"/></svg>
                 Pro Access
-            </button>
-            <button onclick="switchView('settings')" id="tab-settings" class="nav-link">
+            </div>
+            <div onclick="switchView('settings')" id="tab-settings" class="nav-link">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
                 Settings
-            </button>
+            </div>
         </nav>
-
-        <div class="pt-10 border-t border-gray-100">
+        <div class="pt-8 border-t border-gray-100">
             <div class="flex items-center gap-4">
-                <div id="userAvatar" class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center font-black text-indigo-600 text-xl">?</div>
+                <div id="uAvatar" class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-black text-indigo-600">?</div>
                 <div>
-                    <p id="profileName" class="font-black text-sm tracking-tight text-gray-900">Student</p>
-                    <button onclick="logout()" class="text-[10px] uppercase font-bold text-indigo-500 hover:text-indigo-700">Disconnect</button>
+                    <p id="profileName" class="font-black text-sm tracking-tight">Student</p>
+                    <button onclick="logout()" class="text-[10px] font-bold text-gray-400 hover:text-red-500 uppercase tracking-widest">Sign Out</button>
                 </div>
             </div>
         </div>
@@ -286,113 +313,99 @@
 
     <main class="main-content">
         
-        <div id="view-studio" class="view-section studio-frame">
+        <div id="view-studio" class="studio-frame view-section">
             <div class="editor-surface">
                 
+                <div class="top-nav-bar">
+                    <div class="mode-group">
+                        <button class="mode-btn active" onclick="setMode('deep', this)">Deep</button>
+                        <button class="mode-btn" onclick="setMode('speed', this)">Speed</button>
+                        <button class="mode-btn" onclick="setMode('quiz', this)">Quiz</button>
+                        <button class="mode-btn" onclick="setMode('exam', this)">Exam</button>
+                    </div>
+
+                    <div id="quizOptions" class="hidden flex items-center gap-6 border-l pl-8 border-gray-100">
+                        <span id="sliderVal" class="font-black text-indigo-600 text-lg w-6">5</span>
+                        <input type="range" min="5" max="50" value="5" step="5" class="slider-long" id="qSlider">
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <input type="file" id="pdfInput" class="hidden">
+                        <label for="pdfInput" class="text-[10px] font-black uppercase cursor-pointer border border-gray-200 px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-all">Import PDF</label>
+                        <div id="wordCountUI" class="text-[10px] font-black uppercase text-gray-400 tracking-widest">0 / 1000</div>
+                    </div>
+                </div>
+
+                <textarea id="aiInput" placeholder="Paste your messy lecture notes or thoughts here..."></textarea>
+
+                <div class="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none">
+                    <button id="genBtn" class="gen-btn pointer-events-auto">GENERATE INSIGHT</button>
+                </div>
+
                 <div id="responsePanel">
                     <div class="flex justify-between items-center mb-12">
-                        <div class="flex items-center gap-3">
-                            <span id="resModeBadge" class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-lg">Studio Mode</span>
-                            <span id="timerDisplay" class="hidden text-red-500 font-black text-xs">00:00</span>
+                        <div class="flex items-center gap-4">
+                            <span id="resTag" class="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-full">Analysis</span>
+                            <span id="examTimer" class="hidden text-red-500 font-black text-xs tracking-widest">15:00</span>
                         </div>
-                        <button onclick="closeResponse()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <button onclick="closeResponse()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-50 transition-all">
+                            <svg class="w-5 h-5 text-gray-300 hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
-
-                    <div id="resLoading" class="flex-1 flex flex-col items-center justify-center">
-                        <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent animate-spin rounded-full mb-6"></div>
-                        <p class="font-black text-lg tracking-tight">Clarity is synthesizing<span class="loading-dots"></span></p>
-                    </div>
-
-                    <div id="resContent" class="hidden flex-1 overflow-y-auto pr-6 custom-scroll">
-                        <h2 id="resTitle" class="text-5xl font-black mb-8 tracking-tighter">Results.</h2>
-                        <div id="resBody" class="text-xl leading-relaxed text-gray-500 space-y-8 pb-10">
-                            </div>
-                    </div>
-                    
-                    <div id="resFooter" class="hidden pt-8 border-t border-gray-100 flex justify-end gap-4">
-                        <button class="util-btn px-8 py-4 bg-gray-50">Copy Result</button>
-                        <button class="util-btn px-8 py-4 bg-indigo-600 text-white border-none">Save to Cloud</button>
-                    </div>
-                </div>
-
-                <div class="top-shelf">
-                    <input type="file" id="pdfInput" class="hidden">
-                    <label for="pdfInput" class="util-btn">Import PDF</label>
-                    <div id="wordCounter" class="util-btn text-gray-400">0 / 1000 Words</div>
-                </div>
-
-                <textarea id="aiInput" placeholder="Paste your messy lecture notes here..."></textarea>
-
-                <div class="bottom-bar">
-                    <div class="flex items-center gap-8">
-                        <div class="mode-group">
-                            <button class="mode-btn active" onclick="setMode('deep', this)">Deep Dive</button>
-                            <button class="mode-btn" onclick="setMode('speed', this)">Speed</button>
-                            <button class="mode-btn" onclick="setMode('quiz', this)">Quiz</button>
-                            <button class="mode-btn" onclick="setMode('exam', this)">Exam <span class="pro-badge">PRO</span></button>
+                    <div id="resBody" class="flex-1 overflow-y-auto custom-scroll pr-4 text-xl leading-relaxed text-gray-600 space-y-8">
                         </div>
-
-                        <div id="quizExtra" class="hidden slider-wrap">
-                            <span id="sliderVal" class="font-black text-indigo-600 text-xl w-6">5</span>
-                            <input type="range" min="5" max="50" value="5" step="5" class="slider" id="qSlider">
-                        </div>
-                    </div>
-
-                    <button id="generateBtn" class="generate-trigger">GENERATE</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-pro" class="hidden view-section text-center max-w-4xl">
-            <h1 class="text-7xl font-black tracking-tighter mb-6">Clarity Pro.</h1>
-            <p class="text-gray-400 text-2xl font-medium mb-16">The ultimate toolkit for serious students.</p>
-            
-            <div class="grid grid-cols-2 gap-8 text-left">
+        <div id="view-pro" class="hidden view-section w-full max-w-3xl text-center">
+            <h1 class="text-6xl font-black mb-6 tracking-tighter">Limitless Learning.</h1>
+            <p class="text-gray-400 text-xl font-medium mb-16">The complete toolkit for the modern student.</p>
+            <div class="grid grid-cols-2 gap-6 text-left">
                 <div class="p-10 border border-gray-100 rounded-[40px] bg-gray-50/50">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-2xl mb-6 flex items-center justify-center text-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                    </div>
-                    <h4 class="font-black text-2xl mb-3">3,000 Word Inputs</h4>
-                    <p class="text-gray-500 leading-relaxed">Process entire textbooks, long transcripts, or research papers in one single pass.</p>
+                    <h4 class="font-black text-2xl mb-3">3,000 Words</h4>
+                    <p class="text-gray-500 leading-relaxed text-sm">Process entire textbook chapters or scientific journals in a single click.</p>
                 </div>
                 <div class="p-10 border border-gray-100 rounded-[40px] bg-gray-50/50">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-2xl mb-6 flex items-center justify-center text-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
                     <h4 class="font-black text-2xl mb-3">Simulated Exams</h4>
-                    <p class="text-gray-500 leading-relaxed">Timed mock tests that mirror actual exam stress with instant logical grading.</p>
+                    <p class="text-gray-500 leading-relaxed text-sm">Experience timed mock tests with instant logical grading and feedback.</p>
                 </div>
-                <div class="p-10 border border-indigo-100 rounded-[40px] bg-indigo-600 text-white col-span-2 flex items-center justify-between">
+                <div class="p-10 bg-indigo-600 text-white rounded-[40px] col-span-2 flex items-center justify-between">
                     <div>
-                        <h4 class="font-black text-3xl mb-2">Unlock Total Mastery</h4>
-                        <p class="text-indigo-100 text-lg">Join 10,000+ students studying smarter.</p>
+                        <h4 class="font-black text-3xl mb-1 italic">Clarity Pro</h4>
+                        <p class="text-indigo-100 font-medium">Join 500+ students studying smarter today.</p>
                     </div>
-                    <button class="bg-white text-indigo-600 px-12 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl">Upgrade — $9.99</button>
+                    <button class="bg-white text-indigo-600 px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl">Upgrade Now</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-settings" class="hidden view-section max-w-2xl">
-            <h1 class="text-5xl font-black tracking-tighter mb-12">Settings.</h1>
+        <div id="view-settings" class="hidden view-section w-full max-w-xl">
+            <h1 class="text-5xl font-black mb-16 tracking-tighter text-center">Settings.</h1>
             <div class="space-y-4">
-                <div class="p-8 border border-gray-100 rounded-[30px] flex items-center justify-between">
+                <div class="p-8 border border-gray-100 rounded-[35px] flex items-center justify-between">
                     <div>
-                        <p class="font-black text-lg">Focus Haptics</p>
-                        <p class="text-gray-400 text-sm">Visual feedback for deep writing sessions.</p>
+                        <p class="font-black text-lg">Focus Mode</p>
+                        <p class="text-gray-400 text-sm">Minimal UI during writing sessions.</p>
                     </div>
-                    <div class="w-12 h-6 bg-indigo-600 rounded-full relative"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                    <div id="s_focus" class="toggle-switch active" onclick="toggleSetting(this)"><div class="toggle-circle"></div></div>
                 </div>
-                <div class="p-8 border border-gray-100 rounded-[30px] flex items-center justify-between">
+                <div class="p-8 border border-gray-100 rounded-[35px] flex items-center justify-between">
                     <div>
-                        <p class="font-black text-lg">Export Minimalist</p>
-                        <p class="text-gray-400 text-sm">Removes all branding from generated PDFs.</p>
+                        <p class="font-black text-lg">Auto-Save PDF</p>
+                        <p class="text-gray-400 text-sm">Instantly save all results to local library.</p>
                     </div>
-                    <div class="w-12 h-6 bg-gray-200 rounded-full relative"><div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                    <div id="s_save" class="toggle-switch" onclick="toggleSetting(this)"><div class="toggle-circle"></div></div>
                 </div>
-                <div class="pt-10">
-                    <button onclick="resetIdentity()" class="text-xs font-black text-red-500 uppercase tracking-[0.2em] hover:opacity-70 transition-all">Wipe Local Identity & Cache</button>
+                <div class="p-8 border border-gray-100 rounded-[35px] flex items-center justify-between">
+                    <div>
+                        <p class="font-black text-lg">High Contrast</p>
+                        <p class="text-gray-400 text-sm">Increase text visibility for long reads.</p>
+                    </div>
+                    <div id="s_contrast" class="toggle-switch" onclick="toggleSetting(this)"><div class="toggle-circle"></div></div>
+                </div>
+                <div class="pt-10 text-center">
+                    <button onclick="resetIdentity()" class="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] hover:opacity-60 transition-all">Wipe Local Identity & Cache</button>
                 </div>
             </div>
         </div>
@@ -404,6 +417,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // CONFIG
         const firebaseConfig = { 
             apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", 
             authDomain: "clarity-study-cd835.firebaseapp.com", 
@@ -419,49 +433,38 @@
 
         let userProfile = null;
         let currentMode = 'deep';
-        let examTimer = null;
+        let examInt = null;
 
-        // AUTHENTICATION OBSERVER
-        onAuthStateChanged(auth, async (user) => {
-            if(!user) return window.location.href="index.html";
-            
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-            
+        // AUTH
+        onAuthStateChanged(auth, async (u) => {
+            if(!u) return window.location.href="index.html";
+            const snap = await getDoc(doc(db, "users", u.uid));
             if(snap.exists()){
                 userProfile = snap.data();
-                if(!userProfile.nickname) {
-                    document.getElementById('onboarding').classList.remove('hidden');
-                } else {
-                    initializeStudio(userProfile.nickname);
-                }
+                document.getElementById('profileName').innerText = userProfile.nickname || "Student";
+                document.getElementById('uAvatar').innerText = (userProfile.nickname || "S").charAt(0).toUpperCase();
+                updateWordCount();
             }
         });
 
-        function initializeStudio(name) {
-            document.getElementById('onboarding').classList.add('hidden');
-            document.getElementById('profileName').innerText = name;
-            document.getElementById('userAvatar').innerText = name.charAt(0).toUpperCase();
-            updateStats();
-        }
+        // MODAL HANDLERS
+        window.openModal = () => document.getElementById('proModal').style.display = "flex";
+        window.closeModal = () => document.getElementById('proModal').style.display = "none";
 
-        // TEXT ENGINE & PDF LOGIC
+        // EDITOR LOGIC
         const textArea = document.getElementById('aiInput');
-        const counter = document.getElementById('wordCounter');
+        const wordUI = document.getElementById('wordCountUI');
 
-        textArea.oninput = updateStats;
+        textArea.oninput = updateWordCount;
 
-        function updateStats() {
-            const words = textArea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+        function updateWordCount() {
+            const count = textArea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             const limit = userProfile?.isPro ? 3000 : 1000;
-            
-            if(words > limit) {
-                const trimmed = textArea.value.split(/\s+/).slice(0, limit).join(" ");
-                textArea.value = trimmed;
+            if(count > limit) {
+                textArea.value = textArea.value.split(/\s+/).slice(0, limit).join(" ");
             }
-            
-            counter.innerText = `${words} / ${limit} WORDS`;
-            counter.style.color = (words >= limit) ? '#ef4444' : '#8e8e93';
+            wordUI.innerText = `${count} / ${limit}`;
+            wordUI.style.color = count >= limit ? "#ef4444" : "#888888";
         }
 
         document.getElementById('pdfInput').onchange = (e) => {
@@ -470,106 +473,100 @@
                 const label = document.querySelector('label[for="pdfInput"]');
                 label.innerText = "Extracting...";
                 setTimeout(() => {
-                    const mockData = `\n[PDF: ${file.name.toUpperCase()}]\nThe Great Depression (1929–1939) was the longest and most severe depression ever experienced by the industrialized Western world. It began after the U.S. stock market crash of October 1929. The GDP fell by 15% globally.`;
-                    textArea.value += mockData;
+                    const data = `\n[EXTRACTED DATA: ${file.name.toUpperCase()}]\nThe Great Depression was a severe worldwide economic depression that took place mostly during the 1930s. It began in the United States after a major fall in stock prices. In 1932, unemployment reached 25%.`;
+                    textArea.value += data;
                     label.innerText = "Import PDF";
-                    updateStats();
-                }, 1500);
+                    updateWordCount();
+                }, 1200);
             }
         };
 
-        // GENERATION & RESPONSE PANEL LOGIC
-        document.getElementById('generateBtn').onclick = () => {
-            if(!textArea.value.trim()) return;
-            
-            const panel = document.getElementById('responsePanel');
-            const loading = document.getElementById('resLoading');
-            const content = document.getElementById('resContent');
-            const footer = document.getElementById('resFooter');
-            const timer = document.getElementById('timerDisplay');
-
-            panel.style.display = "flex";
-            setTimeout(() => panel.classList.add('show'), 10);
-            
-            loading.classList.remove('hidden');
-            content.classList.add('hidden');
-            footer.classList.add('hidden');
-            timer.classList.add('hidden');
-
-            // Simulate Engine processing
-            setTimeout(() => {
-                loading.classList.add('hidden');
-                content.classList.remove('hidden');
-                footer.classList.remove('hidden');
-
-                const body = document.getElementById('resBody');
-                const title = document.getElementById('resTitle');
-                document.getElementById('resModeBadge').innerText = currentMode.toUpperCase();
-
-                if(currentMode === 'speed') {
-                    title.innerText = "Speed Summary.";
-                    body.innerHTML = `<p class="font-bold text-black italic">"The core of your notes focus on the 1929 Market Crash and the subsequent 15% global GDP drop."</p>
-                                      <p>Key Takeaway: Economic fragility is often hidden by rapid credit expansion.</p>`;
-                } 
-                else if(currentMode === 'quiz') {
-                    const count = document.getElementById('qSlider').value;
-                    title.innerText = `${count} Practice Questions.`;
-                    body.innerHTML = `
-                        <div class="space-y-6">
-                            <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                                <p class="text-xs font-black text-indigo-500 mb-2 uppercase">Question 1</p>
-                                <p class="text-black font-bold">What was the global GDP drop percentage?</p>
-                            </div>
-                            <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                                <p class="text-xs font-black text-indigo-500 mb-2 uppercase">Question 2</p>
-                                <p class="text-black font-bold">Which event triggered the crisis in October 1929?</p>
-                            </div>
-                        </div>`;
-                }
-                else if(currentMode === 'exam') {
-                    title.innerText = "Simulated Exam.";
-                    timer.classList.remove('hidden');
-                    startExamTimer(15); // 15 minute mock
-                    body.innerHTML = `<p>This is a formal assessment based on your uploaded context. Answer the questions logically. You have 15 minutes.</p>
-                                      <hr class="border-gray-100 my-8">
-                                      <p class="font-bold text-black text-2xl">Section A: Economic Causes</p>
-                                      <p>Analyze the relationship between the 1929 crash and the concept of 'Speculative Bubbles'...</p>`;
-                }
-                else {
-                    title.innerText = "Deep Synthesis.";
-                    body.innerHTML = `
-                        <p>The provided text outlines a systemic collapse. To master this, we must look beyond the date (1929) and focus on the <strong>structural weaknesses</strong> of the banking system at the time.</p>
-                        <div class="bg-indigo-600/5 p-8 rounded-[30px] border border-indigo-600/10">
-                            <h4 class="text-indigo-600 font-black mb-2">Mastery Insight</h4>
-                            <p class="text-gray-600">The Depression wasn't caused by a single day, but by a lack of diversification in the American economy and the overproduction of consumer goods.</p>
-                        </div>`;
-                }
-            }, 2000);
+        // MODE SELECTION & PRO LOCKS
+        window.setMode = (m, btn) => {
+            if(m === 'exam' && !userProfile?.isPro) return openModal();
+            currentMode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('quizOptions').classList.toggle('hidden', m !== 'quiz');
         };
 
-        function startExamTimer(mins) {
-            let seconds = mins * 60;
-            if(examTimer) clearInterval(examTimer);
-            examTimer = setInterval(() => {
-                let m = Math.floor(seconds / 60);
-                let s = seconds % 60;
-                document.getElementById('timerDisplay').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if(seconds <= 0) clearInterval(examTimer);
-                seconds--;
-            }, 1000);
-        }
-
-        // QUIZ SLIDER & PRO LIMITS
-        const qSlider = document.getElementById('qSlider');
-        qSlider.oninput = function() {
+        document.getElementById('qSlider').oninput = function() {
             if(!userProfile?.isPro && this.value > 10) {
                 this.value = 10;
-                alert("Upgrade to Pro to generate up to 50 questions.");
+                openModal();
             }
             document.getElementById('sliderVal').innerText = this.value;
         };
 
-        // NAVIGATION & MODES
+        // GENERATION ENGINE
+        document.getElementById('genBtn').onclick = () => {
+            const val = textArea.value.trim();
+            if(!val) return;
+
+            const panel = document.getElementById('responsePanel');
+            const body = document.getElementById('resBody');
+            const tag = document.getElementById('resTag');
+            const timer = document.getElementById('examTimer');
+
+            panel.style.display = "flex";
+            tag.innerText = currentMode.toUpperCase();
+            timer.classList.toggle('hidden', currentMode !== 'exam');
+
+            if(currentMode === 'speed') {
+                body.innerHTML = `
+                    <h2 class="text-4xl font-black text-black tracking-tighter">Speed Briefing.</h2>
+                    <p class="font-bold text-black border-l-4 border-indigo-600 pl-6 italic">"The Depression started in the US in 1929 and lasted a decade, peaking with 25% unemployment in 1932."</p>
+                    <p>Key Insight: Financial collapses often stem from speculative bubbles followed by rapid loss of consumer confidence.</p>
+                `;
+            } else if(currentMode === 'quiz') {
+                const qNum = document.getElementById('qSlider').value;
+                body.innerHTML = `<h2 class="text-4xl font-black text-black tracking-tighter">${qNum} Practice Items.</h2>`;
+                for(let i=1; i<=2; i++) {
+                    body.innerHTML += `
+                        <div class="p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                            <p class="text-[10px] font-black text-indigo-600 uppercase mb-2">Recall Q${i}</p>
+                            <p class="font-bold text-black">What was the maximum unemployment rate recorded in 1932?</p>
+                        </div>
+                    `;
+                }
+            } else if(currentMode === 'exam') {
+                body.innerHTML = `
+                    <h2 class="text-4xl font-black text-black tracking-tighter">Mock Assessment.</h2>
+                    <p>This is a timed logic exam. Answer the prompts based on the provided text. You have 15 minutes.</p>
+                    <hr class="border-gray-100">
+                    <p class="font-black text-black">Prompt 1: Evaluate the systemic impact of the 1929 stock market crash on global trade...</p>
+                `;
+                startTimer(15);
+            } else {
+                body.innerHTML = `
+                    <h2 class="text-4xl font-black text-black tracking-tighter">Deep Synthesis.</h2>
+                    <p>The core narrative of your notes suggests a systemic failure of liquidity. While the <strong>1929 crash</strong> was the catalyst, the longevity of the depression was caused by protectionist trade policies like the Smoot-Hawley Tariff.</p>
+                    <div class="p-8 bg-indigo-50 rounded-[35px] border border-indigo-100">
+                        <h4 class="font-black text-indigo-600 mb-2 italic text-lg">Mastery Insight</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">To master this topic, don't just memorize dates. Focus on the transition from 'Roaring Twenties' consumerism to 1930s austerity.</p>
+                    </div>
+                `;
+            }
+        };
+
+        function startTimer(m) {
+            let s = m * 60;
+            if(examInt) clearInterval(examInt);
+            examInt = setInterval(() => {
+                let mins = Math.floor(s / 60);
+                let secs = s % 60;
+                document.getElementById('examTimer').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+                if(s <= 0) clearInterval(examInt);
+                s--;
+            }, 1000);
+        }
+
+        window.closeResponse = () => {
+            if(examInt) clearInterval(examInt);
+            document.getElementById('responsePanel').style.display = "none";
+        };
+
+        // SETTINGS & UI
         window.switchView = (v) => {
             ['studio', 'pro', 'settings'].forEach(x => {
                 document.getElementById(`view-${x}`).classList.toggle('hidden', x !== v);
@@ -577,40 +574,10 @@
             });
         };
 
-        window.setMode = (m, btn) => {
-            if(m === 'exam' && !userProfile?.isPro) {
-                switchView('pro');
-                return;
-            }
-            currentMode = m;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('quizExtra').classList.toggle('hidden', m !== 'quiz');
-        };
-
-        window.closeResponse = () => {
-            if(examTimer) clearInterval(examTimer);
-            const panel = document.getElementById('responsePanel');
-            panel.classList.remove('show');
-            setTimeout(() => panel.style.display = "none", 500);
-        };
-
+        window.toggleSetting = (el) => el.classList.toggle('active');
         window.logout = () => signOut(auth);
-        
-        window.resetIdentity = async () => {
-            if(confirm("Wipe all data and identity?")) {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
-                location.reload();
-            }
-        };
+        window.resetIdentity = async () => { if(confirm("Reset everything?")) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" }); location.reload(); } };
 
-        document.getElementById('saveNickBtn').onclick = async () => {
-            const val = document.getElementById('nickInput').value.trim();
-            if(val) {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: val });
-                initializeStudio(val);
-            }
-        };
     </script>
 </body>
 </html>
