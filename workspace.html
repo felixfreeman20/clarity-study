@@ -9,184 +9,140 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <style>
         /* ---------------------------------------------------------
-           PREMIUM DESIGN SYSTEM VARIABLES
+           PREMIUM DESIGN SYSTEM (V4.0)
         --------------------------------------------------------- */
         :root { 
             --bg: #f8fafc; 
-            --panel: rgba(255, 255, 255, 0.85); 
+            --panel: rgba(255, 255, 255, 0.9); 
             --text: #0f172a; 
-            --border: rgba(226, 232, 240, 0.9); 
+            --border: rgba(226, 232, 240, 1); 
             --subtext: #64748b; 
             --accent: #4f46e5; 
             --accent-soft: rgba(79, 70, 229, 0.08);
-            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-            --glass: blur(25px);
+            --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
         }
         .dark-theme { 
             --bg: #020617; 
-            --panel: rgba(15, 23, 42, 0.75); 
+            --panel: rgba(15, 23, 42, 0.85); 
             --text: #f8fafc; 
-            --border: rgba(30, 41, 59, 0.8); 
+            --border: rgba(30, 41, 59, 1); 
             --subtext: #94a3b8;
             --accent-soft: rgba(79, 70, 229, 0.15);
-            --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         
-        /* ---------------------------------------------------------
-           BASE LAYOUT & ANIMATION
-        --------------------------------------------------------- */
-        body { 
-            background-color: var(--bg); 
-            color: var(--text); 
-            font-family: 'Inter', sans-serif; 
-            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-            margin: 0; 
-            overflow: hidden; 
-            height: 100vh;
-        }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: background 0.5s ease; margin: 0; overflow: hidden; height: 100vh; }
 
+        /* SIDEBAR SYSTEM */
         .sidebar { 
-            width: 280px; 
-            background: var(--panel); 
-            backdrop-filter: var(--glass); 
-            -webkit-backdrop-filter: var(--glass);
-            border-right: 1px solid var(--border); 
-            height: 100vh; 
-            position: fixed; 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 100; 
-            transition: all 0.5s ease;
+            width: 280px; background: var(--panel); backdrop-filter: blur(25px); 
+            border-right: 1px solid var(--border); height: 100vh; position: fixed; 
+            display: flex; flex-direction: column; z-index: 100; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
         }
-
-        .main-content { 
-            margin-left: 280px; 
-            padding: 50px 80px; 
-            height: 100vh; 
-            overflow-y: auto; 
-            position: relative; 
-            transition: all 0.5s ease;
-        }
+        .main-content { margin-left: 280px; padding: 40px 60px; height: 100vh; overflow-y: auto; transition: 0.5s ease; position: relative; }
         
         /* ---------------------------------------------------------
-           DEEP WORK / FOCUS MODE
-        --------------------------------------------------------- */
-        body.focus-active .sidebar { transform: translateX(-280px); opacity: 0; }
-        body.focus-active header { opacity: 0.1; filter: blur(10px); transform: translateY(-20px); }
-        body.focus-active .main-content { margin-left: 0; padding: 50px 150px; }
-
-        /* ---------------------------------------------------------
-           STUDIO ELEMENTS
+           THE STUDIO BOX (TEXT BOX OVERFLOW FIXES)
         --------------------------------------------------------- */
         .studio-box { 
-            background: var(--panel); 
-            border: 1px solid var(--border); 
-            border-radius: 40px; 
-            display: flex; 
-            flex-direction: column; 
-            height: 70vh; 
-            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            position: relative; 
-            backdrop-filter: var(--glass);
-            z-index: 60; 
-            overflow: hidden;
-            box-shadow: var(--shadow-premium);
+            background: var(--panel); border: 1px solid var(--border); border-radius: 40px; 
+            display: flex; flex-direction: column; height: 75vh; position: relative; 
+            backdrop-filter: blur(20px); z-index: 60; overflow: hidden; box-shadow: var(--shadow-premium);
         }
 
-        .nav-btn { 
-            padding: 14px 20px; 
-            border-radius: 16px; 
-            display: flex; 
-            align-items: center; 
-            gap: 14px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            color: var(--subtext); 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            margin-bottom: 4px;
+        /* Top Utility Bar - Floating above textarea */
+        .top-shelf { 
+            position: absolute; top: 0; left: 0; right: 0; height: 90px; 
+            padding: 0 45px; display: flex; justify-content: flex-end; align-items: center; 
+            gap: 15px; z-index: 80; pointer-events: none; 
+            background: linear-gradient(to bottom, var(--panel) 40%, transparent);
         }
-        .nav-btn:hover { background: var(--accent-soft); color: var(--text); }
-        .nav-btn.active { background: var(--accent); color: white !important; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+        .top-shelf * { pointer-events: auto; }
 
-        .mode-tab { 
-            padding: 12px 22px; 
-            border-radius: 16px; 
-            font-weight: 700; 
-            font-size: 13px; 
-            border: 1.5px solid var(--border); 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            background: transparent; 
-            color: var(--subtext); 
-            white-space: nowrap;
+        /* The scrolling container for the textarea */
+        .input-guard { 
+            flex: 1; padding-top: 90px; /* Space for top-shelf */
+            position: relative; display: flex; flex-direction: column; 
         }
-        .mode-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
         
-        /* ---------------------------------------------------------
-           QUIZ SLIDER & WORD COUNTER
-        --------------------------------------------------------- */
-        .slider { -webkit-appearance: none; width: 100%; height: 5px; background: var(--border); border-radius: 20px; outline: none; }
-        .slider::-webkit-slider-thumb { 
-            -webkit-appearance: none; 
-            appearance: none; 
-            width: 24px; height: 24px; 
-            background: var(--accent); 
-            cursor: pointer; 
-            border-radius: 50%; 
-            border: 4px solid var(--bg); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .count-indicator { 
-            font-size: 11px; font-weight: 900; 
-            letter-spacing: 0.05em; 
-            padding: 6px 14px; 
-            border-radius: 12px; 
-            background: var(--accent-soft);
-            border: 1px solid var(--border); 
-        }
-
-        /* ---------------------------------------------------------
-           INPUT AREA
-        --------------------------------------------------------- */
         textarea { 
-            background: transparent; 
-            color: var(--text); 
-            resize: none; 
-            border: none; 
-            outline: none; 
-            width: 100%; 
-            height: 100%; 
-            padding: 60px; 
-            font-size: 22px; 
-            line-height: 1.7;
-            font-weight: 400;
+            background: transparent; color: var(--text); resize: none; border: none; outline: none; 
+            width: 100%; height: 100%; padding: 45px; font-size: 22px; line-height: 1.7; font-weight: 400;
             overflow-y: auto;
         }
 
         /* ---------------------------------------------------------
-           ONBOARDING & PRO CARDS
+           RESPONSE VIEW OVERLAY
         --------------------------------------------------------- */
-        .onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; items: center; justify-content: center; backdrop-filter: blur(50px); }
-        .pro-badge { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; }
-        .settings-card { background: var(--panel); border: 1px solid var(--border); padding: 35px; border-radius: 30px; transition: 0.4s ease; }
-        .settings-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        #resultLayer { 
+            position: fixed; inset: 0; background: var(--bg); z-index: 1000; 
+            display: none; flex-direction: column; padding: 80px; overflow-y: auto;
+            transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #resultLayer.active { display: flex; transform: translateY(0); }
+
+        .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .flashcard { background: var(--panel); border: 1.5px solid var(--border); border-radius: 24px; padding: 30px; transition: 0.3s; cursor: pointer; }
+        .flashcard:hover { border-color: var(--accent); transform: scale(1.02); }
 
         /* ---------------------------------------------------------
-           ANIMATIONS
+           UI COMPONENTS
         --------------------------------------------------------- */
-        @keyframes streamIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-stream { animation: streamIn 0.4s ease forwards; }
+        .nav-btn { padding: 14px 22px; border-radius: 18px; display: flex; align-items: center; gap: 14px; cursor: pointer; font-weight: 700; color: var(--subtext); transition: 0.3s; margin-bottom: 5px; }
+        .nav-btn:hover { background: var(--accent-soft); color: var(--text); }
+        .nav-btn.active { background: var(--accent); color: white !important; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+
+        .mode-tab { padding: 12px 24px; border-radius: 16px; font-weight: 700; font-size: 13px; border: 1.5px solid var(--border); cursor: pointer; transition: 0.3s; background: transparent; color: var(--subtext); }
+        .mode-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+        
+        .slider { -webkit-appearance: none; width: 100%; height: 6px; background: var(--border); border-radius: 20px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; background: var(--accent); cursor: pointer; border-radius: 50%; border: 4px solid var(--bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        .count-indicator { font-size: 11px; font-weight: 900; padding: 8px 18px; border-radius: 14px; background: var(--accent-soft); border: 1px solid var(--border); color: var(--subtext); }
+        .pro-badge { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 3px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; }
+        
+        /* Focus Effects */
+        body.focus-active .sidebar { transform: translateX(-280px); opacity: 0; }
+        body.focus-active .main-content { margin-left: 0; padding: 40px 140px; }
+
+        .onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; items: center; justify-content: center; backdrop-filter: blur(60px); }
     </style>
 </head>
 <body class="dark-theme">
 
+    <div id="resultLayer">
+        <div class="max-w-5xl mx-auto w-full">
+            <div class="flex items-center justify-between mb-20">
+                <button onclick="closeResult()" class="text-[11px] font-black tracking-[0.2em] uppercase flex items-center gap-4 text-gray-500 hover:text-indigo-500 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Discard and Return
+                </button>
+                <div class="flex gap-4">
+                    <button class="bg-indigo-600/10 text-indigo-500 px-10 py-4 rounded-[22px] text-xs font-black uppercase tracking-widest hover:bg-indigo-600/20 transition-all">Export PDF</button>
+                    <button class="bg-indigo-600 text-white px-10 py-4 rounded-[22px] text-xs font-black uppercase tracking-widest shadow-2xl shadow-indigo-600/30">Save to Library</button>
+                </div>
+            </div>
+            
+            <div id="loadingUI" class="text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-indigo-600 border-t-transparent mb-8"></div>
+                <h3 class="text-3xl font-black tracking-tight">Clarity Engine is Thinking...</h3>
+            </div>
+
+            <div id="resultOutput" class="hidden">
+                <p id="modeBadge" class="text-indigo-500 font-black text-xs uppercase tracking-[0.3em] mb-4">Deep Dive Mode</p>
+                <h2 id="resultTitle" class="text-7xl font-black tracking-tighter mb-12">Synthesized Insight.</h2>
+                <div id="textContent" class="text-2xl leading-relaxed text-gray-400 space-y-10">
+                    </div>
+                <div id="flashcardContent" class="hidden flashcard-grid mt-12">
+                    </div>
+            </div>
+        </div>
+    </div>
+
     <div id="onboarding" class="hidden onboarding-overlay">
-        <div class="max-w-xl w-full p-12 text-center animate-stream">
-            <h2 class="text-7xl font-black mb-6 tracking-tighter">Clarity.</h2>
-            <p class="text-gray-500 mb-14 text-xl font-medium">Step into your private study studio.</p>
-            <input type="text" id="nickInput" class="w-full text-center text-4xl font-bold bg-transparent border-b-4 border-gray-800 focus:border-indigo-500 outline-none pb-6 mb-16 text-current transition-all" placeholder="Your Name">
-            <button id="saveNickBtn" class="w-full bg-indigo-600 text-white py-6 rounded-3xl font-black text-xl hover:bg-indigo-500 hover:scale-[1.02] transition-all shadow-2xl shadow-indigo-600/30">Enter Workspace</button>
+        <div class="max-w-lg w-full p-12 text-center animate-pulse">
+            <h2 class="text-7xl font-black mb-12 tracking-tighter">Clarity.</h2>
+            <input type="text" id="nickInput" class="w-full text-center text-5xl font-bold bg-transparent border-b-4 border-gray-800 focus:border-indigo-500 outline-none pb-6 mb-16 text-current transition-all" placeholder="Enter Nickname">
+            <button id="saveNickBtn" class="w-full bg-indigo-600 text-white py-7 rounded-[30px] font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-indigo-600/40">Launch Workspace</button>
         </div>
     </div>
 
@@ -205,7 +161,7 @@
             </div>
             <div onclick="switchView('pro')" id="tab-pro" class="nav-btn">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                Pro Features
+                Pro Access
             </div>
             <div onclick="switchView('settings')" id="tab-settings" class="nav-btn">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
@@ -213,62 +169,60 @@
             </div>
         </nav>
 
-        <div class="mt-auto border-t border-gray-800/40 pt-10">
-            <div class="flex items-center gap-5 group cursor-pointer" onclick="switchView('settings')">
-                <div class="h-14 w-14 bg-indigo-600 rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-xl group-hover:rotate-6 transition-transform" id="userInitial">?</div>
-                <div class="overflow-hidden">
+        <div class="mt-auto border-t border-gray-800/50 pt-10">
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl" id="userInitial">?</div>
+                <div>
                     <p id="profileName" class="font-black text-base truncate tracking-tight">Student</p>
-                    <button onclick="logout()" class="text-[11px] uppercase tracking-widest text-indigo-500 font-black">Disconnect</button>
+                    <button onclick="logout()" class="text-[10px] uppercase tracking-widest text-indigo-500 font-black">Disconnect</button>
                 </div>
             </div>
         </div>
     </aside>
 
     <main class="main-content">
-        
-        <header class="mb-14 max-w-5xl">
-            <h1 class="text-6xl font-black mb-3 tracking-tighter">AI Studio.</h1>
-            <p class="text-gray-500 text-lg font-medium">Refining knowledge for <span id="helloName" class="text-indigo-500 font-bold">...</span></p>
+        <header class="mb-14">
+            <h1 class="text-6xl font-black tracking-tighter mb-4">Studio.</h1>
+            <p class="text-gray-500 text-xl font-medium">Hello, <span id="helloName" class="text-indigo-500 font-bold">...</span></p>
         </header>
 
-        <div id="view-studio" class="max-w-5xl">
+        <div id="view-studio" class="max-w-6xl">
             <div class="studio-box">
-                <div class="absolute top-8 right-10 flex items-center gap-5 z-20">
+                <div class="top-shelf">
                     <input type="file" id="pdfInput" accept=".pdf" class="hidden">
-                    <label for="pdfInput" class="cursor-pointer px-6 py-2.5 rounded-2xl text-[11px] font-black tracking-widest bg-white/5 border border-white/10 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-3">
+                    <label for="pdfInput" class="cursor-pointer px-7 py-3 rounded-2xl text-[11px] font-black tracking-widest bg-white/5 border border-white/10 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-3">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                         IMPORT PDF
                     </label>
-                    <div id="wordCounter" class="count-indicator text-gray-400">0 / 1000 WORDS</div>
+                    <div id="wordCounter" class="count-indicator uppercase">0 / 1000 WORDS</div>
                 </div>
 
-                <textarea id="aiInput" 
-                    placeholder="Paste your messy lecture notes, transcripts, or thoughts here..." 
-                    onfocus="setFocus(true)" 
-                    onblur="setFocus(false)"></textarea>
+                <div class="input-guard">
+                    <textarea id="aiInput" placeholder="Paste your messy notes, transcripts, or thoughts here..." onfocus="setFocus(true)" onblur="setFocus(false)"></textarea>
+                </div>
                 
                 <div class="p-10 bg-black/20 dark:bg-white/5 border-t border-gray-800/50">
-                    <div class="flex flex-wrap items-center justify-between gap-8">
-                        <div class="flex flex-wrap gap-3">
+                    <div class="flex flex-wrap items-center justify-between gap-10">
+                        <div class="flex flex-wrap gap-4">
                             <button class="mode-tab active" onclick="setMode('deep', this)">Deep Dive</button>
                             <button class="mode-tab" onclick="setMode('speed', this)">Speed</button>
                             <button class="mode-tab" onclick="setMode('flashcards', this)">Flashcards</button>
                             <button class="mode-tab" onclick="setMode('quiz', this)">Quiz</button>
-                            <button class="mode-tab" onclick="setMode('simulate', this)">Simulate Exam <span class="pro-badge ml-2">PRO</span></button>
+                            <button class="mode-tab pro-only" onclick="setMode('simulate', this)">Simulate Exam <span class="pro-badge ml-3">PRO</span></button>
                         </div>
 
-                        <button id="genBtn" class="bg-indigo-600 text-white px-12 py-5 rounded-[24px] font-black text-sm hover:bg-indigo-500 hover:shadow-2xl hover:shadow-indigo-600/30 active:scale-95 transition-all">
+                        <button id="genBtn" class="bg-indigo-600 text-white px-16 py-6 rounded-[28px] font-black text-sm hover:bg-indigo-500 hover:shadow-2xl shadow-indigo-600/30 transition-all active:scale-95">
                             GENERATE
                         </button>
                     </div>
 
-                    <div id="quizConfig" class="hidden mt-10 pt-10 border-t border-gray-800/30 animate-stream">
-                        <div class="flex items-center justify-between mb-6">
+                    <div id="quizConfig" class="hidden mt-10 pt-10 border-t border-gray-800/30">
+                        <div class="flex items-center justify-between mb-8">
                             <div>
-                                <p class="text-[11px] font-black text-gray-500 uppercase tracking-widest">Question Quantity</p>
-                                <p id="proWarning" class="hidden text-[10px] text-indigo-400 font-bold mt-1 uppercase">Free tier: Max 10. Go Pro for 50.</p>
+                                <p class="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1">Quantity</p>
+                                <p class="text-[10px] text-indigo-400 font-bold uppercase">Pro users can generate up to 50.</p>
                             </div>
-                            <span id="sliderVal" class="font-black text-indigo-500 text-3xl tracking-tighter">5</span>
+                            <span id="sliderVal" class="font-black text-indigo-500 text-4xl tracking-tighter">5</span>
                         </div>
                         <input type="range" min="5" max="50" value="5" step="5" class="slider" id="questionSlider">
                     </div>
@@ -276,65 +230,52 @@
             </div>
         </div>
 
-        <div id="view-pro" class="hidden max-w-6xl animate-stream">
-            <h1 class="text-7xl font-black mb-6 tracking-tighter">Pro Access.</h1>
-            <p class="text-gray-500 text-xl mb-16 font-medium">The complete toolkit for academic excellence.</p>
-            
+        <div id="view-pro" class="hidden max-w-6xl">
+            <h1 class="text-7xl font-black mb-8 tracking-tighter">Clarity Pro.</h1>
+            <p class="text-gray-500 text-2xl mb-16 font-medium">Break the limits of standard learning.</p>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="settings-card bg-indigo-600/10 border-indigo-500/40">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">3,000 Words</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Process entire textbooks, long-form journals, or full hour-long lecture transcripts without hitting limits.</p>
+                <div class="bg-indigo-600/10 p-10 border border-indigo-500/30 rounded-[40px]">
+                    <h3 class="text-3xl font-black mb-4">3,000 Words</h3>
+                    <p class="text-gray-400 leading-relaxed">Analyze entire textbook chapters or long-form scientific journals in a single click.</p>
                 </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Simulate Exam</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Mimic real-world testing environments with timed AI-generated exams that grade you on logic, not just keywords.</p>
+                <div class="bg-white/5 p-10 border border-white/10 rounded-[40px]">
+                    <h3 class="text-3xl font-black mb-4">Simulate Exam</h3>
+                    <p class="text-gray-400 leading-relaxed">Mimic real exam conditions with timed AI-generated mocks and instant logical grading.</p>
                 </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Audio Lectures</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Convert your summaries into high-fidelity AI voice podcasts. Study while you commute or workout.</p>
+                <div class="bg-white/5 p-10 border border-white/10 rounded-[40px]">
+                    <h3 class="text-3xl font-black mb-4">Audio Mode</h3>
+                    <p class="text-gray-400 leading-relaxed">Convert your summaries into ultra-realistic AI podcasts for learning on the go.</p>
                 </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Mind Map Export</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Instantly visualize your notes as structural diagrams. Export to PDF or high-res SVG for printing.</p>
+                <div class="bg-white/5 p-10 border border-white/10 rounded-[40px]">
+                    <h3 class="text-3xl font-black mb-4">Mind Maps</h3>
+                    <p class="text-gray-400 leading-relaxed">Visualize your messy notes as structural logic diagrams for spatial memory mastery.</p>
                 </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Active Recall</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Smart notification system that pings you exactly when you're likely to forget a concept based on your quiz data.</p>
+                <div class="bg-white/5 p-10 border border-white/10 rounded-[40px]">
+                    <h3 class="text-3xl font-black mb-4">Recall Pings</h3>
+                    <p class="text-gray-500 leading-relaxed">Smart notifications that alert you exactly when you're about to forget a concept.</p>
                 </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Custom Quizzes</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Unlock advanced quiz formats: Fill-in-the-blank, Case Study analysis, and Boolean (True/False) mastery.</p>
-                </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Unlimited Storage</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Archive every summary, every flashcard, and every quiz result forever in the Clarity Cloud.</p>
-                </div>
-                <div class="settings-card">
-                    <h3 class="text-2xl font-black mb-4 tracking-tight">Priority AI</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Bypass server congestion during peak exam seasons. Your requests are prioritized for sub-2-second results.</p>
-                </div>
-                <div class="settings-card bg-indigo-600 flex flex-col justify-center items-center text-center text-white">
-                    <h3 class="text-3xl font-black mb-2">$9.99/mo</h3>
-                    <p class="text-white/70 font-bold text-sm mb-6 uppercase tracking-widest">Mastery Plan</p>
-                    <button class="bg-white text-indigo-600 px-8 py-3 rounded-xl font-black hover:scale-105 transition-transform">UPGRADE NOW</button>
+                <div class="bg-indigo-600 p-10 rounded-[40px] text-white flex flex-col justify-center items-center text-center">
+                    <p class="text-sm font-black uppercase tracking-[0.2em] mb-2 opacity-70">Mastery Plan</p>
+                    <h3 class="text-4xl font-black mb-6">$9.99/mo</h3>
+                    <button class="bg-white text-indigo-600 px-10 py-4 rounded-2xl font-black text-sm shadow-xl">UPGRADE NOW</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-settings" class="hidden max-w-2xl animate-stream">
-            <h1 class="text-6xl font-black mb-12 tracking-tighter">Settings.</h1>
+        <div id="view-settings" class="hidden max-w-3xl">
+            <h1 class="text-6xl font-black mb-16 tracking-tighter">Settings.</h1>
             <div class="space-y-6">
-                <div class="settings-card flex items-center justify-between">
+                <div class="bg-white/5 border border-white/10 p-10 rounded-[32px] flex items-center justify-between">
                     <div>
-                        <p class="text-xl font-black tracking-tight">Appearance</p>
-                        <p class="text-gray-500 text-sm">Switch between Light and Dark themes.</p>
+                        <p class="text-2xl font-black">Appearance</p>
+                        <p class="text-gray-500">Currently using Dark System Theme.</p>
                     </div>
-                    <button onclick="toggleTheme()" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold">Toggle</button>
+                    <button onclick="toggleTheme()" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-black text-sm">Toggle</button>
                 </div>
-                <div class="settings-card">
-                    <p class="text-xl font-black tracking-tight mb-2">Danger Zone</p>
-                    <p class="text-gray-500 text-sm mb-8">Resetting your identity will clear your nickname from the cloud.</p>
-                    <button onclick="resetName()" class="text-red-500 font-black text-xs uppercase tracking-widest bg-red-500/10 px-6 py-3 rounded-xl border border-red-500/20">Wipe Identity Data</button>
+                <div class="bg-red-500/5 border border-red-500/20 p-10 rounded-[32px]">
+                    <p class="text-2xl font-black text-red-500 mb-4">Wipe Identity</p>
+                    <p class="text-gray-500 mb-8">This will disconnect your account and clear all local session data.</p>
+                    <button onclick="resetName()" class="bg-red-500/10 text-red-500 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest">Clear My Identity</button>
                 </div>
             </div>
         </div>
@@ -353,7 +294,7 @@
         let userDoc = null;
         let activeMode = 'deep';
 
-        // AUTH & ONBOARDING SYSTEM
+        // AUTH SYSTEM
         onAuthStateChanged(auth, async (u) => {
             if(!u) return window.location.href="index.html";
             const snap = await getDoc(doc(db, "users", u.uid));
@@ -372,101 +313,114 @@
             updateWordCountUI();
         }
 
-        // WORD COUNT & PDF SIMULATION
+        // PDF TO TEXT INJECTION SYSTEM
+        document.getElementById('pdfInput').onchange = (e) => {
+            const f = e.target.files[0];
+            if(f) {
+                const btn = document.querySelector('label[for="pdfInput"]');
+                btn.innerHTML = `
+                    <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    EXTRACTING TEXT...`;
+                
+                setTimeout(() => {
+                    const extracted = `\n--- [PDF DATA: ${f.name.toUpperCase()}] ---\nThe American Civil War (1861–1865) was fought between the Union ("the North") and the Confederacy ("the South"). The central cause was the complex status of institutional slavery. General Robert E. Lee eventually surrendered to Ulysses S. Grant at Appomattox Court House in April 1865.`;
+                    document.getElementById('aiInput').value += extracted;
+                    btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg> IMPORT PDF`;
+                    updateWordCountUI();
+                }, 1500);
+            }
+        };
+
         const aiInput = document.getElementById('aiInput');
         const wordCounter = document.getElementById('wordCounter');
 
-        aiInput.oninput = () => {
-            const words = aiInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const limit = (userDoc && userDoc.isPro) ? 3000 : 1000;
-            
-            if(words > limit) {
-                const truncated = aiInput.value.split(/\s+/).slice(0, limit).join(" ");
-                aiInput.value = truncated;
-                alert(`The ${limit} word limit has been reached.`);
-            }
-            updateWordCountUI();
-        };
+        aiInput.oninput = updateWordCountUI;
 
         function updateWordCountUI() {
             const words = aiInput.value.trim().split(/\s+/).filter(w => w.length > 0).length;
             const limit = (userDoc && userDoc.isPro) ? 3000 : 1000;
+            if(words > limit) {
+                aiInput.value = aiInput.value.split(/\s+/).slice(0, limit).join(" ");
+                alert(`Limit reached: ${limit} words.`);
+            }
             wordCounter.innerText = `${words} / ${limit} WORDS`;
-            wordCounter.style.color = (words >= limit) ? '#f43f5e' : '#94a3b8';
+            wordCounter.style.color = (words >= limit) ? '#ef4444' : '#94a3b8';
         }
 
-        document.getElementById('pdfInput').onchange = (e) => {
-            const f = e.target.files[0];
-            if(f) {
-                document.getElementById('genBtn').innerText = "SCANNING PDF...";
-                setTimeout(() => { document.getElementById('genBtn').innerText = "GENERATE"; alert("PDF Data Extracted."); }, 1500);
-            }
+        // GENERATION ENGINE
+        document.getElementById('genBtn').onclick = () => {
+            if(!aiInput.value) return;
+            const res = document.getElementById('resultLayer');
+            res.style.display = "flex";
+            setTimeout(() => res.classList.add('active'), 10);
+            
+            document.getElementById('loadingUI').classList.remove('hidden');
+            document.getElementById('resultOutput').classList.add('hidden');
+
+            setTimeout(() => {
+                document.getElementById('loadingUI').classList.add('hidden');
+                document.getElementById('resultOutput').classList.remove('hidden');
+                document.getElementById('modeBadge').innerText = activeMode.toUpperCase() + " RESULT";
+                
+                if(activeMode === 'flashcards') {
+                    document.getElementById('textContent').classList.add('hidden');
+                    document.getElementById('flashcardContent').classList.remove('hidden');
+                    document.getElementById('flashcardContent').innerHTML = `
+                        <div class="flashcard">
+                            <p class="text-indigo-500 text-[10px] font-black uppercase mb-4">Question</p>
+                            <p class="text-white font-bold text-xl">What was the primary cause of the American Civil War?</p>
+                        </div>
+                        <div class="flashcard">
+                            <p class="text-indigo-500 text-[10px] font-black uppercase mb-4">Question</p>
+                            <p class="text-white font-bold text-xl">Where did General Lee surrender?</p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('textContent').classList.remove('hidden');
+                    document.getElementById('flashcardContent').classList.add('hidden');
+                    document.getElementById('textContent').innerHTML = `
+                        <p>Analysis of your notes suggests a heavy focus on the <strong>economic disparities</strong> between the agrarian South and industrial North.</p>
+                        <div class="p-10 bg-white/5 border border-white/10 rounded-[32px]">
+                            <h4 class="text-white font-black mb-4">Key Takeaway</h4>
+                            <p class="text-gray-400">The Emancipation Proclamation was not just a moral decree, but a strategic military maneuver to deplete the Confederate labor force.</p>
+                        </div>
+                    `;
+                }
+            }, 2000);
         };
 
-        // UI MOTION LOGIC
-        window.setFocus = (active) => {
-            document.body.classList.toggle('focus-active', active);
+        window.closeResult = () => {
+            document.getElementById('resultLayer').classList.remove('active');
+            setTimeout(() => document.getElementById('resultLayer').style.display = "none", 600);
         };
 
-        window.setMode = (mode, btn) => {
-            if(mode === 'simulate' && (!userDoc || !userDoc.isPro)) {
-                switchView('pro');
-                return;
-            }
-            activeMode = mode;
-            document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('quizConfig').classList.toggle('hidden', mode !== 'quiz');
-        };
-
-        const slider = document.getElementById('questionSlider');
-        const sliderVal = document.getElementById('sliderVal');
-        const proWarning = document.getElementById('proWarning');
-
-        slider.oninput = function() {
-            let val = parseInt(this.value);
-            const isPro = userDoc && userDoc.isPro; 
-            if(!isPro && val > 10) {
-                this.value = 10; val = 10;
-                proWarning.classList.remove('hidden');
-            } else {
-                proWarning.classList.add('hidden');
-            }
-            sliderVal.innerText = val;
+        // UI HELPERS
+        window.setFocus = (a) => document.body.classList.toggle('focus-active', a);
+        window.setMode = (m, b) => {
+            activeMode = m;
+            document.querySelectorAll('.mode-tab').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('quizConfig').classList.toggle('hidden', m !== 'quiz');
         };
 
         window.switchView = (v) => {
-            ['studio', 'pro', 'settings'].forEach(view => {
-                document.getElementById(`view-${view}`).classList.toggle('hidden', view !== v);
-                document.getElementById(`tab-${view}`).classList.toggle('active', view === v);
+            ['studio', 'pro', 'settings'].forEach(x => {
+                document.getElementById(`view-${x}`).classList.toggle('hidden', x !== v);
+                document.getElementById(`tab-${x}`).classList.toggle('active', x === v);
             });
         };
 
         window.toggleTheme = () => document.body.classList.toggle('dark-theme');
+        window.resetName = async () => { if(confirm("Clear local identity?")) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" }); location.reload(); } };
         window.logout = () => signOut(auth);
         
-        window.resetName = async () => {
-            if(confirm("Confirm: Reset your identity?")) {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
-                location.reload();
-            }
-        };
-
         document.getElementById('saveNickBtn').onclick = async () => {
             const n = document.getElementById('nickInput').value.trim();
             if(n) { await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: n }); setupWorkspace(n); }
         };
 
-        document.getElementById('genBtn').onclick = () => {
-            if(!aiInput.value) return alert("Please provide source material.");
-            const btn = document.getElementById('genBtn');
-            btn.innerText = "PROCESSING...";
-            btn.style.opacity = "0.5";
-            setTimeout(() => {
-                btn.innerText = "GENERATE";
-                btn.style.opacity = "1";
-                alert(`Engine active: ${activeMode.toUpperCase()}\nStatus: Success`);
-            }, 2500);
+        document.getElementById('questionSlider').oninput = function() {
+            document.getElementById('sliderVal').innerText = this.value;
         };
     </script>
 </body>
