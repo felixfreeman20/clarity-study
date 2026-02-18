@@ -6,59 +6,115 @@
     <title>Workspace | Clarity</title>
     <link rel="icon" href="Clarity Logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #f8fafc; --panel: #ffffff; --text: #0f172a; 
-            --border: #e2e8f0; --subtext: #64748b; --item-hover: #f1f5f9;
+            --bg: #f8fafc; --panel: rgba(255, 255, 255, 0.8); --text: #0f172a; 
+            --border: rgba(226, 232, 240, 0.8); --subtext: #64748b; 
+            --accent: #4f46e5; --accent-soft: rgba(79, 70, 229, 0.1);
+            /* 4. SEMANTIC DEPTH: Multi-layered shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .dark-theme { 
-            --bg: #020617; --panel: #0f172a; --text: #f8fafc; 
-            --border: #1e293b; --subtext: #94a3b8; --item-hover: #1e293b;
+            --bg: #020617; --panel: rgba(15, 23, 42, 0.7); --text: #f8fafc; 
+            --border: rgba(30, 41, 59, 0.7); --subtext: #94a3b8;
+            --accent-soft: rgba(79, 70, 229, 0.2);
         }
         
-        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
-        .sidebar { width: 280px; background: var(--panel); border-right: 1px solid var(--border); height: 100vh; position: fixed; display: flex; flex-direction: column; z-index: 40; }
-        .main-content { margin-left: 280px; padding: 60px; min-height: 100vh; }
-        
-        /* Fixed Button Colors for Dark Mode */
-        .nav-btn { padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; color: var(--subtext); }
-        .nav-btn:hover { background: var(--item-hover); color: var(--text); }
-        .nav-btn.active { background: #4f46e5; color: white !important; }
+        body { 
+            background-color: var(--bg); color: var(--text); 
+            font-family: 'Inter', sans-serif; font-optical-sizing: auto;
+            letter-spacing: -0.011em; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            margin: 0; overflow: hidden;
+        }
 
-        .studio-box { background: var(--panel); border: 1px solid var(--border); border-radius: 24px; display: flex; flex-direction: column; height: 68vh; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        
-        .mode-tab { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 13px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; background: var(--panel); color: var(--subtext); }
-        .mode-tab.active { border-color: #4f46e5; color: #4f46e5; background: rgba(79, 70, 229, 0.1); }
-        .mode-tab.pro-only { border-style: dashed; position: relative; }
-        
-        /* Slider Styling */
-        .slider { -webkit-appearance: none; width: 100%; height: 6px; background: var(--border); border-radius: 5px; outline: none; transition: 0.2s; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: #4f46e5; cursor: pointer; border-radius: 50%; border: 2px solid white; }
+        /* 2. GLASSMORPHISM: Frosted Sidebar */
+        .sidebar { 
+            width: 280px; background: var(--panel); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border); height: 100vh; position: fixed; 
+            display: flex; flex-direction: column; z-index: 50; transition: transform 0.4s spring(1, 80, 10, 0);
+        }
 
-        .onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; items: center; justify-content: center; }
-        .pro-badge { background: linear-gradient(45deg, #4f46e5, #9333ea); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; vertical-align: middle; margin-left: 4px; }
+        .main-content { margin-left: 280px; padding: 60px; height: 100vh; overflow-y: auto; transition: opacity 0.5s ease; }
         
-        textarea { background: transparent; color: var(--text); resize: none; border: none; outline: none; width: 100%; height: 100%; padding: 40px; font-size: 18px; line-height: 1.6; }
-        .settings-card { background: var(--panel); border: 1px solid var(--border); padding: 24px; border-radius: 20px; }
+        /* 3. PROGRESSIVE DISCLOSURE: Deep Work Mode */
+        .main-content.focus-mode { opacity: 0.15; filter: blur(2px); }
+        .studio-box:focus-within { transform: scale(1.005); box-shadow: 0 20px 50px rgba(0,0,0,0.1); z-index: 60; }
+        .studio-box { 
+            background: var(--panel); border: 1px solid var(--border); border-radius: 32px; 
+            display: flex; flex-direction: column; height: 70vh; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; backdrop-filter: blur(10px);
+        }
+
+        /* 2. MICRO-INTERACTIONS: Sliding Pill Navigation */
+        .nav-btn { 
+            padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; 
+            cursor: pointer; font-weight: 500; color: var(--subtext); transition: 0.3s; position: relative;
+        }
+        .nav-btn:hover { color: var(--text); background: var(--accent-soft); }
+        .nav-btn.active { background: var(--accent); color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+
+        .mode-tab { 
+            padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 13px; 
+            border: 1px solid var(--border); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent; color: var(--subtext);
+        }
+        .mode-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+        .mode-tab.pro-only { border-style: dashed; }
+        
+        .slider { -webkit-appearance: none; width: 100%; height: 4px; background: var(--border); border-radius: 10px; outline: none; }
+        .slider::-webkit-slider-thumb { 
+            -webkit-appearance: none; appearance: none; width: 20px; height: 20px; 
+            background: var(--accent); cursor: pointer; border-radius: 50%; border: 3px solid var(--bg);
+            box-shadow: var(--shadow-sm); transition: 0.2s;
+        }
+        .slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .onboarding-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; items: center; justify-content: center; backdrop-filter: blur(40px); }
+        .pro-badge { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 2px 7px; border-radius: 6px; font-size: 9px; font-weight: 900; }
+        
+        textarea { 
+            background: transparent; color: var(--text); resize: none; border: none; outline: none; 
+            width: 100%; height: 100%; padding: 48px; font-size: 20px; line-height: 1.7;
+            font-weight: 400;
+        }
+        .settings-card { 
+            background: var(--panel); border: 1px solid var(--border); padding: 28px; border-radius: 24px; 
+            transition: 0.3s; backdrop-filter: blur(5px);
+        }
+        .settings-card:hover { border-color: var(--accent); }
+
+        /* Custom Scrollbar for Premium Feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--subtext); }
+
+        @keyframes shimmer { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .ai-loading { animation: shimmer 1.5s infinite; }
     </style>
 </head>
-<body class="dark-theme"> <div id="onboarding" class="hidden onboarding-overlay">
-        <div class="max-w-md w-full p-8 text-center">
-            <h2 class="text-5xl font-black mb-4 tracking-tighter">Identity.</h2>
-            <p class="text-gray-500 mb-10 font-medium">How should Clarity address you?</p>
-            <input type="text" id="nickInput" class="w-full text-center text-3xl font-bold bg-transparent border-b-4 border-gray-700 focus:border-indigo-600 outline-none pb-3 mb-12 text-current" placeholder="...">
-            <button id="saveNickBtn" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:scale-[1.02] transition-transform shadow-xl shadow-indigo-900/20">Enter Workspace</button>
+<body class="dark-theme">
+
+    <div id="onboarding" class="hidden onboarding-overlay">
+        <div class="max-w-md w-full p-10 text-center animate-in fade-in zoom-in duration-700">
+            <h2 class="text-6xl font-black mb-4 tracking-tighter text-current">Clarity.</h2>
+            <p class="text-gray-500 mb-12 font-medium text-lg">Your workspace is ready. Who are you?</p>
+            <input type="text" id="nickInput" class="w-full text-center text-4xl font-bold bg-transparent border-b-2 border-gray-800 focus:border-indigo-500 outline-none pb-4 mb-16 text-current transition-all" placeholder="Enter Name">
+            <button id="saveNickBtn" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-bold text-lg hover:bg-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/40 transition-all active:scale-95">Enter Private Studio</button>
         </div>
     </div>
 
-    <aside class="sidebar p-6">
-        <div class="flex items-center gap-2 mb-12 px-2">
-            <img src="Clarity Logo.png" class="h-7 w-auto">
-            <span class="font-bold text-lg tracking-tight">Clarity</span>
+    <aside class="sidebar p-8">
+        <div class="flex items-center gap-3 mb-16 px-2">
+            <div class="h-8 w-8 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
+                <img src="Clarity Logo.png" class="h-5 w-5 brightness-200">
+            </div>
+            <span class="font-extrabold text-xl tracking-tighter">CLARITY</span>
         </div>
 
-        <nav class="flex-1 space-y-1">
+        <nav class="flex-1 space-y-2">
             <div onclick="switchView('studio')" id="tab-studio" class="nav-btn active">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 AI Studio
@@ -73,30 +129,30 @@
             </div>
         </nav>
 
-        <div class="mt-auto border-t border-gray-800 pt-6">
-            <div class="flex items-center gap-3">
-                <div class="h-10 w-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold" id="userInitial">?</div>
+        <div class="mt-auto border-t border-gray-800/50 pt-8">
+            <div class="flex items-center gap-4 group cursor-pointer">
+                <div class="h-11 w-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-110 transition-transform" id="userInitial">?</div>
                 <div class="overflow-hidden">
                     <p id="profileName" class="font-bold text-sm truncate">Student</p>
-                    <button onclick="logout()" class="text-xs text-gray-500 hover:text-red-500 font-medium transition-colors">Log Out</button>
+                    <button onclick="logout()" class="text-[10px] uppercase tracking-widest text-gray-500 hover:text-red-500 font-black transition-colors">Sign Out</button>
                 </div>
             </div>
         </div>
     </aside>
 
-    <main class="main-content">
+    <main class="main-content" id="mainContainer">
         
-        <div id="view-studio" class="max-w-5xl animate-in fade-in duration-500">
-            <header class="mb-10">
-                <h1 class="text-4xl font-black tracking-tight">AI Studio.</h1>
-                <p class="text-gray-500 font-medium mt-1">Ready, <span id="helloName" class="text-indigo-500">...</span>? Let's process those notes.</p>
+        <div id="view-studio" class="max-w-5xl">
+            <header class="mb-14">
+                <h1 class="text-5xl font-black tracking-tighter mb-2">AI Studio.</h1>
+                <p class="text-gray-500 font-medium">Processing notes for <span id="helloName" class="text-indigo-500 font-bold">...</span></p>
             </header>
 
-            <div class="studio-box">
-                <textarea id="aiInput" placeholder="Paste study materials, lecture notes, or textbooks here..."></textarea>
+            <div class="studio-box shadow-premium">
+                <textarea id="aiInput" onfocus="toggleFocus(true)" onblur="toggleFocus(false)" placeholder="Paste your study materials here to begin..."></textarea>
                 
-                <div class="p-6 bg-black/5 dark:bg-white/5 rounded-b-2xl border-t border-gray-100 dark:border-gray-800">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="p-8 bg-black/10 dark:bg-white/5 rounded-b-[32px] border-t border-gray-100 dark:border-gray-800/50">
+                    <div class="flex flex-wrap items-center justify-between gap-6">
                         <div class="flex flex-wrap gap-2">
                             <button class="mode-tab active" onclick="setMode('deep', this)">Deep Dive</button>
                             <button class="mode-tab" onclick="setMode('speed', this)">Speed</button>
@@ -105,69 +161,54 @@
                             <button class="mode-tab pro-only" onclick="setMode('simulate', this)">Simulate Exam <span class="pro-badge">Pro</span></button>
                         </div>
 
-                        <button id="genBtn" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center gap-2">
-                            Generate <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1a1 1 0 112 0v1a1 1 0 11-2 0zM13.536 14.95a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM15 10a5 5 0 11-10 0 5 5 0 0110 0z"/></svg>
+                        <button id="genBtn" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-sm hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20 active:scale-95 flex items-center gap-3">
+                            GENERATE <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1a1 1 0 112 0v1a1 1 0 11-2 0zM13.536 14.95a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM15 10a5 5 0 11-10 0 5 5 0 0110 0z"/></svg>
                         </button>
                     </div>
 
-                    <div id="quizConfig" class="hidden mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
-                        <div class="flex items-center justify-between mb-4">
-                            <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest">Question Quantity</p>
-                            <span id="sliderVal" class="font-black text-indigo-500 text-lg">5</span>
+                    <div id="quizConfig" class="hidden mt-8 pt-8 border-t border-gray-800/30">
+                        <div class="flex items-center justify-between mb-5 px-1">
+                            <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Question Volume</p>
+                            <span id="sliderVal" class="font-black text-indigo-500 text-xl tracking-tighter">5</span>
                         </div>
                         <input type="range" min="5" max="50" value="5" step="5" class="slider" id="questionSlider">
-                        <p id="proWarning" class="hidden text-[10px] text-red-500 font-bold mt-2 italic uppercase tracking-tighter">Pro subscription required for more than 10 questions.</p>
+                        <p id="proWarning" class="hidden text-[10px] text-indigo-400 font-bold mt-4 uppercase tracking-widest text-center">Pro Membership unlocks up to 50 questions.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="view-pro" class="hidden max-w-4xl animate-in slide-in-from-bottom-4 duration-500">
-            <h1 class="text-4xl font-black mb-8 tracking-tight">Pro Mastery.</h1>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="settings-card flex flex-col items-start">
-                    <div class="p-3 bg-indigo-500/10 text-indigo-500 rounded-xl mb-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                    <h3 class="text-xl font-bold mb-2">Simulate Exam</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">The ultimate prep tool. Generates a weighted exam based on your notes with a real-time countdown timer and stress-inducing edge-case questions.</p>
+        <div id="view-pro" class="hidden max-w-4xl">
+            <h1 class="text-5xl font-black mb-12 tracking-tighter">Clarity Pro.</h1>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="settings-card bg-indigo-600/5">
+                    <h3 class="text-xl font-bold mb-3">Simulate Exam</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Experience real exam pressure with AI-curated timed tests that adapt to your weaknesses.</p>
+                    <span class="pro-badge px-3 py-1">UNLOCKED WITH PRO</span>
                 </div>
-                <div class="settings-card flex flex-col items-start">
-                    <div class="p-3 bg-purple-500/10 text-purple-500 rounded-xl mb-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
-                    <h3 class="text-xl font-bold mb-2">Detailed Analytics</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">See exactly where your knowledge gaps are. We track which flashcards you miss and which topics you struggle with during quizzes.</p>
-                </div>
-                <div class="settings-card flex flex-col items-start">
-                    <div class="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl mb-4"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg></div>
-                    <h3 class="text-xl font-bold mb-2">Cloud Library</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Save unlimited study sessions, accessible from any device. Never lose a summary or a quiz result again.</p>
-                </div>
-                <div class="settings-card flex flex-col items-start bg-indigo-600/5 border-indigo-500/20">
-                    <h3 class="text-2xl font-black mb-2 text-indigo-500">$9.99/mo</h3>
-                    <p class="text-gray-400 text-sm mb-6">Unlock the full power of Clarity today.</p>
-                    <button class="w-full bg-indigo-600 py-3 rounded-xl font-bold text-white hover:bg-indigo-700 transition">Upgrade Now</button>
+                <div class="settings-card">
+                    <h3 class="text-xl font-bold mb-3">Unlimited Quizzes</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Break the 10-question barrier. Generate up to 50 targeted questions for deep subject mastery.</p>
+                    <button class="text-indigo-500 font-bold text-sm">Upgrade Now →</button>
                 </div>
             </div>
         </div>
 
-        <div id="view-settings" class="hidden max-w-2xl animate-in slide-in-from-right-4 duration-500">
-            <h1 class="text-4xl font-black mb-8 tracking-tight">Settings.</h1>
+        <div id="view-settings" class="hidden max-w-2xl">
+            <h1 class="text-5xl font-black mb-12 tracking-tighter">Settings.</h1>
             <div class="space-y-4">
                 <div class="settings-card flex items-center justify-between">
                     <div>
-                        <p class="font-bold">Appearance</p>
-                        <p class="text-gray-500 text-xs">Switch between light and dark themes.</p>
+                        <p class="font-bold">Dark Mode</p>
+                        <p class="text-gray-400 text-xs">Switch to light interface.</p>
                     </div>
-                    <button onclick="toggleTheme()" id="themeBtn" class="bg-gray-100 dark:bg-gray-800 p-2.5 rounded-xl transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <button onclick="toggleTheme()" class="bg-gray-800/50 p-3 rounded-2xl hover:bg-indigo-600 transition-all">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     </button>
                 </div>
                 <div class="settings-card">
-                    <p class="font-bold mb-1">Rename Profile</p>
-                    <p class="text-gray-500 text-xs mb-4">Reset your name to trigger onboarding again.</p>
-                    <button onclick="resetName()" class="text-red-500 font-bold text-sm bg-red-500/10 px-4 py-2 rounded-lg hover:bg-red-500/20 transition">Reset Identity</button>
-                </div>
-                <div class="settings-card">
-                    <p class="font-bold mb-1">Account Info</p>
-                    <p id="accEmail" class="text-gray-500 text-sm">...</p>
+                    <p class="font-bold mb-1">Reset Session</p>
+                    <button onclick="resetName()" class="text-red-500 font-black text-xs uppercase tracking-widest mt-4">Wipe Identity</button>
                 </div>
             </div>
         </div>
@@ -186,15 +227,12 @@
         let userDoc = null;
         let activeMode = 'deep';
 
-        // AUTH CORE
         onAuthStateChanged(auth, async (user) => {
             if(!user) return window.location.href="index.html";
             const snap = await getDoc(doc(db, "users", user.uid));
             if(snap.exists()){
                 userDoc = snap.data();
                 if(userDoc.isVerified === false) return window.location.href="verify.html";
-                
-                document.getElementById('accEmail').innerText = user.email;
                 if(!userDoc.nickname) {
                     document.getElementById('onboarding').classList.remove('hidden');
                 } else {
@@ -210,18 +248,22 @@
             document.getElementById('onboarding').classList.add('hidden');
         }
 
-        // QUIZ SLIDER LOGIC
+        // 3. PROGRESSIVE DISCLOSURE: Focus Mode Trigger
+        window.toggleFocus = (isFocused) => {
+            const container = document.getElementById('mainContainer');
+            if(isFocused) container.classList.add('focus-mode');
+            else container.classList.remove('focus-mode');
+        };
+
         const slider = document.getElementById('questionSlider');
         const sliderVal = document.getElementById('sliderVal');
         const proWarning = document.getElementById('proWarning');
 
         slider.oninput = function() {
             let val = parseInt(this.value);
-            // PRO LIMIT LOGIC (Example: Free users capped at 10)
             const isPro = userDoc && userDoc.isPro; 
             if(!isPro && val > 10) {
-                this.value = 10;
-                val = 10;
+                this.value = 10; val = 10;
                 proWarning.classList.remove('hidden');
             } else {
                 proWarning.classList.add('hidden');
@@ -229,21 +271,18 @@
             sliderVal.innerText = val;
         };
 
-        // MODE SELECTION
         window.setMode = (mode, btn) => {
             if(mode === 'simulate' && (!userDoc || !userDoc.isPro)) {
-                alert("Simulate Exam is a Pro-only feature.");
+                alert("Simulate Exam requires Pro Membership.");
                 switchView('pro');
                 return;
             }
             activeMode = mode;
             document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             document.getElementById('quizConfig').classList.toggle('hidden', mode !== 'quiz');
         };
 
-        // UI NAVIGATION
         window.switchView = (v) => {
             ['studio', 'pro', 'settings'].forEach(view => {
                 const el = document.getElementById(`view-${view}`);
@@ -253,15 +292,11 @@
             });
         };
 
-        window.toggleTheme = () => {
-            document.body.classList.toggle('dark-theme');
-        };
+        window.toggleTheme = () => document.body.classList.toggle('dark-theme');
 
         window.resetName = async () => {
-            if(confirm("Change your nickname?")) {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
-                location.reload();
-            }
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: "" });
+            location.reload();
         };
 
         document.getElementById('saveNickBtn').onclick = async () => {
@@ -275,8 +310,13 @@
 
         document.getElementById('genBtn').onclick = () => {
             const input = document.getElementById('aiInput').value;
-            if(!input) return alert("Input text required.");
-            alert(`Engine: ${activeMode} | Q-Limit: ${slider.value}`);
+            if(!input) return;
+            // 5. AI GHOST WRITING (Placeholder alert for logic flow)
+            document.getElementById('genBtn').innerText = "THINKING...";
+            setTimeout(() => {
+                document.getElementById('genBtn').innerText = "GENERATE";
+                alert("AI Engine: " + activeMode.toUpperCase());
+            }, 1500);
         };
     </script>
 </body>
