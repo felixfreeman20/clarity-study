@@ -1,84 +1,332 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarity | Choose Plan</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Clarity | Pro Architecture</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Inter', sans-serif; background: #fff; }
-        .aura { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.15; }
-        .aura-1 { background: #6366f1; top: -10%; right: -10%; }
+        /* ==========================================================================
+           1. OBSIDIAN MASTER THEME (EXTENDED)
+           ========================================================================== */
+        :root {
+            --obsidian-base: #050505;
+            --obsidian-surface: #0a0a0a;
+            --obsidian-elevated: #121212;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-focus: rgba(255, 255, 255, 0.15);
+            --accent-logic-blue: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --sidebar-width: 280px;
+            --radius-lg: 24px;
+            --transition-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            background-color: var(--obsidian-base);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Shared Stealth Sidebar Re-implementation */
+        .stealth-sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--obsidian-surface);
+            border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column;
+            padding: 40px 24px; z-index: 50;
+        }
+
+        .brand-cluster { display: flex; align-items: center; gap: 16px; margin-bottom: 60px; }
+        .brand-glyph { width: 24px; height: 24px; background: #fff; border-radius: 6px; transition: 0.4s; }
+        .brand-logotype { font-weight: 900; font-size: 20px; letter-spacing: -0.04em; text-transform: uppercase; }
+
+        .nav-matrix { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .nav-node {
+            display: flex; align-items: center; gap: 16px; padding: 14px 16px;
+            border-radius: 12px; color: var(--text-secondary);
+            font-weight: 600; font-size: 13px; text-transform: uppercase; text-decoration: none;
+            transition: 0.2s var(--transition-fluid);
+            border: 1px solid transparent;
+        }
+        .nav-node:hover { background: var(--obsidian-elevated); color: #fff; }
+        .nav-node.active { background: #1a1a1a; color: #fff; border: 1px solid var(--glass-border); }
+
+        /* ==========================================================================
+           2. PRICING ARCHITECTURE (HIGH DENSITY)
+           ========================================================================== */
+        .pricing-core {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 100px 60px;
+            max-width: 1400px;
+        }
+
+        .hero-section { text-align: center; margin-bottom: 80px; }
+        .hero-section h1 { font-size: 64px; font-weight: 900; letter-spacing: -0.06em; margin-bottom: 20px; }
+        .hero-section p { font-size: 20px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        .pricing-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 120px;
+        }
+
+        /* Glass Tiers */
+        .tier-card {
+            background: var(--obsidian-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 60px;
+            position: relative;
+            transition: var(--transition-fluid);
+            display: flex;
+            flex-direction: column;
+        }
+        .tier-card:hover { border-color: var(--glass-border-focus); transform: translateY(-8px); }
+        .tier-card.featured { border-color: var(--accent-logic-blue); box-shadow: 0 0 40px rgba(59, 130, 246, 0.05); }
+
+        .badge-pro {
+            position: absolute; top: 24px; right: 24px;
+            background: var(--accent-logic-blue); color: #fff;
+            padding: 6px 14px; border-radius: 100px; font-size: 10px; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        .price-display { margin: 30px 0; }
+        .price-val { font-size: 72px; font-weight: 900; letter-spacing: -0.04em; }
+        .price-sub { font-size: 16px; color: var(--text-secondary); font-weight: 600; }
+
+        .feature-list { list-style: none; margin: 40px 0; flex-grow: 1; }
+        .feature-item {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 18px;
+            font-size: 15px; color: var(--text-secondary); font-weight: 500;
+        }
+        .feature-item svg { color: var(--accent-logic-blue); flex-shrink: 0; }
+        .feature-item.locked { opacity: 0.4; }
+
+        /* Action Buttons */
+        .btn-action {
+            width: 100%; padding: 20px; border-radius: 100px;
+            font-weight: 900; font-size: 14px; text-transform: uppercase;
+            letter-spacing: 0.15em; transition: 0.4s; cursor: pointer;
+        }
+        .btn-base { background: #1a1a1a; color: #fff; border: 1px solid var(--glass-border); }
+        .btn-pro { background: #fff; color: #000; }
+        .btn-pro:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(255,255,255,0.1); }
+
+        /* Comparison Table Section */
+        .comparison-section { margin-top: 100px; }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 40px; }
+        .comparison-table th { text-align: left; padding: 24px; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--glass-border); }
+        .comparison-table td { padding: 24px; border-bottom: 1px solid var(--glass-border); font-weight: 600; }
+        .row-label { color: var(--text-secondary); }
+
+        /* FAQ Accordion */
+        .faq-section { margin-top: 150px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .faq-item {
+            border: 1px solid var(--glass-border); border-radius: 16px;
+            margin-bottom: 16px; overflow: hidden; background: var(--obsidian-surface);
+        }
+        .faq-trigger {
+            width: 100%; padding: 24px; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; font-weight: 700;
+        }
+        .faq-content { padding: 0 24px; max-height: 0; overflow: hidden; transition: 0.3s; color: var(--text-secondary); line-height: 1.6; }
+        .faq-item.active .faq-content { padding-bottom: 24px; max-height: 200px; }
+
+        /* Checkout Modal Overlay */
+        #checkout-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px);
+            z-index: 100; display: none; align-items: center; justify-content: center;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
-    <div class="aura aura-1"></div>
+<body>
 
-    <div id="pricing-view" class="max-w-4xl w-full text-center">
-        <img src="Clarity Logo.png" alt="Clarity" class="h-12 mx-auto mb-10">
-        <h1 class="text-5xl font-black mb-16 tracking-tight">Upgrade Your Study Game.</h1>
+    <aside class="stealth-sidebar">
+        <div class="brand-cluster">
+            <div class="brand-glyph"></div>
+            <span class="brand-logotype">Clarity</span>
+        </div>
+        <nav class="nav-matrix">
+            <a href="dashboard.html" class="nav-node">Dashboard</a>
+            <a href="workspace.html" class="nav-node">Studio</a>
+            <a href="pricing.html" class="nav-node active">Pricing</a>
+            <a href="settings.html" class="nav-node">Settings</a>
+        </nav>
+        <div class="mt-auto p-4 bg-zinc-900/50 rounded-2xl border border-white/5">
+            <div class="text-[10px] font-black uppercase text-zinc-500 mb-1">Authenticated As</div>
+            <div id="ui-nickname" class="text-xs font-bold truncate">Establishing...</div>
+        </div>
+    </aside>
+
+    <main class="pricing-core">
         
-        <div class="grid md:grid-cols-2 gap-8 mb-16 text-left">
-            <div class="bg-slate-50 p-10 rounded-[40px] border border-slate-200">
-                <h3 class="font-bold opacity-40 mb-2 uppercase text-xs">Monthly</h3>
-                <div class="text-5xl font-black mb-6">$4.99</div>
-                <ul class="space-y-4 mb-8 text-sm font-medium text-slate-600">
-                    <li>✓ 30 Questions per Quiz</li>
-                    <li>✓ Unlimited Cloud Storage</li>
-                    <li>✓ Priority AI Processing</li>
+        <header class="hero-section">
+            <div class="inline-block px-4 py-1 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-500 text-[10px] font-black uppercase tracking-widest mb-6">Subscription Engine</div>
+            <h1>The Architecture of Insight.</h1>
+            <p>Select your processing capacity. Professional tiers unlock the full potential of the Clarity Synthesis Engine.</p>
+        </header>
+
+        <div class="pricing-matrix">
+            
+            <div class="tier-card">
+                <div class="text-xs font-black uppercase tracking-widest text-zinc-500">Tier 01</div>
+                <h2 class="text-3xl font-black mt-4">Free Engine</h2>
+                <div class="price-display">
+                    <span class="price-val">$0</span><span class="price-sub">/forever</span>
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> 1,000 Word Context Limit</li>
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> 10 Question Quiz Limit</li>
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Standard Deep Mode</li>
+                    <li class="feature-item locked">Exam Simulation Protocol</li>
+                    <li class="feature-item locked">Advanced PDF Extraction</li>
                 </ul>
-                <button class="w-full bg-black text-white py-4 rounded-2xl font-black hover:bg-slate-800 transition">Go Pro Monthly</button>
+                <button class="btn-action btn-base" onclick="window.location.href='workspace.html'">Current Plan</button>
             </div>
-            <div class="bg-indigo-600 p-10 rounded-[40px] text-white shadow-2xl scale-105">
-                <h3 class="font-bold opacity-60 mb-2 uppercase text-xs">Lifetime</h3>
-                <div class="text-5xl font-black mb-6">$19.99</div>
-                <ul class="space-y-4 mb-8 text-sm font-medium opacity-90">
-                    <li>✓ One-time Payment</li>
-                    <li>✓ All Future Features</li>
-                    <li>✓ Priority Support</li>
+
+            <div class="tier-card featured">
+                <div class="badge-pro">Most Popular</div>
+                <div class="text-xs font-black uppercase tracking-widest text-blue-500">Tier 02</div>
+                <h2 class="text-3xl font-black mt-4">Pro Synthesis</h2>
+                <div class="price-display">
+                    <span class="price-val">$4.99</span><span class="price-sub">/month</span>
+                </div>
+                <ul class="feature-list">
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> 3,000 Word Context Limit</li>
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Unlimited Quiz Logic</li>
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Full Exam Simulation</li>
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Multi-PDF Sync Support</li>
+                    <li class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Export to Obsidian/Notion</li>
                 </ul>
-                <button class="w-full bg-white text-indigo-600 py-4 rounded-2xl font-black hover:bg-slate-100 transition">Get Lifetime</button>
+                <button id="btn-upgrade" class="btn-action btn-pro">Upgrade to Pro</button>
             </div>
+
         </div>
 
-        <button onclick="showOnboarding()" class="text-slate-400 font-black hover:text-black transition text-sm uppercase tracking-widest border-b-2 border-transparent hover:border-black">
-            Skip to Free Version →
-        </button>
-    </div>
+        <section class="comparison-section">
+            <h2 class="text-2xl font-black uppercase tracking-tighter mb-8">Technical Breakdown</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>Base</th>
+                        <th class="text-blue-500">Pro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="row-label">Monthly Logic Tokens</td><td>5,000</td><td>Unlimited</td></tr>
+                    <tr><td class="row-label">Max File Size</td><td>2MB</td><td>50MB</td></tr>
+                    <tr><td class="row-label">AI Model Depth</td><td>GPT-4o Mini</td><td>GPT-4o / Claude 3.5</td></tr>
+                    <tr><td class="row-label">Response Speed</td><td>Standard</td><td>Priority (2x Fast)</td></tr>
+                </tbody>
+            </table>
+        </section>
 
-    <div id="onboarding-modal" class="hidden fixed inset-0 bg-white flex flex-col items-center justify-center z-[100] p-10">
-        <h2 class="text-5xl font-black mb-4 tracking-tighter">Nice to meet you.</h2>
-        <p class="text-slate-400 font-medium mb-12">What should we call you in the workspace?</p>
-        <input type="text" id="nickInput" class="text-4xl font-bold text-center border-b-4 border-black outline-none pb-4 w-full max-w-md mb-12" placeholder="Your Name">
-        <button id="saveNickBtn" class="bg-black text-white px-16 py-5 rounded-full font-black text-xl hover:scale-105 transition shadow-2xl">Start Studying</button>
+        <section class="faq-section">
+            <h2 class="text-center text-3xl font-black mb-12">Frequently Asked</h2>
+            <div class="faq-item">
+                <div class="faq-trigger" onclick="toggleFaq(this)">
+                    <span>Can I cancel anytime?</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="faq-content">Yes. You can downgrade back to the Base Engine at any point from your settings panel without losing your past study data.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-trigger" onclick="toggleFaq(this)">
+                    <span>How does the word limit work?</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="faq-content">The limit applies to a single generation request. Pro users can paste up to 3,000 words (roughly 10-15 pages of notes) at once for synthesis.</div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="checkout-overlay">
+        <div class="bg-black border border-white/10 p-12 rounded-3xl max-w-md w-full text-center">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-8"></div>
+            <h2 class="text-2xl font-black mb-4 uppercase">Initializing Stripe</h2>
+            <p class="text-zinc-500 mb-0">Establishing secure uplink for Tier 02 activation...</p>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo",
+            authDomain: "clarity-study-cd835.firebaseapp.com",
+            projectId: "clarity-study-cd835",
+            storageBucket: "clarity-study-cd835.firebasestorage.app",
+            messagingSenderId: "92484724607",
+            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentUser = null;
-        onAuthStateChanged(auth, u => { if(u) currentUser = u; else window.location.href="index.html"; });
-
-        window.showOnboarding = () => {
-            document.getElementById('pricing-view').classList.add('hidden');
-            document.getElementById('onboarding-modal').classList.remove('hidden');
-        };
-
-        document.getElementById('saveNickBtn').onclick = async () => {
-            const n = document.getElementById('nickInput').value;
-            if(n && currentUser) {
-                await setDoc(doc(db, "users", currentUser.uid), { nickname: n, isPremium: false }, { merge: true });
-                window.location.href = "index.html";
+        // 1. Identity & State Persistence
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
             }
+
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                // SET THE REMEMBERED NAME
+                document.getElementById('ui-nickname').innerText = (data.nickname || user.email).toUpperCase();
+                
+                // If already Pro, update UI
+                if(data.isPro) {
+                    document.getElementById('btn-upgrade').innerText = "Active Subscriber";
+                    document.getElementById('btn-upgrade').disabled = true;
+                    document.getElementById('btn-upgrade').style.opacity = "0.5";
+                }
+            }
+        });
+
+        // 2. Stripe Simulation Logic
+        document.getElementById('btn-upgrade').addEventListener('click', () => {
+            const overlay = document.getElementById('checkout-overlay');
+            overlay.style.display = 'flex';
+
+            // Simulate Payment Success
+            setTimeout(async () => {
+                const user = auth.currentUser;
+                if(user) {
+                    await updateDoc(doc(db, "users", user.uid), { isPro: true });
+                    window.location.href = "dashboard.html?upgrade=success";
+                }
+            }, 3000);
+        });
+
+        // 3. UI Interactions (FAQ)
+        window.toggleFaq = (el) => {
+            const item = el.parentElement;
+            item.classList.toggle('active');
         };
     </script>
 </body>
