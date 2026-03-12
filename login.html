@@ -1,36 +1,344 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Clarity | Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity | Authentication</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* ==========================================================================
+           1. OBSIDIAN GATEWAY TOKENS
+           ========================================================================== */
+        :root {
+            --obsidian-void: #020202;
+            --obsidian-base: #050505;
+            --obsidian-surface: #0a0a0a;
+            
+            --glass-border-subtle: rgba(255, 255, 255, 0.04);
+            --glass-border-active: rgba(255, 255, 255, 0.08);
+            --glass-border-focus: rgba(255, 255, 255, 0.15);
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            
+            --accent-logic-blue: #3b82f6;
+            --accent-logic-glow: rgba(59, 130, 246, 0.15);
+            
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-pill: 9999px;
+            
+            --transition-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-med: all 0.5s var(--transition-fluid);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            background-color: var(--obsidian-base);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient Background Glow */
+        .ambient-light {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-logic-glow) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: pulse 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.6; }
+        }
+
+        /* ==========================================================================
+           2. AUTHENTICATION MODULE
+           ========================================================================== */
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--obsidian-surface);
+            border: 1px solid var(--glass-border-active);
+            border-radius: var(--radius-lg);
+            padding: 60px 50px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUpIn 0.8s var(--transition-fluid) forwards;
+        }
+
+        @keyframes slideUpIn {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Brand Elements */
+        .brand-glyph-large {
+            width: 48px;
+            height: 48px;
+            background: var(--text-primary);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.05);
+            transition: var(--transition-med);
+        }
+        .auth-container:hover .brand-glyph-large {
+            transform: scale(1.05) rotate(5deg);
+            background: var(--accent-logic-blue);
+            box-shadow: 0 0 30px var(--accent-logic-glow);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        p.subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Google Provider Button */
+        .btn-google {
+            width: 100%;
+            background: var(--obsidian-void);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border-focus);
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition-med);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-google:hover {
+            background: var(--text-primary);
+            color: var(--obsidian-void);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255,255,255,0.1);
+        }
+
+        .btn-google svg {
+            width: 20px;
+            height: 20px;
+            transition: var(--transition-med);
+        }
+
+        .btn-google:hover svg path {
+            fill: var(--obsidian-void);
+        }
+
+        /* Loading Overlay */
+        .auth-loader {
+            position: absolute;
+            inset: 0;
+            background: var(--obsidian-surface);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-med);
+            z-index: 20;
+        }
+        
+        .auth-loader.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--glass-border-active);
+            border-top-color: var(--accent-logic-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .auth-footer {
+            margin-top: 30px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .auth-footer a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+        .auth-footer a:hover {
+            color: var(--accent-logic-blue);
+        }
+
+    </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-height-screen">
-    <div class="bg-white p-10 rounded-3xl shadow-xl text-center max-w-md w-full">
-        <img src="Clarity Logo.png" class="h-16 mx-auto mb-6">
-        <h1 class="text-3xl font-bold mb-2">Welcome to Clarity</h1>
-        <p class="text-gray-500 mb-8">Sign in to start your clear study session.</p>
-        <button id="loginBtn" class="bg-black text-white w-full py-4 rounded-xl font-bold hover:opacity-80 transition">Sign in with Google</button>
+<body>
+
+    <div class="ambient-light"></div>
+
+    <div class="auth-container">
+        
+        <div class="brand-glyph-large">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--obsidian-base)" stroke-width="3" class="transition-all duration-500 hover:stroke-white">
+                <path d="M12 2L2 22h20L12 2z"></path>
+            </svg>
+        </div>
+        
+        <h1>Clarity Engine</h1>
+        <p class="subtitle">Secure authentication required.<br>Connect your academic profile to proceed.</p>
+
+        <button id="btn-login" class="btn-google">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff"/>
+            </svg>
+            Continue with Google
+        </button>
+
+        <div class="auth-footer">
+            By connecting, you agree to the <a href="#">Architecture Protocols</a>.
+        </div>
+
+        <div id="auth-loader" class="auth-loader">
+            <div class="spinner"></div>
+            <div class="loader-text">Establishing Uplink...</div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
+        // Firebase Configuration (Matching your repository)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo",
+            authDomain: "clarity-study-cd835.firebaseapp.com",
+            projectId: "clarity-study-cd835",
+            storageBucket: "clarity-study-cd835.firebasestorage.app",
+            messagingSenderId: "92484724607",
+            appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
-        document.getElementById('loginBtn').onclick = async () => {
-            const provider = new GoogleAuthProvider();
+        const DOM = {
+            btnLogin: document.getElementById('btn-login'),
+            loader: document.getElementById('auth-loader')
+        };
+
+        // 1. Session Check (Auto-Redirect if already logged in)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // If user is already authenticated, skip login and go to workspace
+                DOM.loader.classList.add('active');
+                setTimeout(() => {
+                    window.location.href = "workspace.html";
+                }, 800);
+            }
+        });
+
+        // 2. Manual Login Flow
+        DOM.btnLogin.addEventListener('click', async () => {
             try {
+                DOM.loader.classList.add('active');
+                
+                // Trigger Google Auth Popup
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                const userRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userRef);
 
-                if (!userDoc.exists()) {
-                    const nickname = prompt("What should we call you?", "Alon") || "Alon";
-                    await
+                // Check if user exists in Firestore
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+
+                // If they don't exist yet, create their baseline document
+                if (!docSnap.exists()) {
+                    await setDoc(userRef, {
+                        email: user.email,
+                        createdAt: new Date().toISOString(),
+                        isPro: false,
+                        nickname: "" // Left blank intentionally; workspace.html handles the prompting
+                    });
+                }
+
+                // Route to workspace (where the nickname check and app logic lives)
+                window.location.href = "workspace.html";
+
+            } catch (error) {
+                console.error("Authentication Error:", error);
+                DOM.loader.classList.remove('active');
+                
+                // Handle specific user cancellation vs actual errors
+                if(error.code !== 'auth/popup-closed-by-user') {
+                    alert("Connection failed. Please check your network and try again.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
