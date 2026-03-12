@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity | System Configuration</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* ==========================================================================
+           1. OBSIDIAN SYSTEM TOKENS
+           ========================================================================== */
+        :root {
+            --obsidian-base: #050505;
+            --obsidian-surface: #0a0a0a;
+            --obsidian-elevated: #111111;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --sidebar-width: 280px;
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --transition-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { background-color: var(--obsidian-base); color: var(--text-primary); font-family: 'Inter', sans-serif; display: flex; min-height: 100vh; }
+
+        /* Shared Stealth Sidebar */
+        .stealth-sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--obsidian-surface);
+            border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column;
+            padding: 40px 24px; z-index: 50;
+        }
+        .nav-node {
+            display: flex; align-items: center; gap: 16px; padding: 14px 16px;
+            border-radius: 12px; color: var(--text-secondary);
+            font-weight: 600; font-size: 13px; text-transform: uppercase; text-decoration: none;
+            transition: 0.2s var(--transition-fluid);
+        }
+        .nav-node:hover { background: var(--obsidian-elevated); color: #fff; }
+        .nav-node.active { background: #1a1a1a; color: #fff; border: 1px solid var(--glass-border); }
+
+        /* ==========================================================================
+           2. SETTINGS ARCHITECTURE
+           ========================================================================== */
+        .settings-core {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 80px 10%;
+            max-width: 1200px;
+        }
+
+        .settings-header { margin-bottom: 60px; }
+        .settings-header h1 { font-size: 42px; font-weight: 900; letter-spacing: -0.05em; }
+        .settings-header p { color: var(--text-secondary); margin-top: 8px; font-weight: 500; }
+
+        .module-card {
+            background: var(--obsidian-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-bottom: 32px;
+        }
+        .module-label {
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.2em; color: var(--text-secondary);
+            margin-bottom: 30px; display: block;
+        }
+
+        .input-group { margin-bottom: 24px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+        .obsidian-input {
+            width: 100%; background: #000; border: 1px solid var(--glass-border);
+            padding: 16px 20px; border-radius: var(--radius-md); color: #fff; outline: none;
+        }
+
+        .btn-prime {
+            background: #fff; color: #000; padding: 14px 32px; border-radius: 100px;
+            font-size: 12px; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 0.1em; cursor: pointer;
+        }
+        .btn-danger {
+            background: transparent; border: 1px solid rgba(239, 68, 68, 0.3); color: var(--accent-red);
+            padding: 14px 32px; border-radius: 100px; font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
+        }
+
+        #toast {
+            position: fixed; bottom: 40px; right: 40px; background: var(--accent-blue);
+            color: #fff; padding: 16px 32px; border-radius: 12px; font-weight: 700;
+            transform: translateY(200px); transition: 0.5s;
+        }
+        #toast.visible { transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <aside class="stealth-sidebar">
+        <div class="mb-12 flex items-center gap-4">
+            <div class="w-6 h-6 bg-white rounded-md"></div>
+            <span class="font-black uppercase tracking-tighter text-xl">Clarity</span>
+        </div>
+        <nav class="flex flex-col gap-2 flex-grow">
+            <a href="dashboard.html" class="nav-node">Dashboard</a>
+            <a href="workspace.html" class="nav-node">Studio</a>
+            <a href="pricing.html" class="nav-node">Pricing</a>
+            <a href="settings.html" class="nav-node active">Settings</a>
+        </nav>
+        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+            <div id="ui-nickname-side" class="text-xs font-bold truncate uppercase">Establishing...</div>
+        </div>
+    </aside>
+
+    <main class="settings-core">
+        <header class="settings-header">
+            <h1>Settings</h1>
+            <p>Manage your engine configuration and identity protocols.</p>
+        </header>
+
+        <section class="module-card">
+            <span class="module-label">Identity Management</span>
+            <div class="input-group">
+                <label>Preferred Name</label>
+                <input type="text" id="input-nickname" class="obsidian-input" placeholder="Your Name">
+            </div>
+            <button id="btn-save" class="btn-prime">Update Profile</button>
+        </section>
+
+        <section class="module-card" style="border-color: rgba(239, 68, 68, 0.2);">
+            <span class="module-label" style="color: var(--accent-red);">Danger Zone</span>
+            <p class="text-sm text-zinc-500 mb-6">Ending your session will require a full re-authentication.</p>
+            <button id="btn-logout" class="btn-danger">Sign Out</button>
+        </section>
+    </main>
+
+    <div id="toast">Profile Updated.</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAoyilOSkLk7uQVC4znit855wfAwVXU3Uo", authDomain: "clarity-study-cd835.firebaseapp.com", projectId: "clarity-study-cd835", storageBucket: "clarity-study-cd835.firebasestorage.app", messagingSenderId: "92484724607", appId: "1:92484724607:web:d07cbc3f0238264ecf9c4a" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = "login.html"; return; }
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+                const name = snap.data().nickname || "User";
+                document.getElementById('input-nickname').value = name;
+                document.getElementById('ui-nickname-side').innerText = name.toUpperCase();
+            }
+        });
+
+        document.getElementById('btn-save').addEventListener('click', async () => {
+            const name = document.getElementById('input-nickname').value.trim();
+            if(name) {
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { nickname: name });
+                const t = document.getElementById('toast');
+                t.classList.add('visible');
+                setTimeout(() => t.classList.remove('visible'), 3000);
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+    </script>
+</body>
+</html>
